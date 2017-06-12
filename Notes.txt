@@ -1,0 +1,184 @@
+DATA STRUCTURE:
+
+DoubleBlind App
+	Study[]
+		Name
+		current stage
+		isOpen
+		testElement Data
+			Name
+			Price
+			...
+		tester Data
+			Name
+			Trustworthiness?
+			...
+		testElement[]
+			data
+			first map
+			second map
+		tester[]
+			data
+		test[]
+			rating
+			BAC
+			...
+		ratings[]
+			testElement index
+			tester index
+			test index
+			value
+			comments
+			
+In Relational Database form:
+	Study
+		ID
+		Name
+		Stage
+		
+	ElementField
+		ID
+		Study ID
+		Name
+		
+	Element
+		ID
+		Study ID
+		Name
+		
+	ElementFieldValue
+		ID
+		ElementID
+		ElementFieldID
+		Value
+		
+	TesterField
+		ID
+		Study ID
+		Name
+		
+	Tester
+		ID
+		Study ID
+		Name
+		
+	TesterFieldValue
+		ID
+		TesterID
+		TesterFieldID
+		Value
+		
+	SubmissionField
+		ID
+		StudyID
+		Name
+		
+	Submission
+		ID
+		TesterID
+		timestamp
+		
+	SubmissionFieldValue
+		ID
+		SubmissionID
+		SubmissionFieldID
+		Value
+	
+	
+		
+				
+				
+BEHAVIOR:
+
+	Join a study >
+		(only currently open studies)
+		Studies[] (First time, no cookie) >
+			"Privide your information"
+			{
+				Study setup tester data
+			}
+			Continue > (give cookie) V
+		Studies[] (with cookie) >
+			"%name%, give a rating"
+			Element Identifiers [] >
+				{
+					rating
+					comments
+				}
+				submit ^
+	Manage a study >
+		Studies[] >
+			Advance stage >
+		New Study >
+			"Provide information about the study"
+			{
+				Name
+				Info to know about each element
+					{
+						Name*
+						Price
+						Etc..
+					}
+				Info to know about each tester
+					{
+						Name*
+						Experience
+						Comments
+						Etc..
+					}
+			}
+			Continue >
+				"Add test elements"
+				{
+					Data (fields from previous screen)
+				} []
+				* New test element
+				Continue to first mapping (warning) >
+					"Give each element an arbitrary identifier"
+					Test Element Name = ""[]
+					Continue to second mapping >
+						"Scramble the identifiers and note the reordering"
+						%identifier% = ""[]
+						Begin Study >
+							"Currently Accepting Reviews"
+							(becomes available for joining)
+							Close Study >
+								"Study is concluded"
+								Export results >
+				
+			
+			
+			
+STAGES OF A STUDY:
+	- Setup
+		list all elements, data
+	- Map stage 1
+		arbitrary new identifiers
+	- Map stage 2
+		Scramble identifiers
+	- Open study
+		accept reviews
+	- Close study, export data
+		reverse mappings
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			

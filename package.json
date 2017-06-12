@@ -1,0 +1,21 @@
+{
+  "name": "DoubleBlind",
+  "version": "0.0.0",
+  "description": "DoubleBlind",
+  "main": "server.js",
+  "scripts": {
+    "start": "watchify src/js/DoubleBlind.ts -v --debug -p [ tsify ] -o public/bundle.js"
+  },
+  "author": {
+    "name": "Colten Nye"
+  },
+  "dependencies": {
+    "@types/angular": "^1.5.23",
+    "bookshelf": "^0.10.2",
+    "knex": "^0.12.6"
+  },
+  "devDependencies": {
+    "@types/node": "^6.0.57",
+    "webpack": "^1.14.0"
+  }
+}

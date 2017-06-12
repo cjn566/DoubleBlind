@@ -1,0 +1,49 @@
+
+<div>Study Selected: <span editable-text="ctrl.study.name">{{ctrl.study.name}}</span></div>
+
+<table border="1px solid black" align="center">
+    <tr>
+        <td>Name</td>
+        <td ng-repeat="header in ctrl.study.subjectFields"
+            style="text-decoration: {{header.deleted? 'line-through':''}}">
+            <span
+                editable-text="header.name"
+                onbeforesave="ctrl.updateSubjectField(header.id)">{{header.name}}</span>
+            <span ng-click="ctrl.deleteSubjectField(header.id)" class="glyphicon glyphicon-remove"></span>
+        </td>
+        <td>
+            <button class="btn-sm btn-success" ng-click="ctrl.addSubjectField()">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+        </td>
+    </tr>
+    <tr ng-repeat="subject in ctrl.study.subjects"
+        style="text-decoration: {{subject.deleted? 'line-through':''}}">
+        <td>
+            <span editable-text="subject.name"
+                  onbeforesave="ctrl.updateSubject(subject.id)">{{subject.name}}</span>
+            <span ng-click="ctrl.deleteSubject(subject.id)" class="glyphicon glyphicon-remove"></span>
+        </td>
+        <td ng-repeat="entry in subject.entries"
+            editable-text="entry.value"
+            onbeforesave="ctrl.updateSubjectValue(subject.id, entry.id)"
+            style="text-decoration: {{ctrl.isColDeleted(entry.fieldId)? 'line-through':''}}">
+            {{entry.value}}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <button class="btn-sm btn-success" ng-click="ctrl.addSubject()">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+        </td>
+    </tr>
+</table>
+
+
+
+
+
+<button ng-click="ctrl.buildBackToSelect()">Back</button>
+<button ng-click="ctrl.saveStudy()">Save</button>
+<button ng-click="ctrl.buildToMap1()">Continue</button>

@@ -1,0 +1,8 @@
+
+Select Study:
+<ul>
+    <li ng-click="ctrl.selectStudy(study.id)" ng-repeat="study in ctrl.studies">{{study.name}}</li>
+    <button class="btn-success" ng-click="ctrl.newStudy()">
+        <span class="glyphicon glyphicon-plus"></span>
+    </button>
+</ul>
