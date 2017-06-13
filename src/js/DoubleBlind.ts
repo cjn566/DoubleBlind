@@ -10,8 +10,13 @@ let ngRoute = require('angular-route');
     angular.module("DoubleBlind", ["xeditable"])
         .factory("manageService", ["$http", "$log", ManageService])
         .controller('manageController', ["$log", "manageService", ManageController])
-        .config(function( ){
-
+        .config(function( $routeProvider){
+            $routeProvider
+                .when("/manage",{
+                    templateUrl: "manage.html",
+                    controller: "MainController"
+                })
+                .otherwise({redirectTo:"/"});
         })
         .run((editableOptions)=>{
             editableOptions.theme = 'bs3';
