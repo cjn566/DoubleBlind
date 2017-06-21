@@ -24,14 +24,9 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body ng-app="DoubleBlind">
-    <div ng-controller="manageController as ctrl">
+    <ui-view></ui-view>
 
-        <div ng-view ng-include="'selectstudy.html'" ng-show="ctrl.page == 0"></div>
+    <div ng-show="ctrl.loading">LOADING</div>
 
-        <div ng-include="'buildstudy.html'" ng-show="ctrl.page == 1"></div>
-
-        <div ng-show="ctrl.loading">LOADING</div>
-
-    </div>
 </body>
 </html>

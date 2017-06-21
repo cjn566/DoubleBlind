@@ -1,23 +1,24 @@
 
 let angular = require('angular');
-let ngRoute = require('angular-route');
 
 (function(){
     let ManageController = require('./controllers/ManageController');
     let ManageService = require('./services/ManageService');
-    let xeditable = require('angular-xeditable');
+    require('angular-xeditable');
+    require('angular-ui-router');
 
-    angular.module("DoubleBlind", ["xeditable"])
+    angular.module("DoubleBlind", ["xeditable", "ui.router"])
         .factory("manageService", ["$http", "$log", ManageService])
         .controller('manageController', ["$log", "manageService", ManageController])
-        .config(function( $routeProvider){
-            $routeProvider
-                .when("/manage",{
-                    templateUrl: "manage.html",
-                    controller: "MainController"
+        .config(['$stateProvider', function( $stateProvider){
+            $stateProvider
+                .state("select",{
+                    url:"/manage",
+                    controller: "MainController",
+                    controllerAs:"ctrl",
+                    templateUrl:"selectstudy.html"
                 })
-                .otherwise({redirectTo:"/"});
-        })
+        }])
         .run((editableOptions)=>{
             editableOptions.theme = 'bs3';
         });
