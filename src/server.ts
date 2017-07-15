@@ -12,13 +12,25 @@ namespace DoubleBlind.Database {
   });
 
   let bookshelf = require('bookshelf')(knex);
+  let cascadeDelete = require('bookshelf-cascade-delete');
+  bookshelf.plugin(cascadeDelete);
 
   export let Subject = bookshelf.Model.extend({
-    tableName: 'subject'
+      tableName: 'subject',
+      subjectFieldValues: function(){
+          return this.hasMany(SubjectFieldValue)
+      }
+  },{
+      dependents: ['subjectFieldValues']
   });
 
   export let SubjectField = bookshelf.Model.extend({
-    tableName: 'subjectField'
+    tableName: 'subjectField',
+      subjectFieldValues: function(){
+          return this.hasMany(SubjectFieldValue)
+      }
+  },{
+      dependents: ['subjectFieldValues']
   });
 
   export let SubjectFieldValue = bookshelf.Model.extend({
@@ -63,6 +75,8 @@ namespace DoubleBlind.Database {
     testerFields: function(){
         return this.hasMany(TesterField);
     }
+  },{
+      dependents: ['subjects', 'subjectFields', 'testers', 'testerFields']
   });
 }
 
@@ -105,59 +119,59 @@ namespace DoubleBlind.Server{
     });
 
     let getStudy = function(id){
-        return context.Study.where("id", id).fetch({ withRelated: ['subjects', 'testers', 'subjectFields', 'testerFields'] })
-        .then(function (studyModel) {
+            return context.Study.where("id", id).fetch({withRelated: ['subjects', 'testers', 'subjectFields', 'testerFields']})
+                .then(function (studyModel) {
 
-            let study = studyModel.toJSON();
-            study.fresh = true;
-            let rowArray = study.subjects || [];
-            let colArray = study.subjectFields  || [];
-            let valueModel = context.SubjectFieldValue;
+                    let study = studyModel.toJSON();
+                    study.fresh = true;
+                    let rowArray = study.subjects || [];
+                    let colArray = study.subjectFields || [];
+                    let valueModel = context.SubjectFieldValue;
 
-            let promises = [];
+                    let promises = [];
 
-            // Rows contain the array of values, Cols just contain value headers.
-            rowArray.map((row)=>{
-                row.fresh = true;
-                colArray.map((col)=>{
-                    col.fresh = true;
-                    promises.push(valueModel.where({
-                        subject_id: row.id,
-                        subjectField_id: col.id
-                    }).fetch().then(function(valueModel){
-                        if(valueModel){
-                            let result = valueModel.toJSON();
-                            return {
-                                fresh : true,
-                                id: result.id,
-                                subjectId: row.id,
-                                fieldId: col.id,
-                                value: result.value
-                            }
-                        }
-                        else return {
-                            fresh : true,
-                            id: 0,
-                            subjectId: row.id,
-                            fieldId: col.id,
-                            value: "empty"
-                        };
-                    }));
-                });
-            });
+                    // Rows contain the array of values, Cols just contain value headers.
+                    rowArray.map((row) => {
+                        row.fresh = true;
+                        colArray.map((col) => {
+                            col.fresh = true;
+                            promises.push(valueModel.where({
+                                subject_id: row.id,
+                                subjectField_id: col.id
+                            }).fetch().then(function (valueModel) {
+                                if (valueModel) {
+                                    let result = valueModel.toJSON();
+                                    return {
+                                        fresh: true,
+                                        id: result.id,
+                                        subjectId: row.id,
+                                        fieldId: col.id,
+                                        value: result.value
+                                    }
+                                }
+                                else return {
+                                    fresh: true,
+                                    id: 0,
+                                    subjectId: row.id,
+                                    fieldId: col.id,
+                                    value: ""
+                                };
+                            }));
+                        });
+                    });
 
-            return Promise.all(promises).then(values => {
-                study.subjects.map((subject)=> {
-                    subject.entries = values.filter((value)=>{
-                        return value.subjectId === subject.id
+                    return Promise.all(promises).then(values => {
+                        study.subjects.map((subject) => {
+                            subject.entries = values.filter((value) => {
+                                return value.subjectId === subject.id
+                            })
+                        });
+                        return study;
                     })
-                });
-                return study;
-            })
 
-        }).catch(function (err) {
-            console.error(err);
-        });
+                }).catch(function (err) {
+                    console.error(err);
+                });
     };
 
     app.get('/studies', function (req, res) {
@@ -168,180 +182,54 @@ namespace DoubleBlind.Server{
     });
 
 
-    app.post('/saveStudy', function(req, res){
-        let save = req.body;
-        let studyId = save.studyId;
-        console.log(save);
-        let idMap = {
-            subjects: [],
-            fields: []
-        };
-
-
-        let saveValueAndDeletes = ()=>{
-            let promises = [];
-            save.values.map((entry)=> {
-                promises.push(
-                    (entry.id < 1) ?
-                        new context.SubjectFieldValue(
-                            {
-                                subject_id:
-                                    (entry.subjectId < 1)?
-                                        idMap.subjects.find(x => x[0] == entry.subjectId)[1] :
-                                        entry.subjectId,
-                                subjectField_id:
-                                    (entry.fieldId < 1)?
-                                        idMap.fields.find(x => x[0] == entry.fieldId)[1] :
-                                        entry.fieldId,
-                                value: entry.value
-                            }, {
-                                method: "insert"
-                            }).save()
-
-                        : new context.SubjectFieldValue(
-                        {
-                            id: entry.id,
-                            value: entry.value
-                        }, {
-                            method: "update",
-                            patch: true
-                        }).save());
-            });
-
-            save.deletes.map((del)=>{
-                if(del) {
-                    switch (del.type) {
-                        case "subject":
-                            promises.push(new context.Subject({id: del.id}).destroy());
-                            break;
-                        case "subjectField":
-                            promises.push(new context.SubjectField({id: del.id}).destroy());
-                            break;
-                        case "subjectFieldValue":
-                            promises.push(new context.SubjectFieldValue({id: del.id}).destroy());
-                            break;
-                    }
-                }
-            });
-
-            Promise.all(promises).then((entries)=>{
-                getStudy(studyId).then((study)=>{
+    app.post('/save', function(req, res){
+        console.log(req.body)
+        switch (req.body.type){
+            case 'study':
+                new context.Study(req.body.data).save().then((study) => {
                     res.json(study);
-                });
-            }, (error)=>{
-                console.error(error);
-                res.sendStatus(500);
-            });
-        };
-
-        let saveHeaders = ()=> {
-            let subjectPromises = [];
-            let fieldPromises = [];
-            let done = false;
-
-            save.subjects.map((update) => {
-                subjectPromises.push(
-                    (update.id < 1) ?
-                        new context.Subject(
-                            {
-                                study_id: studyId,
-                                name: update.name
-                            }, {
-                                method: "insert"
-                            }).save()
-
-                        : new context.Subject(
-                        {
-                            id: update.id,
-                            name: update.name
-                        }, {
-                            method: "update",
-                            patch: true
-                        }).save());
-                idMap.subjects.push([update.id]);
-            });
-
-            save.fields.map((update)=>{
-                fieldPromises.push(
-                    (update.id < 1) ?
-                        new context.SubjectField(
-                            {
-                                study_id: studyId,
-                                name: update.name
-                            }, {
-                                method: "insert"
-                            }).save()
-
-                        : new context.SubjectField(
-                        {
-                            id: update.id,
-                            name: update.name
-                        }, {
-                            method: "update",
-                            patch: true
-                        }).save());
-                idMap.fields.push([update.id]);
-            });
-
-            Promise.all(subjectPromises).then((subjects)=>{
-                subjects.map((subject, idx)=>{
-                    idMap.subjects[idx].push(subject.attributes.id);
-                });
-                if(!done)
-                    done = true;
-                else
-                    saveValueAndDeletes();
-            }, (error)=>{
-                console.error(error);
-                res.sendStatus(500);
-            });
-
-            Promise.all(fieldPromises).then((fields)=>{
-                fields.map((field, idx)=>{
-                    idMap.fields[idx].push(field.attributes.id);
-                });
-                if(!done)
-                    done = true;
-                else
-                    saveValueAndDeletes();
-            }, (error)=>{
-                console.error(error);
-                res.sendStatus(500);
-            })
-
-        };
-
-        if(save.study){
-            if(studyId < 1){
-                new context.Study({
-                    name: save.study.name,
-                    stage: save.study.stage
-                }, {
-                    method: "insert"
-                }).save().then((study)=>{
-                    studyId = study.attributes.id;
-                    saveHeaders();
-                }, (error)=>{
-                    console.error(error);
-                    res.sendStatus(500);
-                })
-            }
-            else{
-                new context.Study({
-                    id: studyId,
-                    name: save.study.name,
-                    stage: save.study.stage
-                }).save().catch((error)=>{
-                    console.error(error);
-                    res.sendStatus(500);
-                });
-                saveHeaders();
-            }
+                }, err)
+                break;
+            case 'field':
+                new context.SubjectField(req.body.data).save().then((field) => {
+                    res.json(field);
+                }, err)
+                break;
+            case 'subject':
+                new context.Subject(req.body.data).save().then((subject) => {
+                    res.json(subject);
+                }, err)
+                break;
+            case 'entry':
+                new context.SubjectFieldValue(req.body.data).save().then((entry) => {
+                    res.json(entry);
+                }, err)
+                break;
         }
-        else saveHeaders();
     });
 
+    app.post('/delete', function(req, res){
+        console.log(req.body)
+        switch (req.body.type) {
+            case 'subject':
+                new context.Subject("id", req.body.id).destroy().then((result)=>{
+                    res.json(result);
+                }, err);
+                break;
+            case 'field':
+                new context.SubjectField("id", req.body.id).destroy().then((result)=>{
+                    res.json(result);
+                }, err);
+                break;
+            case 'study':
+                new context.Study("id", req.body.id).destroy().then((result)=>{
+                    res.json(result);
+                }, err);
+                break;
+        }
+    });
 
+    let err = (e) => {console.error(e)};
 
     app.listen(3000);
     console.log("READY");

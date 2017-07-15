@@ -1,20 +1,34 @@
 
 
-var tsify = require('tsify');
-var fs = require('fs');
-var browserify = require('browserify');
-var watchify = require('watchify');
+let tsify = require('tsify');
+let fs = require('fs');
+let browserify = require('browserify');
+let watchify = require('watchify');
+let babelify = require('babelify');
 
-var b = browserify({
+let b = browserify({
     entries: ['src/js/DoubleBlind.ts'],
+    debug: true,
+    verbose: true,
     cache: {},
-    packageCache: {},
-    plugin: [tsify, watchify]
+    packageCache: {}
 });
 
+b.plugin(tsify, {target: 'es6'});
+b.plugin(watchify)
 b.on('update', bundle);
-bundle();
+b.on('log', m=>console.log(m))
 
-function bundle() {
-    b.bundle().pipe(fs.createWriteStream('public/bundle.js'));
+function bundle(ids) {
+    /*
+*/
+    b.transform(babelify, {
+        extensions: ['.tsx', '.ts'],
+        presets: ["es2015"]
+    })
+    .bundle().pipe(fs.createWriteStream('public/bundle.js'));
 }
+
+console.log("FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+
+bundle();

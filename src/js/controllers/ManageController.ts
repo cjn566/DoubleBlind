@@ -1,238 +1,170 @@
 
-enum Steps{
-    One,
-    Two,
-    Three
-}
 
-enum Page{
-    SelectStudy,
-    BuildStudy,
-    FirstMap,
-    SecondMap,
-    Live
-}
+import {Stage, Study} from "../interfaces/Istudy";
 
-interface Study {
-    id: number,
-    name: string,
-    stage: Steps,
-    fresh: boolean,
-    subjects: any[],
-    subjectFields: any[]
-}
-
-class ManageController {
+export default class {
     logger;
     manageService;
+    state;
     loading: boolean = false;
     indexer: number = -1;
 
-    constructor(log, manageService){
+    constructor(log, manageService, state, params){
         this.manageService = manageService;
         this.logger = log;
-        this.loadStudies();
-
-        //this.selectStudy(1);
+        this.state = state;
+        this.study = params.study;
     }
 
-    page: Page;
-    studies: Study[];
+    newFieldName:string = "";
+    newSubjectName:string = "";
     study: Study;
-    save = {
-        study: null,
-        subjects: [],
-        fields: [],
-        values: [],
-        deletes: [],
-        studyId: 0
+
+    log = (m)=>{
+        this.logger.log(m);
     };
 
-    loadStudies = () => {
-        this.doLoad(
-            this.manageService.getStudies().then((data)=>{
-                this.studies = data;
-                this.page = Page.SelectStudy;
-            })
-        );
-    };
-
-    newStudy = () => {
-        this.study = {
-            id: this.indexer--,
-            name: "newstudy",
-            stage: Steps.One,
-            fresh: false,
-            subjects: [],
-            subjectFields: [],
-        };
-        this.page = Page.BuildStudy;
-    };
-
-    selectStudy = (id:number) =>{
-        this.doLoad(
-            this.manageService.getStudy(id).then((data)=> {
-                this.study = data;
-                this.page = Page.BuildStudy;
-            })
-        );
-    };
+    err = (e)=>{this.logger.error(e)};
 
     addSubjectField = ()=>{
-        let newIdx = this.indexer--;
-        this.study.subjectFields.push({
-            deleted: false,
-            fresh : false,
-            id: newIdx,
-            name: "newfield",
-            study_id: this.study.id
-        });
-        this.study.subjects.map((subject)=>{
-            subject.entries.push({
-                fresh: false,
-                fieldId: newIdx,
-                id: this.indexer--,
-                subjectId: subject.id,
-                value: "empty"
-            })
-        });
-        this.logger.log(this.study.subjectFields)
+        if(this.newFieldName.length > 0) {
+            this.manageService.save({
+                type: 'field',
+                data: {
+                    name: this.newFieldName,
+                    study_id: this.study.id
+                }
+            }).then((data) => {
+                this.study.subjectFields.push({
+                    deleted: false,
+                    fresh: true,
+                    id: data.id,
+                    name: data.name,
+                    study_id: this.study.id
+                });
+                this.study.subjects.map((subject) => {
+                    subject.entries.push({
+                        fresh: true,
+                        fieldId: data.id,
+                        subjectId: subject.id,
+                        value: "empty"
+                    })
+                });
+                this.newFieldName = "";
+            });
+        }
     };
 
     addSubject = ()=>{
-        let newSubjectIdx = this.indexer--;
-        this.study.subjects.push({
-            entries: this.study.subjectFields.map((field)=>{
-                return {
-                    fresh: false,
-                    fieldId: field.id,
-                    id: this.indexer--,
-                    subjectId: newSubjectIdx,
-                    value: "empty"
+        if(this.newSubjectName.length > 0) {
+            this.manageService.save({
+                type: 'subject',
+                data: {
+                    name: this.newSubjectName,
+                    study_id: this.study.id
                 }
-            }),
-            deleted: false,
-            fresh: false,
-            id:newSubjectIdx,
-            name: "newsubject",
-            study_id: this.study.id
-        });
-        this.logger.log(this.study.subjectFields)
-    };
-
-    updateSubject = (idx) => {
-        this.logger.log("update subject: " + idx);
-        this.study.subjects[this.study.subjects.findIndex(s => s.id == idx)].fresh = false;
-    };
-
-    updateSubjectField = (idx) => {
-        this.logger.log("update subject field: " + idx);
-        this.study.subjectFields[this.study.subjectFields.findIndex(s => s.id == idx)].fresh = false;
-    };
-
-    updateSubjectValue = (sid, eid) => {
-        this.logger.log("update subject value: " + sid + " : " + eid);
-
-        let subject = this.study.subjects[this.study.subjects.findIndex(s => s.id == sid)];
-        subject.entries[subject.entries.findIndex(s => s.id == eid)].fresh = false;
-    };
-
-    deleteSubject = (idx) => {
-        this.study.subjects[this.study.subjects.findIndex(s => s.id == idx)].deleted ^= 1;
-    };
-
-    deleteSubjectField = (idx) => {
-        this.study.subjectFields[this.study.subjectFields.findIndex(s => s.id == idx)].deleted ^= 1;
-    };
-
-    isColDeleted = (idx) =>{
-        return this.study.subjectFields[this.study.subjectFields.findIndex(s => s.id == idx)].deleted;
-    };
-
-    saveStudy = ()=>{
-
-        this.save.studyId = this.study.id;
-
-        // Save Study
-        if(!this.study.fresh){
-            this.save.study = {
-                name: this.study.name,
-                stage: this.study.stage,
-            }
-        }
-
-        // Save Subjects
-        this.save.subjects = this.study.subjects.filter(x => !x.fresh).map(y => {
-            return {
-                id: y.id,
-                name: y.name
-            }
-        });
-
-        // Save Fields
-        this.save.fields = this.study.subjectFields.filter(x => !x.fresh).map(y => {
-            return {
-                id: y.id,
-                name: y.name
-            }
-        });
-
-        // Save Values
-        this.save.values = [].concat(...this.study.subjects.map(x=>x.entries)).filter(x => !x.fresh).map(y => {
-            return {
-                id: y.id,
-                subjectId: y.subjectId,
-                fieldId: y.fieldId,
-                value: y.value
-            }
-        });
-
-        // Delete Subjects, Fields, and Values
-        let deletedRows = [];
-        this.save.deletes = [].concat(...this.study.subjects.filter(x => x.deleted).map(y => {
-                deletedRows.push(y.id);
-                return [{
-                    type: "subject",
-                    id: y.id
-                }, ...y.entries.map( (z) => {return{
-                    type: "subjectFieldValue",
-                    id: z.id
-                }})]
-            }),
-            ...this.study.subjectFields.filter(x => x.deleted).map(y => {
-                return [{
-                    type: "subjectField",
-                    id: y.id
-                }, ...this.study.subjects.map( (z) => {
-                    let entry = z.entries[z.entries.findIndex(e => e.fieldId == y.id)];
-                    if( !deletedRows.some(h => h == entry.subjectId) ) {
+            }).then((data) => {
+                this.study.subjects.push({
+                    entries: this.study.subjectFields.map((field) => {
                         return {
-                            type: "subjectFieldValue",
-                            id:entry.id
+                            fresh: false,
+                            fieldId: field.id,
+                            id: this.indexer--,
+                            subjectId: data.id,
+                            value: "empty"
                         }
-                    }
-                })]
-            }));
+                    }),
+                    deleted: false,
+                    fresh: false,
+                    id: data.id,
+                    name: data.name,
+                    study_id: this.study.id
+                });
+            });
+            this.newSubjectName = "";
+        }
+    };
 
-        this.logger.log(this.save);
+    updateSubject = (id, name, form) => {
+        if(form.$dirty) {
+            this.log("saving subject")
+            this.manageService.save({
+                type: 'subject',
+                data: {
+                    id: id,
+                    name: name
+                }
+            }).catch(e => this.logger.error(e))
+            form.$setPristine();
+        }
+    };
 
-        this.doLoad(
-            this.manageService.saveStudy(this.save).then((data)=>{
-                this.study = data;
+    updateField = (id, name, form) => {
+        if(form.$dirty) {
+            this.log("saving field")
+            this.manageService.save({
+                type: 'field',
+                data: {
+                    id: id,
+                    name: name
+                }
+            }).catch(e=>this.logger.error(e))
+            form.$setPristine();
+        }
+    };
+
+    updateEntry = (sidx, eidx, value, form) => {
+        if(form.$dirty) {
+            this.log("saving entry")
+            let entry = this.study.subjects[sidx].entries[eidx];
+            let obj = (entry.id > 0) ?
+                {
+                    id: entry.id,
+                    value: value
+                } :
+                {
+                    subject_id: entry.subjectId,
+                    subjectField_id: entry.fieldId,
+                    value: value
+                }
+            this.manageService.save({type: 'entry', data: obj}).then((entry)=>{
+                this.study.subjects[sidx].entries[eidx] = entry;
+            }).catch(this.err);
+            form.$setPristine();
+        }
+    };
+
+    deleteSubject = (id, name) => {
+        if(confirm("Delete '" + name + "'?")) {
+            this.manageService.delete({type: 'subject', id:id}).then(()=>{
+                this.manageService.getStudy(this.study.id).then((study)=>{
+                    this.study = study;
+                })
             })
-        )
+        }
     };
 
-    buildBackToSelect = ()=>{
-        this.study = null;
-        this.loadStudies();
+    deleteSubjectField = (id, name) => {
+        if(confirm("Delete '" + name + "'?")) {
+            this.manageService.delete({type: 'field', id:id}).then(()=>{
+                this.manageService.getStudy(this.study.id).then((study)=>{
+                    this.study = study;
+                })
+            })
+        }
     };
 
-    doLoad = (fn:Promise<any>)=>{
-        this.loading = true;
-        fn.then(()=>{this.loading = false});
+    buildToMap1 = () =>{
+        if(confirm("Commit and continue to mapping?")){
+            this.study.stage = Stage.firstMap;
+            this.manageService.save({
+                type: 'study',
+                data: {id: this.study.id, stage : this.study.stage}
+            }).then(()=>{
+                this.state.go('map1', {name: this.study.name, study: this.study});
+            });
+        }
     }
-
 }
 
-module.exports = ManageController;
+//module.exports = ManageController;

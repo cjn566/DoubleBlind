@@ -1,0 +1,28 @@
+
+<div>
+
+    <div>Study Selected: <span editable-text="ctrl.study.name">{{ctrl.study.name}}</span></div>
+
+    <table border="1px solid black" align="center">
+        <tr>
+            <td>Name</td>
+            <td>First Alias</td>
+        </tr>
+        <tr ng-repeat="subject in ctrl.study.subjects">
+            <td>{{subject.name}}</td>
+            <td ng-form="mapForm">
+                <input
+                    ng-model="subject.map1"
+                    ng-blur="ctrl.updateMapFromUI(subject.id, subject.map1, mapForm)"
+                />
+            </td>
+        </tr>
+    </table>
+
+    <button ng-click="ctrl.generateNumbers()">Numbers</button>
+    <button ng-click="ctrl.generateLetters()">Letters</button>
+    <button ng-click="ctrl.scramble()">Scramble</button>
+    <br/>
+    <button ng-click="ctrl.map1BackToBuild()">Back</button>
+    <button ng-click="ctrl.map1ToBlind()">Continue</button>
+</div>

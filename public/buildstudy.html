@@ -1,50 +1,45 @@
 <div>
-    <div>Study Selected: <span editable-text="ctrl.study.name">{{ctrl.study.name}}</span></div>
+
+    <div>Study Selected: {{ctrl.study.name}}</div>
 
     <table border="1px solid black" align="center">
         <tr>
             <td>Name</td>
             <td ng-repeat="header in ctrl.study.subjectFields"
-                style="text-decoration: {{header.deleted? 'line-through':''}}">
-                <span
-                    editable-text="header.name"
-                    onbeforesave="ctrl.updateSubjectField(header.id)">{{header.name}}</span>
-                <span ng-click="ctrl.deleteSubjectField(header.id)" class="glyphicon glyphicon-remove"></span>
+                ng-form="fieldForm">
+                <input
+                    ng-model="header.name"
+                    ng-blur="ctrl.updateField(header.id, header.name, fieldForm)"
+                />
+                <span ng-click="ctrl.deleteSubjectField(header.id, header.name)" class="glyphicon glyphicon-trash"></span>
             </td>
             <td>
-                <button class="btn-sm btn-success" ng-click="ctrl.addSubjectField()">
-                    <span class="glyphicon glyphicon-plus"></span>
-                </button>
+                <input ng-model="ctrl.newFieldName" required="true" ng-blur="ctrl.addSubjectField()"/>
             </td>
         </tr>
         <tr ng-repeat="subject in ctrl.study.subjects"
-            style="text-decoration: {{subject.deleted? 'line-through':''}}">
+            ng-form="subjectForm">
             <td>
-                <span editable-text="subject.name"
-                      onbeforesave="ctrl.updateSubject(subject.id)">{{subject.name}}</span>
-                <span ng-click="ctrl.deleteSubject(subject.id)" class="glyphicon glyphicon-remove"></span>
+                <input
+                    ng-model="subject.name"
+                    ng-blur="ctrl.updateSubject(subject.id, subject.name, subjectForm)"
+                />
+                <span ng-click="ctrl.deleteSubject(subject.id, subject.name)" class="glyphicon glyphicon-trash"></span>
             </td>
-            <td ng-repeat="entry in subject.entries"
-                editable-text="entry.value"
-                onbeforesave="ctrl.updateSubjectValue(subject.id, entry.id)"
-                style="text-decoration: {{ctrl.isColDeleted(entry.fieldId)? 'line-through':''}}">
-                {{entry.value}}
+            <td ng-form="entryForm" ng-repeat="entry in subject.entries">
+                <input
+                    ng-model="entry.value"
+                    ng-blur="ctrl.updateEntry($parent.$index, $index, entry.value, entryForm)"
+                />
             </td>
         </tr>
         <tr>
             <td>
-                <button class="btn-sm btn-success" ng-click="ctrl.addSubject()">
-                    <span class="glyphicon glyphicon-plus"></span>
-                </button>
+                <input ng-model="ctrl.newSubjectName" required="true" ng-blur="ctrl.addSubject()"/>
             </td>
         </tr>
     </table>
 
-
-
-
-
-    <button ng-click="ctrl.buildBackToSelect()">Back</button>
-    <button ng-click="ctrl.saveStudy()">Save</button>
+    <button ui-sref="select">Back</button>
     <button ng-click="ctrl.buildToMap1()">Continue</button>
 </div>

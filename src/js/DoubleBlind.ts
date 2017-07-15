@@ -1,26 +1,53 @@
 
-let angular = require('angular');
+import * as angular from 'angular';
+import DataService from './services/DataService';
+import SelectController from './controllers/selectController';
+import ManageController from "./controllers/ManageController";
+import MapController from "./controllers/mapController";
+import 'angular-xeditable';
+import 'angular-ui-router';
 
 (function(){
-    let ManageController = require('./controllers/ManageController');
-    let ManageService = require('./services/ManageService');
-    require('angular-xeditable');
-    require('angular-ui-router');
 
     angular.module("DoubleBlind", ["xeditable", "ui.router"])
-        .factory("manageService", ["$http", "$log", ManageService])
-        .controller('manageController', ["$log", "manageService", ManageController])
-        .config(['$stateProvider', function( $stateProvider){
+        .factory("dataService", ["$http", "$log", DataService])
+        .controller('selectController', ["$log", "dataService", "$state", "studies", SelectController])
+        .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
+        .controller('mapController', ["$log", "dataService", "$state", "$stateParams", MapController])
+        .config(['$stateProvider', '$logProvider', function( $stateProvider, $logProvider){
+            $logProvider.debugEnabled(true);
+
             $stateProvider
                 .state("select",{
-                    url:"/manage",
-                    controller: "MainController",
-                    controllerAs:"ctrl",
-                    templateUrl:"selectstudy.html"
+                    url:"",
+                    controller: "selectController",
+                    controllerAs: "ctrl",
+                    templateUrl:"selectstudy.html",
+                    resolve: {
+                        studies: function(dataService){
+                            return dataService.getStudies()
+                        }
+                    }
+                })
+                .state("build",{
+                    url:"/build/:name",
+                    controller: "manageController",
+                    controllerAs: "ctrl",
+                    templateUrl:"buildstudy.html",
+                    params: {study: null}
+                })
+                .state("map1",{
+                    url:"/map1/:name",
+                    controller: "mapController",
+                    controllerAs: "ctrl",
+                    templateUrl:"firstmap.html",
+                    params: {study: null}
                 })
         }])
-        .run((editableOptions)=>{
-            editableOptions.theme = 'bs3';
-        });
-
+        .run($trace => $trace.enable('TRANSISTION'))
+        .run(($rootScope, $log)=>{
+            $rootScope.$on('$stateChangeError', ()=>{
+                $log.error("HIT MF")
+            })
+        })
 }());
