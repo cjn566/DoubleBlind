@@ -151,7 +151,7 @@ BEHAVIOR:
 			
 STAGES OF A STUDY:
 	- Setup
-		list all elements, data
+		list all elements, questions for participants
 	- Map stage 1
 		arbitrary new identifiers
 	- Map stage 2

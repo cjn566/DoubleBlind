@@ -43,21 +43,21 @@ namespace DoubleBlind.Database {
     }
   });
 
- export  let Tester = bookshelf.Model.extend({
+  export let Participant = bookshelf.Model.extend({
     tableName: 'tester'
   });
 
-  export let TesterField = bookshelf.Model.extend({
+  export let ParticipantQuestion = bookshelf.Model.extend({
     tableName: 'testerField'
   });
 
-  export let TesterFieldValue = bookshelf.Model.extend({
+  export let ParticipantAnswer = bookshelf.Model.extend({
     tableName: 'testerFieldValue',
     testerField: function(){
-        return this.belongsTo(TesterField);
+        return this.belongsTo(ParticipantQuestion);
     },
     tester: function(){
-        return this.belongsTo(Tester);
+        return this.belongsTo(Participant);
     }
   });
 
@@ -70,10 +70,10 @@ namespace DoubleBlind.Database {
         return this.hasMany(SubjectField);
     },
     testers: function(){
-        return this.hasMany(Tester);
+        return this.hasMany(Participant);
     },
     testerFields: function(){
-        return this.hasMany(TesterField);
+        return this.hasMany(ParticipantQuestion);
     }
   },{
       dependents: ['subjects', 'subjectFields', 'testers', 'testerFields']
