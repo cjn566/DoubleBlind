@@ -2,44 +2,25 @@
 
     <div>Study Selected: {{ctrl.study.name}}</div>
 
-    <table border="1px solid black" align="center">
-        <tr>
-            <td>Name</td>
-            <td ng-repeat="header in ctrl.study.subjectFields"
-                ng-form="fieldForm">
-                <input
-                    ng-model="header.name"
-                    ng-blur="ctrl.updateField(header.id, header.name, fieldForm)"
-                />
-                <span ng-click="ctrl.deleteSubjectField(header.id, header.name)" class="glyphicon glyphicon-trash"></span>
-            </td>
-            <td>
-                <input ng-model="ctrl.newFieldName" required="true" ng-blur="ctrl.addSubjectField()"/>
-            </td>
-        </tr>
-        <tr ng-repeat="subject in ctrl.study.subjects"
-            ng-form="subjectForm">
-            <td>
-                <input
-                    ng-model="subject.name"
-                    ng-blur="ctrl.updateSubject(subject.id, subject.name, subjectForm)"
-                />
-                <span ng-click="ctrl.deleteSubject(subject.id, subject.name)" class="glyphicon glyphicon-trash"></span>
-            </td>
-            <td ng-form="entryForm" ng-repeat="entry in subject.entries">
-                <input
-                    ng-model="entry.value"
-                    ng-blur="ctrl.updateEntry($parent.$index, $index, entry.value, entryForm)"
-                />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input ng-model="ctrl.newSubjectName" required="true" ng-blur="ctrl.addSubject()"/>
-            </td>
-        </tr>
-    </table>
+    <ng-form name="build-form">
+        List all subjects in the study
+        <div ng-repeat="subject in ctrl.study.subjects">
+            <input ng-model="subject.name"
+                   ng-blur="ctrl.updateSubject(subject.id, subject.name, build-form)">
+        </div>
+        <input ng-model="ctrl.newSubject"
+               ng-blur="ctrl.addSubject()">
+        <div>List all questions to ask participants</div>
+        <div ng-repeat="question in ctrl.study.questions">
+            <input ng-model="question.name"
+                   ng-blur="ctrl.updateQuestion(question.id, question.name, build-form)">
+        </div>
+        <input ng-model="ctrl.newQuestion"
+               ng-blur="ctrl.addQuestion()">
+    </ng-form>
 
-    <button ui-sref="select">Back</button>
-    <button ng-click="ctrl.buildToMap1()">Continue</button>
+    <div>
+        <button ui-sref="select">Back</button>
+        <button ng-click="ctrl.buildToMap1()">Continue</button>
+    </div>
 </div>

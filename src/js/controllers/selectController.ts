@@ -1,4 +1,4 @@
-import {Stage, Study} from "../interfaces/Istudy";
+import {Model, Stage, Study} from "../interfaces/Istudy";
 
 export default class {
 
@@ -30,7 +30,7 @@ export default class {
 
     newStudy = () =>{
         this.dataService.save({
-            type: 'study',
+            type: Model.study,
             data: {name: this.newStudyName, stage : 0}
         }).then((data)=>{
             this.state.go('build', {studyId: data.id});

@@ -1,4 +1,5 @@
 "use strict";
+import {Model} from "./js/interfaces/Istudy";
 
 /// <reference path="Scripts/typings/bookshelf.d.ts" />
 
@@ -17,46 +18,22 @@ namespace DoubleBlind.Database {
 
   export let Subject = bookshelf.Model.extend({
       tableName: 'subject',
-      subjectFieldValues: function(){
-          return this.hasMany(SubjectFieldValue)
-      }
-  },{
-      dependents: ['subjectFieldValues']
-  });
-
-  export let SubjectField = bookshelf.Model.extend({
-    tableName: 'subjectField',
-      subjectFieldValues: function(){
-          return this.hasMany(SubjectFieldValue)
-      }
-  },{
-      dependents: ['subjectFieldValues']
-  });
-
-  export let SubjectFieldValue = bookshelf.Model.extend({
-    tableName: 'subjectFieldValue',
-    testerField: function(){
-        return this.belongsTo(SubjectField);
-    },
-    tester: function(){
-        return this.belongsTo(Subject);
-    }
   });
 
   export let Participant = bookshelf.Model.extend({
-    tableName: 'tester'
+    tableName: 'participant'
   });
 
-  export let ParticipantQuestion = bookshelf.Model.extend({
-    tableName: 'testerField'
+  export let Question = bookshelf.Model.extend({
+    tableName: 'question'
   });
 
-  export let ParticipantAnswer = bookshelf.Model.extend({
-    tableName: 'testerFieldValue',
-    testerField: function(){
-        return this.belongsTo(ParticipantQuestion);
+  export let Answer = bookshelf.Model.extend({
+    tableName: 'answer',
+    question: function(){
+        return this.belongsTo(Question);
     },
-    tester: function(){
+    participant: function(){
         return this.belongsTo(Participant);
     }
   });
@@ -66,17 +43,14 @@ namespace DoubleBlind.Database {
     subjects: function(){
         return this.hasMany(Subject);
     },
-    subjectFields: function(){
-        return this.hasMany(SubjectField);
-    },
-    testers: function(){
+      participants: function(){
         return this.hasMany(Participant);
     },
-    testerFields: function(){
-        return this.hasMany(ParticipantQuestion);
+      questions: function(){
+        return this.hasMany(Question);
     }
   },{
-      dependents: ['subjects', 'subjectFields', 'testers', 'testerFields']
+      dependents: ['subjects', 'participants', 'questions']
   });
 }
 
@@ -86,30 +60,16 @@ namespace DoubleBlind.Server{
     let path = require('path');
     let bodyParser = require('body-parser');
     let express = require('express');
-    let app  = express()
+    let app  = express();
+    let sqlite3 = require('sqlite3').verbose();
+    let db = new sqlite3.Database('sqldb.db');
+    let context = DoubleBlind.Database;
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({
         extended: true
     }));
     app.use('/', express.static(path.join(__dirname, '../public')));
-
-    //let asyncParallel = require('async/parallel');
-    //let asyncEach = require('async/each');
-
-
-    let sqlite3 = require('sqlite3').verbose();
-    let db = new sqlite3.Database('sqldb.db');
-
-    let context = DoubleBlind.Database;
-
-    app.get("/manager/getStudy",function(req,res){
-        context.Study.where("id",req.query.id).fetch({withRelated: ['subjects','subjectFields']})
-        .then((data)=>{
-            let study=data.toJSON();
-            let x = "x";
-        });
-    });
 
     //returns a study with all associated subjects, tests, subject fields and test fields and values for those.
     app.get('/getStudy', function (req, res) {
@@ -119,59 +79,10 @@ namespace DoubleBlind.Server{
     });
 
     let getStudy = function(id){
-            return context.Study.where("id", id).fetch({withRelated: ['subjects', 'testers', 'subjectFields', 'testerFields']})
-                .then(function (studyModel) {
-
-                    let study = studyModel.toJSON();
-                    study.fresh = true;
-                    let rowArray = study.subjects || [];
-                    let colArray = study.subjectFields || [];
-                    let valueModel = context.SubjectFieldValue;
-
-                    let promises = [];
-
-                    // Rows contain the array of values, Cols just contain value headers.
-                    rowArray.map((row) => {
-                        row.fresh = true;
-                        colArray.map((col) => {
-                            col.fresh = true;
-                            promises.push(valueModel.where({
-                                subject_id: row.id,
-                                subjectField_id: col.id
-                            }).fetch().then(function (valueModel) {
-                                if (valueModel) {
-                                    let result = valueModel.toJSON();
-                                    return {
-                                        fresh: true,
-                                        id: result.id,
-                                        subjectId: row.id,
-                                        fieldId: col.id,
-                                        value: result.value
-                                    }
-                                }
-                                else return {
-                                    fresh: true,
-                                    id: 0,
-                                    subjectId: row.id,
-                                    fieldId: col.id,
-                                    value: ""
-                                };
-                            }));
-                        });
-                    });
-
-                    return Promise.all(promises).then(values => {
-                        study.subjects.map((subject) => {
-                            subject.entries = values.filter((value) => {
-                                return value.subjectId === subject.id
-                            })
-                        });
-                        return study;
-                    })
-
-                }).catch(function (err) {
-                    console.error(err);
-                });
+        return context.Study.where("id", id).fetch({withRelated: ['subjects', 'questions']})
+            .then(function (studyModel) {
+                return studyModel.toJSON();
+            });
     };
 
     app.get('/studies', function (req, res) {
@@ -183,50 +94,42 @@ namespace DoubleBlind.Server{
 
 
     app.post('/save', function(req, res){
-        console.log(req.body)
+        console.log(req.body);
+        let model;
         switch (req.body.type){
-            case 'study':
-                new context.Study(req.body.data).save().then((study) => {
-                    res.json(study);
-                }, err)
+            case Model.study:
+                model = new context.Study(req.body.data);
                 break;
-            case 'field':
-                new context.SubjectField(req.body.data).save().then((field) => {
-                    res.json(field);
-                }, err)
+            case Model.subject:
+                model = new context.Subject(req.body.data);
                 break;
-            case 'subject':
-                new context.Subject(req.body.data).save().then((subject) => {
-                    res.json(subject);
-                }, err)
-                break;
-            case 'entry':
-                new context.SubjectFieldValue(req.body.data).save().then((entry) => {
-                    res.json(entry);
-                }, err)
+            case Model.question:
+                model = new context.Question(req.body.data);
                 break;
         }
+        model.save().then((study) => {
+            res.json(study);
+        }, err);
     });
 
     app.post('/delete', function(req, res){
-        console.log(req.body)
+        console.log(req.body);
+        let model;
         switch (req.body.type) {
-            case 'subject':
-                new context.Subject("id", req.body.id).destroy().then((result)=>{
-                    res.json(result);
-                }, err);
+            case Model.subject:
+                model = new context.Subject("id", req.body.id)
                 break;
-            case 'field':
-                new context.SubjectField("id", req.body.id).destroy().then((result)=>{
-                    res.json(result);
-                }, err);
+            case Model.question:
+                model = new context.Question("id", req.body.id)
                 break;
-            case 'study':
-                new context.Study("id", req.body.id).destroy().then((result)=>{
-                    res.json(result);
-                }, err);
+            case Model.study:
+                model = new context.Study("id", req.body.id)
                 break;
         }
+        model.destroy().then((result)=>{
+            res.json(result);
+        }, err);
+
     });
 
     let err = (e) => {console.error(e)};

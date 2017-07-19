@@ -1,4 +1,4 @@
-import {Stage, Study} from "../interfaces/Istudy";
+import {Model, Stage, Study} from "../interfaces/Istudy";
 
 export default class {
     logger;
@@ -43,7 +43,7 @@ export default class {
 
     updateMap = (id, name)=>{
         this.mapService.save({
-            type: 'subject',
+            type: Model.subject,
             data: {
                 id: id,
                 map1: name
@@ -77,7 +77,7 @@ export default class {
         if(confirm("Discard mapping and return to build?")){
             this.study.stage = Stage.build;
             this.mapService.save({
-                type: 'study',
+                type: Model.study,
                 data: {id: this.study.id, stage : this.study.stage}
             }).then(()=>{
                 this.state.go('build', {name: this.study.name, study: this.study});
