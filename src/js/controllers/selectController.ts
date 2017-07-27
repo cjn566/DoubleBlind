@@ -19,10 +19,10 @@ export default class {
         this.dataService.getStudy(id).then((study:Study)=>{
             switch (study.stage) {
                 case Stage.build:
-                    this.state.go('build', {name: study.name, study: study});
+                    this.state.go('build', {id: id, study: study});
                     break;
                 case Stage.firstMap:
-                    this.state.go('map1', {name: study.name, study: study});
+                    this.state.go('map1', {id: id, study: study});
                     break;
             }
         })

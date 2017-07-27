@@ -30,11 +30,18 @@ import 'angular-ui-router';
                     }
                 })
                 .state("build",{
-                    url:"/build/:name",
+                    url:"/build/:id",
                     controller: "manageController",
                     controllerAs: "ctrl",
                     templateUrl:"buildstudy.html",
-                    params: {study: null}
+                    params: {id: null},
+                    /*
+                    resolve:
+                        study: (stateParams)=>{
+                        console.log("Hit1")
+                        console.log(stateParams)
+                    }
+                    */
                 })
                 .state("map1",{
                     url:"/map1/:name",
