@@ -2,20 +2,24 @@
 
     <div>Study Selected: {{ctrl.study.name}}</div>
 
-    <ng-form name="build-form">
+    <ng-form name="buildForm">
         List all subjects in the study
         <div ng-repeat="subject in ctrl.study.subjects">
             <input ng-model="subject.name"
-                   ng-blur="ctrl.updateSubject(subject.id, subject.name, build-form)">
+                   ng-blur="ctrl.updateSubject(subject.id, subject.name, buildForm)">
+            <span ng-click="ctrl.deleteSubject(subject, $index)" class="glyphicon glyphicon-trash" ></span>
         </div>
-        <input ng-model="ctrl.newSubject"
+        <input id="newSubject"
+               ng-model="ctrl.newSubject"
                ng-blur="ctrl.addSubject()">
         <div>List all questions to ask participants</div>
         <div ng-repeat="question in ctrl.study.questions">
             <input ng-model="question.name"
                    ng-blur="ctrl.updateQuestion(question.id, question.name, build-form)">
+            <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
         </div>
-        <input ng-model="ctrl.newQuestion"
+        <input id="newQuestion"
+               ng-model="ctrl.newQuestion"
                ng-blur="ctrl.addQuestion()">
     </ng-form>
 

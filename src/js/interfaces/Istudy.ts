@@ -1,8 +1,6 @@
 
 export enum Stage {
     build,
-    firstMap,
-    secondMap,
     live,
     concluded
 }
@@ -14,11 +12,22 @@ export enum Model {
     answer
 }
 
+export interface Subject {
+    id: number,
+    name: string,
+    map1: any,
+    map2: any
+}
+
+export interface Question {
+    id: number,
+    name: string
+}
+
 export interface Study {
     id: number,
     name: string,
-    fresh: boolean,
     stage: Stage,
-    subjects: any[],
-    subjectFields: any[]
+    subjects: Subject[],
+    questions: Question[]
 }

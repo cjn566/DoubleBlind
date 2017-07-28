@@ -73,17 +73,11 @@ namespace DoubleBlind.Server{
 
     //returns a study with all associated subjects, tests, subject fields and test fields and values for those.
     app.get('/getStudy', function (req, res) {
-        getStudy(req.query.id).then((study)=>{
-            res.json(study);
-        });
-    });
-
-    let getStudy = function(id){
-        return context.Study.where("id", id).fetch({withRelated: ['subjects', 'questions']})
+        context.Study.where("id", req.query.id).fetch({withRelated: ['subjects', 'questions']})
             .then(function (studyModel) {
-                return studyModel.toJSON();
+                res.json(studyModel.toJSON());
             });
-    };
+    });
 
     app.get('/studies', function (req, res) {
         context.Study.fetchAll().then(function(studyModels){
@@ -107,8 +101,8 @@ namespace DoubleBlind.Server{
                 model = new context.Question(req.body.data);
                 break;
         }
-        model.save().then((study) => {
-            res.json(study);
+        model.save().then((data) => {
+            res.json(data);
         }, err);
     });
 
@@ -117,13 +111,13 @@ namespace DoubleBlind.Server{
         let model;
         switch (req.body.type) {
             case Model.subject:
-                model = new context.Subject("id", req.body.id)
+                model = new context.Subject("id", req.body.id);
                 break;
             case Model.question:
-                model = new context.Question("id", req.body.id)
+                model = new context.Question("id", req.body.id);
                 break;
             case Model.study:
-                model = new context.Study("id", req.body.id)
+                model = new context.Study("id", req.body.id);
                 break;
         }
         model.destroy().then((result)=>{
