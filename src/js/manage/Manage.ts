@@ -1,31 +1,33 @@
 
+import 'angular-ui-router';
 import * as angular from 'angular';
 import DataService from './services/DataService';
 import SelectController from './controllers/SelectController';
-import ManageController from "./controllers/ManageController";
+import ManageController from "./controllers/BuildController";
 import MapTwoController from "./controllers/MapTwoController";
 import MapOneController from "./controllers/MapOneController";
 import LiveController from "./controllers/LiveController";
-import 'angular-ui-router';
+import ConcludedController from "./controllers/ConcludedController";
 
 (function(){
 
-    angular.module("DoubleBlind", ["ui.router"])
+    angular.module("DoubleBlindManager", ["ui.router"])
         .factory("dataService", ["$http", "$log", DataService])
         .controller('selectController', ["$log", "dataService", "$state", "studies", SelectController])
         .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
         .controller('mapOneController', ["$log", "dataService", "$state", "$stateParams", MapOneController])
         .controller('mapTwoController', ["$log", "dataService", "$state", "$stateParams", MapTwoController])
         .controller('liveController', ["$log", "dataService", "$state", "$stateParams", LiveController])
+        .controller('concludedController', ["$log", "dataService", "$state", "$stateParams", ConcludedController])
         .config(['$stateProvider', '$logProvider', function( $stateProvider, $logProvider){
             $logProvider.debugEnabled(true);
 
             $stateProvider
-                .state("select",{
-                    url:"",
+                .state("",{
+                    url:"/manage",
                     controller: "selectController",
                     controllerAs: "ctrl",
-                    templateUrl:"selectstudy.html",
+                    templateUrl:"manage/select-study.html",
                     resolve: {
                         studies: function(dataService){
                             return dataService.getStudies()
@@ -68,7 +70,7 @@ import 'angular-ui-router';
                     controllerAs: "ctrl",
                     templateUrl:"live.html",
                     params: {
-                        name: null,
+                        study: null,
                         id: null
                     }
                 })
@@ -78,7 +80,7 @@ import 'angular-ui-router';
                     controllerAs: "ctrl",
                     templateUrl:"concluded.html",
                     params: {
-                        name: null,
+                        study: null,
                         id: null
                     }
                 })

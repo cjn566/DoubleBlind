@@ -1,29 +1,10 @@
-import {Model, Study} from "../interfaces/Istudy";
+import {Model, Study} from "../../interfaces/Istudy";
+import _controller from './_studyController'
 
-export default class {
-    $log;
-    dataService;
-    state;
-    study: Study;
+export default class extends _controller{
+    constructor(a,b,c,d){super(a,b,c,d)}
+
     blankScreen = false;
-
-    constructor(log, dataService, state, params) {
-        this.dataService = dataService;
-        this.$log = log;
-        this.state = state;
-        if(params.study) {
-            this.study = params.study;
-        }
-        else {
-            dataService.getStudy(params.id).then((study) => {
-                this.study = study;
-            });
-        }
-    }
-
-    log = (m) => {this.$log.log(m)};
-    err = (e)=>{this.$log.error(e)};
-
     generateNumbers = ()=>{
         this.study.subjects.map((s, idx)=>{
             this.study.subjects[idx].map1 = idx+1;
@@ -56,6 +37,7 @@ export default class {
             }
         }).catch(this.err)
     };
+
     map1BackToBuild = ()=>{
         if(confirm("Discard mapping and return to build?")){
             this.state.go('build', {name: this.study.name, study: this.study});

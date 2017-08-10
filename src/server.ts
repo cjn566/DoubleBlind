@@ -71,7 +71,14 @@ namespace DoubleBlind.Server{
     }));
     app.use('/', express.static(path.join(__dirname, '../public')));
 
-    //returns a study with all associated subjects, tests, subject fields and test fields and values for those.
+    app.get('/', (req, res)=>{
+        res.sendFile(path.join(__dirname, '../public/participate/idx-participate.html'))
+    });
+
+    app.get('/manage', (req, res)=>{
+        res.sendFile(path.join(__dirname, '../public/manage/idx-manage.html'))
+    });
+
     app.get('/getStudy', function (req, res) {
         context.Study.where("id", req.query.id).fetch({withRelated: ['subjects', 'questions']})
             .then(function (studyModel) {

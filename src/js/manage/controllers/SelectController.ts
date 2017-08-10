@@ -1,22 +1,17 @@
-import {Model, Stage, Study} from "../interfaces/Istudy";
+import {Model, Stage, Study} from "../../interfaces/Istudy";
+import _controller from './_studyController'
 
-export default class {
-
-    logger;
-    dataService;
-    state;
-    studies;
-    newStudyName;
-
-    constructor(log, dataService, state, studies){
-        this.logger = log;
-        this.dataService = dataService;
-        this.state = state;
-        this.studies = studies;
+export default class extends _controller{
+    constructor(a,b,c,d){
+        super(a,b,c,{study: true})
+        this.studies = d;
     }
 
+    studies;
+    newStudyName;
     selectStudy = (id:number) =>{
         this.dataService.getStudy(id).then((study:Study)=>{
+            this.log(study.stage)
             switch (study.stage) {
                 case Stage.build:
                     this.state.go('build', {id: id, study: study});
@@ -55,4 +50,4 @@ export default class {
 
 }
 
-//module.exports = SelectController;
+//module.exports = SelectSubjectController;

@@ -7,7 +7,7 @@ let watchify = require('watchify');
 let babelify = require('babelify');
 
 let b = browserify({
-    entries: ['src/js/DoubleBlind.ts'],
+    entries: ['src/js/Manage.ts'],
     debug: true,
     verbose: true,
     cache: {},

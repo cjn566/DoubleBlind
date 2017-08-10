@@ -1,33 +1,13 @@
 
 
-import {Model, Study} from "../interfaces/Istudy";
+import {Model, Study} from "../../interfaces/Istudy";
+import _controller from './_studyController'
 
-export default class {
-    dataService;
-    $log;
-    state;
-
-    constructor(log, dataService, state, params){
-        this.dataService = dataService;
-        this.$log = log;
-        this.state = state;
-        if(params.study) {
-            this.study = params.study;
-        }
-        else {
-            dataService.getStudy(params.id).then((study) => {
-                this.study = study;
-            });
-        }
-    }
+export default class extends _controller{
+    constructor(a,b,c,d){super(a,b,c,d)}
 
     newQuestion:string = "";
     newSubject:string = "";
-    study: Study;
-
-    log = (m)=>{this.$log.log(m)};
-    err = (e)=>{this.$log.error(e)};
-
     addSubject = ()=>{
         if(this.newSubject.length > 0) {
             this.dataService.save({
