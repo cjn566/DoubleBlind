@@ -9,6 +9,7 @@ export enum Model {
     study,
     subject,
     question,
+    participant,
     answer
 }
 

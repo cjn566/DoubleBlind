@@ -35,6 +35,9 @@ namespace DoubleBlind.Database {
     },
     participant: function(){
         return this.belongsTo(Participant);
+    },
+    subject: function(){
+        return this.belongsTo(Subject);
     }
   });
 
@@ -64,12 +67,26 @@ namespace DoubleBlind.Server{
     let sqlite3 = require('sqlite3').verbose();
     let db = new sqlite3.Database('sqldb.db');
     let context = DoubleBlind.Database;
+    let passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({
         extended: true
     }));
+
+    passport.use(new LocalStrategy(
+        function(username, password, done){
+            User.findOne
+        }
+    ));
+
     app.use('/', express.static(path.join(__dirname, '../public')));
+
+    app.post('/login',
+        passport.authenticate('local'),
+        function(req, res){
+            res.redirect('/users/' + req.user.username);
+    });
 
     app.get('/', (req, res)=>{
         res.sendFile(path.join(__dirname, '../public/participate/idx-participate.html'))
@@ -106,6 +123,12 @@ namespace DoubleBlind.Server{
                 break;
             case Model.question:
                 model = new context.Question(req.body.data);
+                break;
+            case Model.participant:
+                model = new context.Participant(req.body.data);
+                break;
+            case Model.answer:
+                model = new context.Answer(req.body.data);
                 break;
         }
         model.save().then((data) => {

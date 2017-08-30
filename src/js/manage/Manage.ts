@@ -1,7 +1,7 @@
 
 import 'angular-ui-router';
 import * as angular from 'angular';
-import DataService from './services/DataService';
+import DataService from '../services/DataService';
 import SelectController from './controllers/SelectController';
 import ManageController from "./controllers/BuildController";
 import MapTwoController from "./controllers/MapTwoController";
@@ -23,7 +23,7 @@ import ConcludedController from "./controllers/ConcludedController";
             $logProvider.debugEnabled(true);
 
             $stateProvider
-                .state("",{
+                .state("select",{
                     url:"/manage",
                     controller: "selectController",
                     controllerAs: "ctrl",
