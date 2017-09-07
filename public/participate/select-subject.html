@@ -1,0 +1,7 @@
+<div>Welcome, {{ctrl.user.name}}. <a ng-click="ctrl.notMe()">Not you?</a></div>
+Select subject:
+<ul>
+    <li ng-repeat="subject in ctrl.study.subjects" ng-click="ctrl.selectSubject(subject.id)">
+        {{subject.name}}
+    </li>
+</ul>

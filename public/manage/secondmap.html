@@ -1,0 +1,27 @@
+
+<div>
+
+    <div>Study Selected: {{ctrl.study.name}}</div>
+
+    <h2>Second Map</h2>
+    <table border="1px solid black" align="center">
+        <tr>
+            <td>First Alias</td>
+            <td>Second Alias</td>
+        </tr>
+        <tr ng-form="mapForm" ng-repeat="subject in ctrl.study.subjects">
+            <td>{{subject.map1}}</td>
+            <td>
+                <input
+                    ng-model="subject.map2"
+                    ng-blur="ctrl.updateMapFromUI(subject, true, mapForm)"
+                />
+            </td>
+        </tr>
+    </table>
+
+    <button ng-click="ctrl.copyScramble()">Copy and Scramble</button>
+    <br/>
+    <button ng-click="ctrl.map2BackToMap1()">Back</button>
+    <button ng-click="ctrl.map2toStartTrial()">Continue</button>
+</div>

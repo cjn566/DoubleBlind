@@ -4,7 +4,6 @@
   "description": "DoubleBlind",
   "main": "server.js",
   "scripts": {
-    "test": "node start.js",
     "bm": "watchify src/js/manage/Manage.ts -v --debug -p [ tsify ] -o public/manage/ManageBundle.js -t [ babelify --presets [ es2015 ] ]",
     "bp": "watchify src/js/participate/Participate.ts -v --debug -p [ tsify ] -o public/participate/ParticipateBundle.js -t [ babelify --presets [ es2015 ] ]"
   },
@@ -16,7 +15,9 @@
     "angular-ui-router": "^1.0.3",
     "bookshelf": "^0.10.2",
     "bookshelf-cascade-delete": "^2.0.1",
+    "cookie-parser": "^1.4.3",
     "es6-enum": "^1.1.0",
+    "express-session": "^1.15.5",
     "knex": "^0.12.6"
   },
   "devDependencies": {

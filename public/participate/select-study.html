@@ -1,0 +1,8 @@
+
+Select Study:
+<ul>
+    <li
+      ng-repeat="study in ctrl.studies | filter : study.stage : 1">
+        <span ng-click="ctrl.selectStudy(study.id)">{{study.name}}</span>
+    </li>
+</ul>
