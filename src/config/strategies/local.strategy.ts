@@ -14,10 +14,10 @@ module.exports = function(){
                     done(null, result);
                 }
                 else {
-                    done(null, false, "Invalid Password");
+                    done(null, false, {message: "Invalid Password"});
                 }
             } else {
-                done(null, false, "No username found.");
+                done(null, false, {message: "No username found."});
             }
         }).catch((err)=>{
             console.error(err);

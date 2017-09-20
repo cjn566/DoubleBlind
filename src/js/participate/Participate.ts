@@ -16,12 +16,12 @@ import SetName from './controllers/setName';
         .controller('setName', ["$state", "dataService", "$stateParams", SetName])
         .controller('selectSubjectController', ["$log", "dataService", "$state", "$stateParams", SelectSubjectController])
         .controller('answerQuestionsController', ["$log", "dataService", "$state", "$stateParams", AnswerQuestionsController])
-        .config(['$stateProvider', '$logProvider', function( $stateProvider, $logProvider){
+        .config(['$stateProvider', '$logProvider', '$urlRouteProvider', function( $stateProvider, $logProvider, $urlRouteProvider){
             $logProvider.debugEnabled(true);
 
             $stateProvider
                 .state("selectStudy",{
-                    url:"/",
+                    url:"/selectStudy",
                     controller: "selectStudyController",
                     controllerAs: "ctrl",
                     templateUrl:"participate/select-study.html",
@@ -59,7 +59,10 @@ import SetName from './controllers/setName';
                         id: null,
                         subId: null
                     }
-                })
+                });
+
+            $urlRouteProvider.otherwise('/home');
+
         }])
         .run($trace => $trace.enable('TRANSISTION'))
         .run(($rootScope, $log)=>{

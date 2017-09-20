@@ -7,7 +7,6 @@ let path = require('path');
 let bodyParser = require('body-parser');
 let express = require('express');
 let app  = express();
-let sqlite3 = require('sqlite3').verbose();
 let context = require('./config/database');
 let cookieParser = require('cookie-parser');
 let session = require('express-session');
