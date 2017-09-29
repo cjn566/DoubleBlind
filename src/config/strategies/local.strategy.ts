@@ -4,7 +4,7 @@ let LocalStrategy = require('passport-local').Strategy;
 
 module.exports = function(){
     pp.use(new LocalStrategy({
-        usernameField: 'userName',
+        usernameField: 'username',
         passwordField: 'password'
     }, function(username, password, done){
         context.User.where("username", username).fetch().then((UserModel)=>{
@@ -14,14 +14,14 @@ module.exports = function(){
                     done(null, result);
                 }
                 else {
-                    done(null, false, {message: "Invalid Password"});
+                    return done(null, false, {message: "Invalid Password"});
                 }
             } else {
-                done(null, false, {message: "No username found."});
+                return done(null, false, {message: "No username found."});
             }
         }).catch((err)=>{
             console.error(err);
-            done("Something broke.", null);
+            return done(err, null);
         });
     }));
 };

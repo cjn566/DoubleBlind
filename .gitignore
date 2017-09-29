@@ -1,0 +1,7 @@
+*.js
+*.js.map
+*Bundle.js
+*.log
+node_modules/
+Notes.txt
+.idea/

@@ -34,4 +34,10 @@ export default class {
         }, this.err)
     };
 
+    whoami = ()=>{
+        return this.$http.get('/whoami').then((res) => {
+            return res.data;
+        });
+    }
+
 }

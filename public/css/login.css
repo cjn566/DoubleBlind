@@ -1,0 +1,34 @@
+.rule-line {
+    text-align:center;
+    border-bottom: 1px solid #000;
+    height: 14px;
+    margin:5px 0 20px;
+    padding: 0;
+}
+
+.rule-text {
+    font-size:1em;
+    background:#fff;
+    padding: 0 5px 0;
+
+}
+
+.login-btn {
+    width: 100px;
+}
+
+.input-group {
+    margin: 0 0;
+}
+
+.full-height {
+    height: 100%;
+}
+
+h1 {
+    text-align: center;
+}
+
+#password-feedback-parent {
+    margin-bottom: 0;
+}

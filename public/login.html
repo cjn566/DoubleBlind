@@ -1,18 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html class="full-height">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Double Blind</title>
+
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            crossorigin="anonymous"></script>
+
+    <link data-require="bootstrap@*" data-semver="4.0.5" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" />
+    <script data-require="bootstrap@*" data-semver="4.0.5" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../css/login.css" />
+    <script src="login.js"></script>
 </head>
-<body>
 
-<form name="signInForm"
-action="/auth/login",
-method="post">
-    <input name="userName" id="userName">
-    <input type="password" name="password" id="password">
-    <input type="submit" value="LOG IN" >
-</form>
+<body class="container full-height">
+<div class="row  align-items-center justify-content-center full-height">
+    <div class="col-12 col-md-8 col-lg-6 col-xl-4" >
+        <h1>Double Blind</h1>
 
+        <div id="username-feedback-parent" class="form-group">
+            <div style="margin-bottom: 0.5rem">
+                <input class="form-control" id="username" placeholder="username" />
+            </div>
+            <div class="form-control-feedback" id="username-feedback" style="display:none"></div>
+        </div>
+
+        <div id="password-feedback-parent" class="form-group">
+            <div class="input-group">
+                <input class="form-control" id="password" type="password" placeholder="password" />
+                <span class="input-group-btn">
+                <button id="btn-login" class="btn btn-primary login-btn">Log In</button>
+              </span>
+            </div>
+            <div class="form-control-feedback" id="password-feedback" style="display:none"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="rule-line col-8"><span class="rule-text">or</span></div>
+        </div>
+
+        <div id="confirm-password-feedback-parent" class="form-group">
+            <div class="input-group">
+                <input class="form-control form-control-danger" id="confirm-password" type="password" placeholder="confirm password" />
+                <span class="input-group-btn">
+                <button id="btn-signup"  class="btn btn-primary login-btn" value="Sign Up">Sign Up</button>
+              </span>
+            </div>
+            <div class="form-control-feedback" id="confirm-password-feedback" style="display:none"></div>
+        </div>
+
+    </div>
+</div>
 </body>
+
 </html>

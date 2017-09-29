@@ -4,8 +4,7 @@
   "description": "DoubleBlind",
   "main": "server.js",
   "scripts": {
-    "bm": "watchify src/js/manage/Manage.ts -v --debug -p [ tsify ] -o public/manage/ManageBundle.js -t [ babelify --presets [ es2015 ] ]",
-    "bp": "watchify src/js/participate/Participate.ts -v --debug -p [ tsify ] -o public/participate/ParticipateBundle.js -t [ babelify --presets [ es2015 ] ]"
+    "build": "watchify src/js/app.ts -v --debug -p [ tsify ] -o public/Bundle.js -t [ babelify --presets [ es2015 ] ]"
   },
   "author": {
     "name": "Colten Nye"
