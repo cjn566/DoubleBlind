@@ -20,10 +20,9 @@ app.use(require('express-session')({
 require('./config/passport')(app);
 app.use('/auth', require('./routes/auth')());
 // Ensure logged in
-app.get('');
 app.use((req, res, next) => {
     if (!req.user) {
-        return res.status(401).send(loginURL);
+        return res.cookie('oDest', req.originalUrl).redirect(loginURL);
     }
     return next();
 });

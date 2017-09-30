@@ -2,7 +2,7 @@
 
 let passport = require('passport');
 
-let context = require('./config/database');
+let context = require('./database');
 
 module.exports = (app) => {
 
@@ -20,11 +20,11 @@ module.exports = (app) => {
                 delete user.password;
                 return done(null, user);
             }
-            else{return done("???", null)}
+            else{return done("????", null)}
         }).catch((err)=>{
             return done(err, null);
         });
     });
 
-    require('./strategies/local.strategy')();
+    //require('./strategies/local.strategy')();
 };

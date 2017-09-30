@@ -11,19 +11,16 @@ let router = function(){
                 password: req.body.password
             }).save().then((results)=>{
                 req.login({id: results.attributes.id}, (err) =>{
-                    return res.send(req.body.destination);
+                    res.clearCookie('oDest');
+                    respond(res, null, req.cookies.oDest || "/");
                 })
             }, (err)=>{
                 if(err.code === "SQLITE_CONSTRAINT")
-                    return res.status(401).send("user fail");
+                    respond(res, "user fail", null);
                 console.error(err);
                 return res.status(500).end();
             })
         });
-
-
-    //TODO: Get the server to send the originally requested resource if login successful. If not successful, inidcate that to the client.
-
 
     authRouter.route('/login')
         .post((req, res, next) =>{
@@ -35,21 +32,28 @@ let router = function(){
                     if (password === result.password) { // Successful login
                         req.login({id: result.id}, (err)=>{
                             if(err) return next(err);
-                            //todo: redirect to original destination?
-                            return res.send(req.body.destination);
+                            res.clearCookie('oDest');
+                            respond(res, null, req.cookies.oDest || "/");
                         });
                     }
                     else { // Password mismatch
-                        return res.status(401).send("password fail");
+                        respond(res, "password fail", null);
                     }
                 } else { // username not found
-                    return res.status(401).send("user fail");
+                    respond(res, "user fail", null);
                 }
             }).catch((err)=>{
                 console.error(err);
                 return next(err);
             });
         });
+
+    let respond = (res, err, destination) =>{
+        return res.json({
+            err: err,
+            destination: destination
+        });
+    }
 
     return authRouter;
 };

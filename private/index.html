@@ -21,14 +21,17 @@
 
         <script src="Bundle.js" type="text/javascript"></script>
 
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="/css/main.css">
     </head>
 
     <body ng-app="DoubleBlind">
         <div ng-controller="base as base">
             <h1>Double Blind</h1>
-            <p>Welcome, <b>{{base.user.username}}!</b></p>
-            <ui-view></ui-view>
+            <div class="loading" ng-show="base.loading">Loading...</div>
+            <div id="wait-for-load" ng-hide="base.loading">
+                <p>Welcome, <b>{{base.user.username}}!</b></p>
+                <ui-view></ui-view>
+            </div>
         </div>
     </body>
 </html>

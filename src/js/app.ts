@@ -61,11 +61,11 @@ import ConcludedController from "./controllers/ConcludedController";
                         }
                     }
                 })
-                .state("setName",{
-                    url:"/setName/study=:id",
-                    controller: "setName",
+                .state("participate",{
+                    url:"/participate/study=:id",
+                    controller: "select-subject",
                     controllerAs: "ctrl",
-                    templateUrl:"set-name.html",
+                    templateUrl:"select-subject.html",
                     params: {
                         id: null
                     }
@@ -150,19 +150,8 @@ import ConcludedController from "./controllers/ConcludedController";
                         study: null,
                         id: null
                     }
-                })
-
-            $urlRouterProvider.otherwise('/');
+                });
             $httpProvider.interceptors.push('httpInterceptor');
-
         }])
-        .run($trace => $trace.enable('TRANSISTION'))
-        .run(($rootScope, $log)=>{
-            $rootScope.$on('$stateChangeError', ()=>{
-                $log.error("HIT MF")
-            })
-        });
-
-
 }());
 
