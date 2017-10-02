@@ -22,12 +22,28 @@ app.use('/auth', require('./routes/auth')());
 // Ensure logged in
 app.use((req, res, next) => {
     if (!req.user) {
-        return res.cookie('oDest', req.originalUrl).redirect(loginURL);
+        /*
+        */
+        let redirect = loginURL;
+        if (req.query.goto) {
+            redirect += "?redirect=" + req.query.goto;
+        }
+        return res.redirect(redirect);
+        /*
+        // AUTO LOG IN FOR DEV PURPOSES!
+        req.login({id: 1}, (err) =>{
+            return next();
+        });
+        */
     }
     return next();
 });
 app.use('/', express.static(path.join(__dirname, '../private')));
 require('./routes/data')(app);
+//Nothing found
+app.use((req, res) => {
+    res.redirect('/notfound.html');
+});
 app.listen(3000);
 console.log("READY");
 //# sourceMappingURL=server.js.map

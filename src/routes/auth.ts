@@ -4,19 +4,19 @@ let authRouter = require('express').Router();
 let router = function(){
 
     authRouter.route('/signup')
-        .post((req, res) =>{
+        .post((req, res, next) =>{
             console.log(req.body);
             new context.User({
                 username: req.body.username,
                 password: req.body.password
             }).save().then((results)=>{
                 req.login({id: results.attributes.id}, (err) =>{
-                    res.clearCookie('oDest');
-                    respond(res, null, req.cookies.oDest || "/");
+                    if(err) return next(err);
+                    res.send("");
                 })
             }, (err)=>{
                 if(err.code === "SQLITE_CONSTRAINT")
-                    respond(res, "user fail", null);
+                    res.send("user fail");
                 console.error(err);
                 return res.status(500).end();
             })
@@ -32,15 +32,14 @@ let router = function(){
                     if (password === result.password) { // Successful login
                         req.login({id: result.id}, (err)=>{
                             if(err) return next(err);
-                            res.clearCookie('oDest');
-                            respond(res, null, req.cookies.oDest || "/");
+                            res.send("");
                         });
                     }
                     else { // Password mismatch
-                        respond(res, "password fail", null);
+                        res.send("password fail");
                     }
                 } else { // username not found
-                    respond(res, "user fail", null);
+                    res.send("user fail");
                 }
             }).catch((err)=>{
                 console.error(err);
@@ -48,13 +47,10 @@ let router = function(){
             });
         });
 
-    let respond = (res, err, destination) =>{
-        return res.json({
-            err: err,
-            destination: destination
-        });
-    }
-
+    authRouter.route('/logout', function(req, res){
+        req.logout();
+        res.redirect('/');
+    });
     return authRouter;
 };
 

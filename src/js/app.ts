@@ -26,7 +26,7 @@ import ConcludedController from "./controllers/ConcludedController";
         .controller('base', ["$log", "dataService", Base])
         .controller('selectStudyController', ["$log", "dataService", "$state", "studies", SelectStudyController])
         .controller('setName', ["$state", "dataService", "$stateParams", SetName])
-        .controller('selectSubjectController', ["$log", "dataService", "$state", "$stateParams", SelectSubjectController])
+        .controller('selectSubject', ["$log", "dataService", "$state", "$stateParams", SelectSubjectController])
         .controller('answerQuestionsController', ["$log", "dataService", "$state", "$stateParams", AnswerQuestionsController])
         .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
         .controller('selectController', ["$log", "dataService", "$state", "studies", SelectController])
@@ -43,7 +43,7 @@ import ConcludedController from "./controllers/ConcludedController";
                     url:"/",
                     controller: "selectController",
                     controllerAs: "ctrl",
-                    templateUrl:"select-study.html",
+                    templateUrl:"home.html",
                     resolve: {
                         studies: function(dataService){
                             return dataService.getStudies()
@@ -63,7 +63,7 @@ import ConcludedController from "./controllers/ConcludedController";
                 })
                 .state("participate",{
                     url:"/participate/study=:id",
-                    controller: "select-subject",
+                    controller: "selectSubject",
                     controllerAs: "ctrl",
                     templateUrl:"select-subject.html",
                     params: {
@@ -102,7 +102,7 @@ import ConcludedController from "./controllers/ConcludedController";
                     }
                 })
                 .state("build",{
-                    url:"/:id",
+                    url:"/build/:id",
                     controller: "manageController",
                     controllerAs: "ctrl",
                     templateUrl:"buildstudy.html",

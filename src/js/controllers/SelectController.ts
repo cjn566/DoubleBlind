@@ -32,6 +32,8 @@ export default class extends _controller{
             type: Model.study,
             data: {name: this.newStudyName, stage : 0}
         }).then((data)=>{
+            console.log("newstudy callback:")
+            console.log(data);
             this.state.go('build', {studyId: data.id});
         })
     };

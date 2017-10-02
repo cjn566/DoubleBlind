@@ -9,23 +9,37 @@ module.exports = function(app) {
         if (req.user) {
             return res.json(req.user);
         }
-        return res.json(null);
+        return res.sendStatus(500);
     });
 
     app.get('/getStudy', function (req, res) {
+        console.log("getting study: " + req.query.id);
+        if(!req.query.id){
+
+            return res.sendStatus(404)
+        }
         context.Study.where("id", req.query.id).fetch({withRelated: ['subjects', 'questions']})
             .then(function (studyModel) {
-                res.json(studyModel.toJSON());
-            });
+                if(studyModel) {
+                    return res.json(studyModel.toJSON());
+                }
+                console.error('Study model is null. ID: ' + req.query.id);
+                return res.sendStatus(404);
+            }).catch((err)=>{
+                console.log(err);
+                return res.sendStatus(500);
+        });
     });
 
     app.get('/studies', function (req, res) {
-        context.Study.fetchAll().then(function (studyModels) {
-            let studies = studyModels.toJSON();
-            res.json(studies);
+        context.Study.where("owner_id", req.user.id).fetchAll().then(function (studyModel) {
+            if(studyModel) {
+                return res.json(studyModel.toJSON());
+            }
+            console.error('Studies model is null');
+            return res.sendStatus(404);
         })
     });
-
 
     app.post('/save', function (req, res) {
         if (!req.user) {
@@ -34,7 +48,7 @@ module.exports = function(app) {
         let model;
         let finish = (m) => {
             m.save().then((data) => {
-                res.json(data);
+                res.json(data.toJSON());
             }, err);
         };
         switch (req.body.type) {

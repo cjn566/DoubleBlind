@@ -75,10 +75,10 @@ $( document ).ready(function() {
 
     let login = (username, password)=>{
         $.post("/auth/login", {username: username, password: password, destination: "/"}, (res) => {
-            if(res.err === null) {
-                window.location.href = res.destination;
+            if(res === "") {
+                go();
             } else {
-                switch (res.err) {
+                switch (res) {
                     case "user fail":
                         invalid('username', 'That username does not exist.');
                         break;
@@ -92,10 +92,10 @@ $( document ).ready(function() {
 
     let signup = (username, password)=> {
         $.post("/auth/signup", {username: username, password: password}, (res) => {
-            if(res.err === null) {
-                window.location.href = res.destination;
+            if(res === "") {
+                go();
             } else {
-                switch (res.err) {
+                switch (res) {
                     case "user fail":
                         invalid('username', 'That username is not available.');
                         break;
@@ -103,6 +103,13 @@ $( document ).ready(function() {
             }
         }, "json");
     };
+
+    let go = ()=>{
+        let redirect = $.urlParam('redirect');
+        if(redirect)
+            redirect = "?study=" + redirect;
+        window.location.href = "/#!/" + redirect;
+    }
 
     passwordField.keyup(function(event){
         if(event.keyCode == 13){
@@ -123,3 +130,10 @@ $( document ).ready(function() {
     $('#btn-signup').click(trySignup);
 
 });
+
+$.urlParam = function(name){
+    let results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if(results)
+        return results[1] || "";
+    return "";
+}

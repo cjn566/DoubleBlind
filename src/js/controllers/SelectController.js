@@ -26,6 +26,8 @@ class default_1 extends _studyController_1.default {
                 type: Istudy_1.Model.study,
                 data: { name: this.newStudyName, stage: 0 }
             }).then((data) => {
+                console.log("newstudy callback:");
+                console.log(data);
                 this.state.go('build', { studyId: data.id });
             });
         };

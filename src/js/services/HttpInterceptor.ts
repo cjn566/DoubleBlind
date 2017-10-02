@@ -13,10 +13,8 @@ export default class {
     }
 
     responseError = (rej)=>{
-        console.log("before")
-        console.log(this.$location)
-        console.log("after")
         if(rej.status ===401){ // Not logged in
+            console.error("Not logged in.")
             console.log(rej);
             window.location.href = rej.data;
             return this.$q.reject(rej);
