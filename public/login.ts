@@ -1,4 +1,4 @@
-declare var $: any;
+declare let $: any;
 
 document.addEventListener('load', function() {
     let scale = 1 / (window.devicePixelRatio || 1);
@@ -28,7 +28,7 @@ $( document ).ready(function() {
             }
         }
         else {
-            login(username, password);
+            doAjax("/auth/login", username, password);
         }
     };
 
@@ -54,7 +54,7 @@ $( document ).ready(function() {
             invalid('confirm-password', 'Passwords do not match.');
         }
         else {
-            signup(username, password);
+            doAjax("/auth/signup", username, password);
         }
     };
 
@@ -73,43 +73,37 @@ $( document ).ready(function() {
         });
     };
 
-    let login = (username, password)=>{
-        $.post("/auth/login", {username: username, password: password, destination: "/"}, (res) => {
-            if(res === "") {
-                go();
-            } else {
-                switch (res) {
-                    case "user fail":
-                        invalid('username', 'That username does not exist.');
-                        break;
-                    case "password fail":
-                        invalid('password', 'Incorrect password.');
-                        break;
-                }
-            }
-        }, "json")
+    let doAjax = (url, username, password)=>{
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {username: username, password: password},
+            success: handleResponse,
+            dataType: "text"
+        });
     };
 
-    let signup = (username, password)=> {
-        $.post("/auth/signup", {username: username, password: password}, (res) => {
-            if(res === "") {
-                go();
-            } else {
-                switch (res) {
-                    case "user fail":
-                        invalid('username', 'That username is not available.');
-                        break;
-                }
+    let handleResponse = (res)=>{
+        console.log(res)
+        if(res === "k") {
+            let redirect = $.urlParam('redirect');
+            if(redirect)
+                redirect = "?study=" + redirect;
+            window.location.href = "/#!/" + redirect;
+        } else {
+            switch (res) {
+                case "user not available":
+                    invalid('username', 'That username is not available.');
+                    break;
+                case "user not exist":
+                    invalid('username', 'That username does not exist.');
+                    break;
+                case "password invalid":
+                    invalid('password', 'Incorrect password.');
+                    break;
             }
-        }, "json");
+        }
     };
-
-    let go = ()=>{
-        let redirect = $.urlParam('redirect');
-        if(redirect)
-            redirect = "?study=" + redirect;
-        window.location.href = "/#!/" + redirect;
-    }
 
     passwordField.keyup(function(event){
         if(event.keyCode == 13){
@@ -136,4 +130,4 @@ $.urlParam = function(name){
     if(results)
         return results[1] || "";
     return "";
-}
+};

@@ -12,11 +12,11 @@ let router = function(){
             }).save().then((results)=>{
                 req.login({id: results.attributes.id}, (err) =>{
                     if(err) return next(err);
-                    res.send("");
+                    res.send("k");
                 })
             }, (err)=>{
                 if(err.code === "SQLITE_CONSTRAINT")
-                    res.send("user fail");
+                    res.send("user not available");
                 console.error(err);
                 return res.status(500).end();
             })
@@ -32,14 +32,14 @@ let router = function(){
                     if (password === result.password) { // Successful login
                         req.login({id: result.id}, (err)=>{
                             if(err) return next(err);
-                            res.send("");
+                            res.send("k");
                         });
                     }
                     else { // Password mismatch
-                        res.send("password fail");
+                        res.send("password invalid");
                     }
                 } else { // username not found
-                    res.send("user fail");
+                    res.send("user not exist");
                 }
             }).catch((err)=>{
                 console.error(err);
