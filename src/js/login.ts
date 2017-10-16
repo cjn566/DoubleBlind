@@ -1,4 +1,6 @@
+import {Code} from './interfaces/IauthCodes'
 declare let $: any;
+
 
 document.addEventListener('load', function() {
     let scale = 1 / (window.devicePixelRatio || 1);
@@ -79,26 +81,28 @@ $( document ).ready(function() {
             url: url,
             data: {username: username, password: password},
             success: handleResponse,
-            dataType: "text"
+            dataType: "json"
         });
     };
 
     let handleResponse = (res)=>{
-        console.log(res)
-        if(res === "k") {
-            let redirect = $.urlParam('redirect');
-            if(redirect)
-                redirect = "?study=" + redirect;
-            window.location.href = "/#!/" + redirect;
+        if(res === Code.ok) {
+            let destination;
+            let join = $.urlParam('join');
+            if(join) {
+                destination = "/#!/" + join;
+            }
+            else destination = "/#!/";
+            window.location.href = destination;
         } else {
             switch (res) {
-                case "user not available":
+                case Code.userExist:
                     invalid('username', 'That username is not available.');
                     break;
-                case "user not exist":
+                case Code.noUser:
                     invalid('username', 'That username does not exist.');
                     break;
-                case "password invalid":
+                case Code.badPassword:
                     invalid('password', 'Incorrect password.');
                     break;
             }

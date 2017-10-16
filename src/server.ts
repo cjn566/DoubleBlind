@@ -35,8 +35,8 @@ app.use((req, res, next)=>{
         /*
         */
         let redirect = loginURL;
-        if(req.query.goto){
-            redirect += "?redirect=" + req.query.goto
+        if(req.query.join){
+            redirect += "?join=" + req.query.join
         }
         return res.redirect(redirect);
         /*

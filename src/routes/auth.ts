@@ -1,4 +1,5 @@
 import * as context from '../config/database'
+import {Code} from '../js/interfaces/IauthCodes'
 let authRouter = require('express').Router();
 
 let router = function(){
@@ -12,11 +13,11 @@ let router = function(){
             }).save().then((results)=>{
                 req.login({id: results.attributes.id}, (err) =>{
                     if(err) return next(err);
-                    res.send("k");
+                    res.json(Code.ok);
                 })
             }, (err)=>{
                 if(err.code === "SQLITE_CONSTRAINT")
-                    res.send("user not available");
+                    res.json(Code.userExist);
                 console.error(err);
                 return res.status(500).end();
             })
@@ -32,14 +33,14 @@ let router = function(){
                     if (password === result.password) { // Successful login
                         req.login({id: result.id}, (err)=>{
                             if(err) return next(err);
-                            res.send("k");
+                            res.json(Code.ok);
                         });
                     }
                     else { // Password mismatch
-                        res.send("password invalid");
+                        res.json(Code.badPassword);
                     }
                 } else { // username not found
-                    res.send("user not exist");
+                    res.json(Code.noUser);
                 }
             }).catch((err)=>{
                 console.error(err);

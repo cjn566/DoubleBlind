@@ -18,7 +18,7 @@ export default class{
 
     logout = ()=>{
         jscookie.remove('connect.sid');
-        window.location.href = '/getredirected';
+        window.location.href = '/login.html';
     };
 
     log = (m) => {this.$log.log(m)};

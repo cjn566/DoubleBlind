@@ -112,7 +112,7 @@ import ConcludedController from "./controllers/ConcludedController";
                     }
                 })
                 .state("map1",{
-                    url:"/:id",
+                    url:"/build/:id",
                     controller: "mapOneController",
                     controllerAs: "ctrl",
                     templateUrl:"firstmap.html",
@@ -122,7 +122,7 @@ import ConcludedController from "./controllers/ConcludedController";
                     }
                 })
                 .state("map2",{
-                    url:"/:id",
+                    url:"/build/:id",
                     controller: "mapTwoController",
                     controllerAs: "ctrl",
                     templateUrl:"secondmap.html",
@@ -132,7 +132,7 @@ import ConcludedController from "./controllers/ConcludedController";
                     }
                 })
                 .state("live",{
-                    url:"/:id",
+                    url:"/build/:id",
                     controller: "liveController",
                     controllerAs: "ctrl",
                     templateUrl:"live.html",
@@ -142,7 +142,7 @@ import ConcludedController from "./controllers/ConcludedController";
                     }
                 })
                 .state("concluded",{
-                    url:"/:id",
+                    url:"/build/:id",
                     controller: "concludedController",
                     controllerAs: "ctrl",
                     templateUrl:"concluded.html",
