@@ -1,7 +1,7 @@
 
 
 import {Model, Study} from "../interfaces/Istudy";
-import _controller from './abstract/_studyController'
+import _controller from './AbstractStudy'
 
 export default class extends _controller{
     constructor(a,b,c,d){super(a,b,c,d)}

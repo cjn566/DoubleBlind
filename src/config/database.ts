@@ -54,5 +54,5 @@ export let Study = bookshelf.Model.extend({
         return this.hasMany(Question);
     }
 },{
-    dependents: ['subjects', 'participants', 'questions']
+    dependents: ['subjectList', 'participants', 'questions']
 });

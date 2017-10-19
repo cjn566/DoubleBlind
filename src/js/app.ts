@@ -5,9 +5,8 @@ import DataService from './services/DataService';
 import httpInterceptor from './services/HttpInterceptor';
 
 import Base from './controllers/base';
-import SelectStudyController from './controllers/selectStudy';
-import SelectSubjectController from './controllers/selectSubject';
-import AnswerQuestionsController from './controllers/answerQuestions';
+import SelectSubject from './controllers/join/selectSubject';
+import AnswerQuestions from './controllers/join/answerQuestions';
 import SetName from './controllers/setName';
 import SelectController from "./controllers/SelectController";
 import MapOneController from "./controllers/MapOneController";
@@ -15,6 +14,7 @@ import MapTwoController from "./controllers/MapTwoController";
 import ManageController from "./controllers/BuildController";
 import LiveController from "./controllers/LiveController";
 import ConcludedController from "./controllers/ConcludedController";
+import JoinBase from "./controllers/join/base";
 
 
 
@@ -24,21 +24,67 @@ import ConcludedController from "./controllers/ConcludedController";
         .factory("dataService", ["$http", "$log", DataService])
         .factory('httpInterceptor', ['$q', '$rootScope', '$location', httpInterceptor])
         .controller('base', ["$log", "dataService", Base])
-        .controller('selectStudyController', ["$log", "dataService", "$state", "studies", SelectStudyController])
         .controller('setName', ["$state", "dataService", "$stateParams", SetName])
-        .controller('selectSubject', ["$log", "dataService", "$state", "$stateParams", SelectSubjectController])
-        .controller('answerQuestionsController', ["$log", "dataService", "$state", "$stateParams", AnswerQuestionsController])
+        .controller('selectSubject', ["$log", "dataService", "$state", "$stateParams",'subjectList', SelectSubject])
+        .controller('answerQuestions', ["$log", "dataService", "$state", "$stateParams", 'subject','questionList', AnswerQuestions])
         .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
         .controller('selectController', ["$log", "dataService", "$state", "studies", SelectController])
         .controller('mapOneController', ["$log", "dataService", "$state", "$stateParams", MapOneController])
         .controller('mapTwoController', ["$log", "dataService", "$state", "$stateParams", MapTwoController])
         .controller('liveController', ["$log", "dataService", "$state", "$stateParams", LiveController])
         .controller('concludedController', ["$log", "dataService", "$state", "$stateParams", ConcludedController])
-        .config(['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider',
-            function( $stateProvider, $logProvider, $urlRouterProvider, $httpProvider){
+        .controller('JoinBase', ["$log", "dataService", "$state", "$stateParams", 'study', JoinBase])
+        .config(['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider',
+            function( $stateProvider, $logProvider, $urlRouterProvider, $httpProvider, $compileProvider){
             $logProvider.debugEnabled(true);
 
             $stateProvider
+
+                // JOIN Study States
+                .state("join",{
+                    url:"/join/:id",
+                    abstract:"true",
+                    controller: "JoinBase",
+                    controllerAs: "joinShellCtrl",
+                    templateUrl:"join/join-shell.html",
+                    params: {
+                        id: null
+                    },
+                    resolve:{
+                        study: ["dataService", '$stateParams', function(dataService, $stateParams){
+                            return dataService.getStudy($stateParams.id);
+                        }]
+                    }
+                })
+                .state("join.select",{
+                    url:"/subjects",
+                    controller: "selectSubject",
+                    controllerAs: "joinCtrl",
+                    templateUrl:"join/select-subject.html",
+                    resolve:{
+                        subjectList: ["study", (s)=>{return s.subjects}]
+                    }
+
+                })
+                .state("join.answer",{
+                    url:"/subject=:subId",
+                    controller: "answerQuestions",
+                    controllerAs: "joinCtrl",
+                    templateUrl:"join/answer-questions.html",
+                    params: {
+                        subId: null,
+                        subject: null
+                    },
+                    resolve: {
+                        subject: ["study", '$stateParams', (s, p)=>{
+                            let sub = s.subjects[s.subjects.findIndex( e => e.id == p.subId)];
+                            return sub;
+                        }],
+                        questionList: ["study", (s)=>{return s.questions}]
+                    }
+                })
+
+                // Build states
                 .state("home",{
                     url:"/",
                     controller: "selectController",
@@ -53,46 +99,6 @@ import ConcludedController from "./controllers/ConcludedController";
                 .state("selectStudy",{
                     url:"/selectStudy",
                     controller: "selectStudyController",
-                    controllerAs: "ctrl",
-                    templateUrl:"select-study-part.html",
-                    resolve: {
-                        studies: function(dataService){
-                            return dataService.getStudies()
-                        }
-                    }
-                })
-                .state("participate",{
-                    url:"/participate/study=:id",
-                    controller: "selectSubject",
-                    controllerAs: "ctrl",
-                    templateUrl:"select-subject.html",
-                    params: {
-                        id: null
-                    }
-                })
-                .state("selectSubject",{
-                    url:"/study=:id",
-                    controller: "selectSubjectController",
-                    controllerAs: "ctrl",
-                    templateUrl:"select-subject.html",
-                    params: {
-                        study: null,
-                        id: null
-                    }
-                })
-                .state("answerQuestions",{
-                    url:"/study=:id/subject=:subId",
-                    controller: "answerQuestionsController",
-                    controllerAs: "ctrl",
-                    templateUrl:"answer-questions.html",
-                    params: {
-                        id: null,
-                        subId: null
-                    }
-                })
-                .state("select",{
-                    url:"/html",
-                    controller: "selectController",
                     controllerAs: "ctrl",
                     templateUrl:"select-study-part.html",
                     resolve: {
@@ -152,6 +158,7 @@ import ConcludedController from "./controllers/ConcludedController";
                     }
                 });
             $httpProvider.interceptors.push('httpInterceptor');
+            $compileProvider.debugInfoEnabled(true);
         }])
 }());
 

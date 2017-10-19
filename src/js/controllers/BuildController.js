@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Istudy_1 = require("../interfaces/Istudy");
-const _studyController_1 = require("./abstract/_studyController");
-class default_1 extends _studyController_1.default {
+const AbstractStudy_1 = require("./AbstractStudy");
+class default_1 extends AbstractStudy_1.default {
     constructor(a, b, c, d) {
         super(a, b, c, d);
         this.newQuestion = "";

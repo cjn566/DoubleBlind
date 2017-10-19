@@ -1,5 +1,5 @@
 
-import _controller from './abstract/_studyController'
+import _controller from './AbstractStudy'
 import {Model, Stage} from "../interfaces/Istudy";
 
 export default class extends _controller{

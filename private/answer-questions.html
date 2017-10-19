@@ -1,9 +1,0 @@
-<div>Welcome, {{ctrl.user.name}}. <a ng-click="ctrl.notMe()">Not you?</a></div>
-Questions:
-<ng-form name="buildForm">
-    <div  ng-repeat="question in ctrl.study.questions">
-        <label for="question.id">{{question.name}}</label>
-        <input id="question.id" ng-model="question.answer"
-               ng-blur="ctrl.updateAnswer(question.id, question.answer, buildForm)">
-    </div>
-</ng-form>

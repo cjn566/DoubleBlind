@@ -1,0 +1,10 @@
+<div class="show-box">
+    Subject: {{joinCtrl.subject.name}}
+    <ng-form name="buildForm">
+        <div  ng-repeat="question in joinCtrl.questionList">
+            <label for="question.id">{{question.question}}</label>
+            <input id="question.id" ng-model="question.answer"
+                   ng-blur="joinCtrl.updateAnswer(question.id, question.answer, buildForm)">
+        </div>
+    </ng-form>
+</div>

@@ -5,3 +5,7 @@ td {
     padding-right: 10px;
     text-align: center;
 }
+
+.show-box {
+    border: 1px solid blue
+}

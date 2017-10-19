@@ -1,14 +1,14 @@
-import _controller from './abstract/_participateUser'
-import {Model} from "../interfaces/Istudy";
+import _controller from './AbstractJoin'
+import {Model} from "../../interfaces/Istudy";
 
 export default class extends _controller{
-    constructor(a,b,c,d){
+    subject;
+    questionList;
+    constructor(a,b,c,d, subject, questionList){
         super(a,b,c,d);
-        this.subjectId = d.subId;
-        console.log(this.user.id);
+        this.subject = subject;
+        this.questionList = questionList;
     }
-    user;
-    subjectId;
 
     updateAnswer = (id: number, answer: string, form) => {
         if(form.$dirty) {
@@ -17,10 +17,10 @@ export default class extends _controller{
                 data: {
                     participant_id: this.user.id,
                     question_id: id,
-                    subject_id: this.subjectId,
+                    subject_id: this.subject.id,
                     value: answer
                 }
-            }).catch(e => this.$log.error(e));
+            }).catch(e => this.err(e));
             form.$setPristine();
         }
     };

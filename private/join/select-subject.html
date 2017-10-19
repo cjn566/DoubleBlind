@@ -1,0 +1,8 @@
+<div class="show-box">
+Select subject:
+<ul>
+    <li ng-repeat="subject in joinCtrl.subjectList" ng-click="joinCtrl.selectSubject(subject.id)">
+        {{subject.name}}
+    </li>
+</ul>
+</div>

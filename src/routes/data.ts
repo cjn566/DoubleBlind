@@ -13,7 +13,6 @@ module.exports = function(app) {
     });
 
     app.get('/getStudy', function (req, res) {
-        console.log("getting study: " + req.query.id);
         if(!req.query.id){
 
             return res.sendStatus(404)
@@ -42,9 +41,6 @@ module.exports = function(app) {
     });
 
     app.post('/save', function (req, res) {
-        if (!req.user) {
-            res.status(502).end()
-        }
         let model;
         let finish = (m) => {
             m.save().then((data) => {

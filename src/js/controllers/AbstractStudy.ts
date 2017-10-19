@@ -1,4 +1,4 @@
-import {Model, Stage, Study} from "../../interfaces/Istudy";
+import {Model, Stage, Study} from "../interfaces/Istudy";
 
 export default abstract class{
     $log;
@@ -24,4 +24,5 @@ export default abstract class{
 
     log = (m) => {this.$log.log(m)};
     err = (e)=>{this.$log.error(e)};
+
 }
