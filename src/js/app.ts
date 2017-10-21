@@ -25,7 +25,7 @@ import JoinBase from "./controllers/join/base";
         .factory('httpInterceptor', ['$q', '$rootScope', '$location', httpInterceptor])
         .controller('base', ["$log", "dataService", Base])
         .controller('setName', ["$state", "dataService", "$stateParams", SetName])
-        .controller('selectSubject', ["$log", "dataService", "$state", "$stateParams",'subjectList', SelectSubject])
+        .controller('selectSubject', ["$log", "dataService", "$state", "$stateParams",'subjectList', 'answers', SelectSubject])
         .controller('answerQuestions', ["$log", "dataService", "$state", "$stateParams", 'subject','questionList', AnswerQuestions])
         .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
         .controller('selectController', ["$log", "dataService", "$state", "studies", SelectController])
@@ -42,7 +42,7 @@ import JoinBase from "./controllers/join/base";
 
                 // JOIN Study States
                 .state("join",{
-                    url:"/join/:id",
+                    url:"/join=:id",
                     abstract:"true",
                     controller: "JoinBase",
                     controllerAs: "joinShellCtrl",
@@ -52,17 +52,18 @@ import JoinBase from "./controllers/join/base";
                     },
                     resolve:{
                         study: ["dataService", '$stateParams', function(dataService, $stateParams){
-                            return dataService.getStudy($stateParams.id);
+                            return dataService.getStudyByLink($stateParams.id);
                         }]
                     }
                 })
                 .state("join.select",{
-                    url:"/subjects",
+                    url:"",///subjects",
                     controller: "selectSubject",
                     controllerAs: "joinCtrl",
                     templateUrl:"join/select-subject.html",
                     resolve:{
-                        subjectList: ["study", (s)=>{return s.subjects}]
+                        subjectList: ["study", (s)=>{return s.subjects}],
+                        answers: ['dataService', (ds)=>{return ds.answers()}]
                     }
 
                 })
@@ -76,9 +77,11 @@ import JoinBase from "./controllers/join/base";
                         subject: null
                     },
                     resolve: {
-                        subject: ["study", '$stateParams', (s, p)=>{
+                        subject: ["study", '$stateParams', '$state', (s, p, $s)=>{
                             let sub = s.subjects[s.subjects.findIndex( e => e.id == p.subId)];
-                            return sub;
+                            if(sub)
+                                return sub;
+                            $s.go('join.select');
                         }],
                         questionList: ["study", (s)=>{return s.questions}]
                     }

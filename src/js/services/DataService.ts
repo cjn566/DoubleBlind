@@ -17,10 +17,20 @@ export default class {
         }, this.err)
     };
 
-    getStudy = (id: number) => {
+    getStudyByID = (id: number) => {
         return this.$http.get('/getStudy',
             {
                 'params': {'id': id}
+            }
+        ).then((response) => {
+            return response.data
+        }, this.err)
+    };
+
+    getStudyByLink = (link: string) => {
+        return this.$http.get('/getStudy',
+            {
+                'params': {'link': link}
             }
         ).then((response) => {
             return response.data
@@ -38,6 +48,10 @@ export default class {
         return this.$http.get('/whoami').then((res) => {
             return res.data;
         });
+    }
+
+    answers = ()=>{
+        return this.$http.get('/answers').then((res)=>{return res.data})
     }
 
 }

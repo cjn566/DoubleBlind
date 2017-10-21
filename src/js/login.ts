@@ -90,7 +90,7 @@ $( document ).ready(function() {
             let destination;
             let join = $.urlParam('join');
             if(join) {
-                destination = "/#!/" + join;
+                destination = "/#!/join/" + join;
             }
             else destination = "/#!/";
             window.location.href = destination;

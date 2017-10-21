@@ -33,20 +33,20 @@ app.use('/auth', require('./routes/auth')());
 app.use((req, res, next)=>{
     if(!req.user) {
         /*
-        */
-        /*
         let redirect = loginURL;
         if(req.query.join){
             redirect += "?join=" + req.query.join
         }
         return res.redirect(redirect);
-        */
+    */
         // AUTO LOG IN FOR DEV PURPOSES!
         req.login({id: 1}, (err) =>{
             return next();
         });
-    }
-    else return next();
+        /*
+        */
+}
+else return next();
 });
 
 app.use('/', express.static(path.join(__dirname, '../private')));
@@ -55,7 +55,7 @@ require('./routes/data')(app);
 
 //Nothing found
 app.use((req, res)=>{
-    res.redirect('/notfound.html');
+res.redirect('/notfound.html');
 });
 
 app.listen(3000);

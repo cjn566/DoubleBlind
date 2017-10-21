@@ -13,20 +13,19 @@ module.exports = function(app) {
     });
 
     app.get('/getStudy', function (req, res) {
-        if(!req.query.id){
-
-            return res.sendStatus(404)
+        if(!req.query){
+            return res.sendStatus(400)
         }
-        context.Study.where("id", req.query.id).fetch({withRelated: ['subjects', 'questions']})
+        context.Study.where(req.query).fetch({withRelated: ['subjects', 'questions']})
             .then(function (studyModel) {
                 if(studyModel) {
                     return res.json(studyModel.toJSON());
                 }
                 console.error('Study model is null. ID: ' + req.query.id);
-                return res.sendStatus(404);
+                return res.sendStatus(400);
             }).catch((err)=>{
-                console.log(err);
-                return res.sendStatus(500);
+            console.log(err);
+            return res.sendStatus(500);
         });
     });
 
@@ -41,48 +40,40 @@ module.exports = function(app) {
     });
 
     app.post('/save', function (req, res) {
-        let model;
-        let finish = (m) => {
-            m.save().then((data) => {
-                res.json(data.toJSON());
-            }, err);
-        };
-        switch (req.body.type) {
-            case Model.study:
-
-                let tryId = () => {
-                    let Id = makeId(10);
-                    context.Study.where('link', Id).count().then((count) => {
-                        if (count > 0) { // Exists, try again
-                            tryId();
-                        }
-                        else {
-                            req.body.data["link"] = Id;
-                            req.body.data["owner_id"] = req.user.id;
-                            model = new context.Study(req.body.data);
-                            finish(model);
-                        }
-                    });
-                };
-                tryId();
-                break;
-            case Model.subject:
-                model = new context.Subject(req.body.data);
-                finish(model);
-                break;
-            case Model.question:
-                model = new context.Question(req.body.data);
-                finish(model);
-                break;
-            case Model.participant:
-                model = new context.Participant(req.body.data);
-                finish(model);
-                break;
-            case Model.answer:
-                model = new context.Answer(req.body.data);
-                finish(model);
-                break;
-        }
+        Promise.all(req.body.map((save)=>{
+            let model;
+            switch (save.type) {
+                case Model.study:
+                    let tryId = () => {
+                        let Id = makeId(10);
+                        context.Study.where('link', Id).count().then((count) => {
+                            if (count > 0) { // Exists, try again
+                                tryId();
+                            }
+                            else {
+                                save.data["link"] = Id;
+                                save.data["owner_id"] = req.user.id;
+                                model = new context.Study(save.data);
+                                return model.save();
+                            }
+                        });
+                    };
+                    tryId();
+                    break;
+                case Model.subject:
+                    model = new context.Subject(save.data);
+                    return model.save();
+                case Model.question:
+                    model = new context.Question(save.data);
+                    return model.save();
+                case Model.participant:
+                    model = new context.Participant(save.data);
+                    return model.save();
+                case Model.answer:
+                    model = new context.Answer(save.data);
+                    return model.save();
+            }
+        })).then((data)=>{res.json(data)});
     });
 
     app.post('/delete', function (req, res) {
@@ -103,6 +94,18 @@ module.exports = function(app) {
             res.json(result);
         }, err);
 
+    });
+
+
+    app.get('/myAnswers', function(req, res){
+        context.Answer.where({"participant_id":req.user.id}, ).fetchAll({'columns':'subject_id'}).then((models)=>{
+            let data = models.toJSON();
+            data = data.map(e => e.subject_id);
+            data = data.filter((item, pos)=>{
+                    return data.indexOf(item) == pos;
+                });
+            return res.json(data);
+        })
     });
 
 

@@ -12,7 +12,7 @@ export default class extends _controller{
 
     updateAnswer = (id: number, answer: string, form) => {
         if(form.$dirty) {
-            this.dataService.save({
+            this.dataService.save([{
                 type: Model.answer,
                 data: {
                     participant_id: this.user.id,
@@ -20,7 +20,7 @@ export default class extends _controller{
                     subject_id: this.subject.id,
                     value: answer
                 }
-            }).catch(e => this.err(e));
+            }]).catch(e => this.err(e));
             form.$setPristine();
         }
     };

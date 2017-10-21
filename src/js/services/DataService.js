@@ -8,9 +8,16 @@ class default_1 {
                 return response.data;
             }, this.err);
         };
-        this.getStudy = (id) => {
+        this.getStudyByID = (id) => {
             return this.$http.get('/getStudy', {
                 'params': { 'id': id }
+            }).then((response) => {
+                return response.data;
+            }, this.err);
+        };
+        this.getStudyByLink = (link) => {
+            return this.$http.get('/getStudy', {
+                'params': { 'link': link }
             }).then((response) => {
                 return response.data;
             }, this.err);
@@ -24,6 +31,9 @@ class default_1 {
             return this.$http.get('/whoami').then((res) => {
                 return res.data;
             });
+        };
+        this.answers = () => {
+            return this.$http.get('/answers').then((res) => { return res.data; });
         };
         this.$http = http;
         this.$log = log;

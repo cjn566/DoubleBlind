@@ -10,7 +10,7 @@ export default class extends _controller{
     studies;
     newStudyName;
     selectStudy = (id:number) =>{
-        this.dataService.getStudy(id).then((study:Study)=>{
+        this.dataService.getStudyByID(id).then((study:Study)=>{
             this.log(study.stage)
             switch (study.stage) {
                 case Stage.build:

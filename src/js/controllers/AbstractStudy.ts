@@ -16,7 +16,7 @@ export default abstract class{
             this.study = params.study;
         }
         else {
-            dataService.getStudy(params.id).then((study) => {
+            dataService.getStudyByID(params.id).then((study) => {
                 this.study = study;
             });
         }

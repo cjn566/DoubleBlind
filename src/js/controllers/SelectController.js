@@ -6,7 +6,7 @@ class default_1 extends AbstractStudy_1.default {
     constructor(a, b, c, d) {
         super(a, b, c, { study: true });
         this.selectStudy = (id) => {
-            this.dataService.getStudy(id).then((study) => {
+            this.dataService.getStudyByID(id).then((study) => {
                 this.log(study.stage);
                 switch (study.stage) {
                     case Istudy_1.Stage.build:
