@@ -50,8 +50,11 @@ export default class {
         });
     }
 
-    answers = ()=>{
-        return this.$http.get('/answers').then((res)=>{return res.data})
+    answers = (study_id)=>{
+        return this.$http.get('/myAnswers',
+            {
+                'params': {'study_id': study_id}
+            }).then((res)=>{return res.data})
     }
 
 }

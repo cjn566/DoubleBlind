@@ -54,7 +54,6 @@ module.exports = function(app) {
                                 save.data["link"] = Id;
                                 save.data["owner_id"] = req.user.id;
                                 model = new context.Study(save.data);
-                                return model.save();
                             }
                         });
                     };
@@ -62,17 +61,17 @@ module.exports = function(app) {
                     break;
                 case Model.subject:
                     model = new context.Subject(save.data);
-                    return model.save();
+                    break;
                 case Model.question:
                     model = new context.Question(save.data);
-                    return model.save();
-                case Model.participant:
-                    model = new context.Participant(save.data);
-                    return model.save();
+                    break;
                 case Model.answer:
+                    save.data["participant_id"] = req.user.id;
                     model = new context.Answer(save.data);
-                    return model.save();
+                    break;
             }
+            return model.save();
+
         })).then((data)=>{res.json(data)});
     });
 
@@ -98,16 +97,12 @@ module.exports = function(app) {
 
 
     app.get('/myAnswers', function(req, res){
-        context.Answer.where({"participant_id":req.user.id}, ).fetchAll({'columns':'subject_id'}).then((models)=>{
+        context.Answer.where({"participant_id":req.user.id, "study_id":req.query.study_id}, ).fetchAll().then((models)=>{
             let data = models.toJSON();
-            data = data.map(e => e.subject_id);
-            data = data.filter((item, pos)=>{
-                    return data.indexOf(item) == pos;
-                });
             return res.json(data);
         })
     });
 
 
     let err = (e) => {console.error(e)};
-}
+};

@@ -4,17 +4,14 @@ import * as angular from 'angular';
 import DataService from './services/DataService';
 import httpInterceptor from './services/HttpInterceptor';
 
-import Base from './controllers/base';
-import SelectSubject from './controllers/join/selectSubject';
-import AnswerQuestions from './controllers/join/answerQuestions';
-import SetName from './controllers/setName';
 import SelectController from "./controllers/SelectController";
 import MapOneController from "./controllers/MapOneController";
 import MapTwoController from "./controllers/MapTwoController";
 import ManageController from "./controllers/BuildController";
 import LiveController from "./controllers/LiveController";
 import ConcludedController from "./controllers/ConcludedController";
-import JoinBase from "./controllers/join/base";
+import Join from "./controllers/join/join";
+import Base from "./controllers/base";
 
 
 
@@ -24,16 +21,13 @@ import JoinBase from "./controllers/join/base";
         .factory("dataService", ["$http", "$log", DataService])
         .factory('httpInterceptor', ['$q', '$rootScope', '$location', httpInterceptor])
         .controller('base', ["$log", "dataService", Base])
-        .controller('setName', ["$state", "dataService", "$stateParams", SetName])
-        .controller('selectSubject', ["$log", "dataService", "$state", "$stateParams",'subjectList', 'answers', SelectSubject])
-        .controller('answerQuestions', ["$log", "dataService", "$state", "$stateParams", 'subject','questionList', AnswerQuestions])
         .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
         .controller('selectController', ["$log", "dataService", "$state", "studies", SelectController])
         .controller('mapOneController', ["$log", "dataService", "$state", "$stateParams", MapOneController])
         .controller('mapTwoController', ["$log", "dataService", "$state", "$stateParams", MapTwoController])
         .controller('liveController', ["$log", "dataService", "$state", "$stateParams", LiveController])
         .controller('concludedController', ["$log", "dataService", "$state", "$stateParams", ConcludedController])
-        .controller('JoinBase', ["$log", "dataService", "$state", "$stateParams", 'study', JoinBase])
+        .controller('Join', ["$log", "dataService", "$state", "$stateParams", 'study', '$scope', Join])
         .config(['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider',
             function( $stateProvider, $logProvider, $urlRouterProvider, $httpProvider, $compileProvider){
             $logProvider.debugEnabled(true);
@@ -42,48 +36,38 @@ import JoinBase from "./controllers/join/base";
 
                 // JOIN Study States
                 .state("join",{
-                    url:"/join=:id",
+                    url:"/join=:link",
                     abstract:"true",
-                    controller: "JoinBase",
-                    controllerAs: "joinShellCtrl",
+                    controller: "Join",
+                    controllerAs: "ctrl",
                     templateUrl:"join/join-shell.html",
                     params: {
-                        id: null
+                        link: null
                     },
                     resolve:{
                         study: ["dataService", '$stateParams', function(dataService, $stateParams){
-                            return dataService.getStudyByLink($stateParams.id);
+                            return dataService.getStudyByLink($stateParams.id).then((study)=>{
+                                return dataService.answers(study.id).then((answers)=>{
+                                    study['answers'] = answers;
+                                    return study;
+                                });
+                            });
                         }]
                     }
                 })
                 .state("join.select",{
                     url:"",///subjects",
-                    controller: "selectSubject",
-                    controllerAs: "joinCtrl",
-                    templateUrl:"join/select-subject.html",
-                    resolve:{
-                        subjectList: ["study", (s)=>{return s.subjects}],
-                        answers: ['dataService', (ds)=>{return ds.answers()}]
-                    }
-
+                    controller: "Join",
+                    controllerAs: "ctrl",
+                    templateUrl:"join/select-subject.html"
                 })
                 .state("join.answer",{
                     url:"/subject=:subId",
-                    controller: "answerQuestions",
-                    controllerAs: "joinCtrl",
+                    controller: "Join",
+                    controllerAs: "ctrl",
                     templateUrl:"join/answer-questions.html",
                     params: {
-                        subId: null,
-                        subject: null
-                    },
-                    resolve: {
-                        subject: ["study", '$stateParams', '$state', (s, p, $s)=>{
-                            let sub = s.subjects[s.subjects.findIndex( e => e.id == p.subId)];
-                            if(sub)
-                                return sub;
-                            $s.go('join.select');
-                        }],
-                        questionList: ["study", (s)=>{return s.questions}]
+                        subId: null
                     }
                 })
 

@@ -21,10 +21,6 @@ export let Subject = bookshelf.Model.extend({
     tableName: 'subject',
 });
 
-export let Participant = bookshelf.Model.extend({
-    tableName: 'participant'
-});
-
 export let Question = bookshelf.Model.extend({
     tableName: 'question'
 });
@@ -35,10 +31,13 @@ export let Answer = bookshelf.Model.extend({
         return this.belongsTo(Question);
     },
     participant: function(){
-        return this.belongsTo(Participant);
+        return this.belongsTo(User);
     },
     subject: function(){
         return this.belongsTo(Subject);
+    },
+    study: function(){
+        return this.belongsTo(Study);
     }
 });
 
@@ -48,7 +47,7 @@ export let Study = bookshelf.Model.extend({
         return this.hasMany(Subject);
     },
     participants: function(){
-        return this.hasMany(Participant);
+        return this.hasMany(User);
     },
     questions: function(){
         return this.hasMany(Question);
