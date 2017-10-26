@@ -15,9 +15,15 @@ exports.User = bookshelf.Model.extend({
 });
 exports.Subject = bookshelf.Model.extend({
     tableName: 'subject',
+    study: function () {
+        return this.belongsTo(exports.Study);
+    }
 });
 exports.Question = bookshelf.Model.extend({
-    tableName: 'question'
+    tableName: 'question',
+    study: function () {
+        return this.belongsTo(exports.Study);
+    }
 });
 exports.Answer = bookshelf.Model.extend({
     tableName: 'answer',

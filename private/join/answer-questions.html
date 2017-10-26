@@ -3,8 +3,8 @@
     <ng-form name="buildForm">
         <div  ng-repeat="question in ctrl.study.questions">
             <label for="question.id">{{question.question}}</label>
-            <input id="question.id" ng-model="question.answer"
-                   ng-blur="ctrl.updateAnswer(question.id, question.answer, buildForm)">
+            <input id="question.id" ng-model="question.answer">
         </div>
+        <button ng-click="ctrl.updateAnswers()">Submit</button>
     </ng-form>
 </div>

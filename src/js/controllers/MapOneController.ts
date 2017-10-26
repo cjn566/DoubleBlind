@@ -1,4 +1,4 @@
-import {Model, Study} from "../interfaces/Istudy";
+import {Model, Study} from "../interfaces/study";
 import _controller from './AbstractStudy'
 
 export default class extends _controller{

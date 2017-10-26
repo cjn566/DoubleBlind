@@ -3,8 +3,23 @@
     <div>Study Selected: {{ctrl.study.name}}</div>
 
     <ng-form name="buildForm">
+        <div class="checkbox" data-toggle="tooltip" title="When exporting results, usernames will be replaced by anonymous identites.">
+            <label>
+                <input type="checkbox" ng-model="ctrl.study.anonParts">
+                Anonymize participants
+            </label>
+        </div>
+        <div class="checkbox" data-toggle="tooltip" title="Participants will not be able to overwrite their responses.">
+            <label>
+                <input type="checkbox" ng-model="ctrl.study.lockResponses">
+                Lock responses
+            </label>
+        </div>
+
+        <hr/>
+
         List all subjects in the study
-        <div ng-repeat="subject in ctrl.study.subjectList">
+        <div ng-repeat="subject in ctrl.study.subjects">
             <input ng-model="subject.name"
                    ng-blur="ctrl.updateSubject(subject.id, subject.name, buildForm)">
             <span ng-click="ctrl.deleteSubject(subject, $index)" class="glyphicon glyphicon-trash" ></span>
@@ -12,10 +27,21 @@
         <input id="newSubject"
                ng-model="ctrl.newSubject"
                ng-blur="ctrl.addSubject()">
+
+        <hr/>
+
         <div>List all questions to ask participants</div>
         <div ng-repeat="question in ctrl.study.questions">
-            <input ng-model="question.name"
+            <input ng-model="question.question"
                    ng-blur="ctrl.updateQuestion(question.id, question.name, build-form)">
+
+            <div class="checkbox" data-toggle="tooltip" title="Require participants to provide a response to this question.">
+                <label>
+                    <input type="checkbox" ng-model="question.require">
+                    required
+                </label>
+            </div>
+
             <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
         </div>
         <input id="newQuestion"

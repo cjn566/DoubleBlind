@@ -1,4 +1,4 @@
-import {Code} from './interfaces/IauthCodes'
+import {LoginCode} from './interfaces/codes'
 declare let $: any;
 
 
@@ -86,23 +86,23 @@ $( document ).ready(function() {
     };
 
     let handleResponse = (res)=>{
-        if(res === Code.ok) {
+        if(res === LoginCode.ok) {
             let destination;
             let join = $.urlParam('join');
             if(join) {
-                destination = "/#!/join/" + join;
+                destination = "/#!/join=" + join;
             }
             else destination = "/#!/";
             window.location.href = destination;
         } else {
             switch (res) {
-                case Code.userExist:
+                case LoginCode.userExist:
                     invalid('username', 'That username is not available.');
                     break;
-                case Code.noUser:
+                case LoginCode.noUser:
                     invalid('username', 'That username does not exist.');
                     break;
-                case Code.badPassword:
+                case LoginCode.badPassword:
                     invalid('password', 'Incorrect password.');
                     break;
             }

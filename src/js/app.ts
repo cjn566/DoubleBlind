@@ -83,17 +83,6 @@ import Base from "./controllers/base";
                         }
                     }
                 })
-                .state("selectStudy",{
-                    url:"/selectStudy",
-                    controller: "selectStudyController",
-                    controllerAs: "ctrl",
-                    templateUrl:"select-study-part.html",
-                    resolve: {
-                        studies: function(dataService){
-                            return dataService.getStudies()
-                        }
-                    }
-                })
                 .state("build",{
                     url:"/build/:id",
                     controller: "manageController",
@@ -146,6 +135,9 @@ import Base from "./controllers/base";
                 });
             $httpProvider.interceptors.push('httpInterceptor');
             $compileProvider.debugInfoEnabled(true);
+        }])
+        .run(['$state', function( state){
+            state.go('home');
         }])
 }());
 

@@ -1,4 +1,4 @@
-import {Model, Stage, Study} from "../interfaces/Istudy";
+import {Model, Stage, Study} from "../interfaces/study";
 import _controller from './AbstractStudy'
 
 export default class extends _controller{
@@ -28,13 +28,18 @@ export default class extends _controller{
     };
 
     newStudy = () =>{
-        this.dataService.save({
+        this.dataService.save([{
             type: Model.study,
-            data: {name: this.newStudyName, stage : 0}
-        }).then((data)=>{
+            data: {
+                name: this.newStudyName,
+                stage : 0,
+                anon_participants: false,
+                lock_responses: false
+            }
+        }]).then((data)=>{
             console.log("newstudy callback:")
             console.log(data);
-            this.state.go('build', {studyId: data.id});
+            this.state.go('build', {id: data[0].id});
         })
     };
 

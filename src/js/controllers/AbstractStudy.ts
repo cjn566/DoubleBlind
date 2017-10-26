@@ -1,4 +1,4 @@
-import {Model, Stage, Study} from "../interfaces/Istudy";
+import {Model, Stage, Study} from "../interfaces/study";
 
 export default abstract class{
     $log;

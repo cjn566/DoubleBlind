@@ -1,4 +1,4 @@
-import {Model, Stage, Study} from "../interfaces/Istudy";
+import {Model, Stage, Study} from "../interfaces/study";
 
 import _controller from './AbstractStudy'
 

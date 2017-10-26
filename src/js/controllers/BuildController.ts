@@ -1,6 +1,6 @@
 
 
-import {Model, Study} from "../interfaces/Istudy";
+import {Model, Study} from "../interfaces/study";
 import _controller from './AbstractStudy'
 
 export default class extends _controller{
@@ -8,16 +8,17 @@ export default class extends _controller{
 
     newQuestion:string = "";
     newSubject:string = "";
+
     addSubject = ()=>{
         if(this.newSubject.length > 0) {
-            this.dataService.save({
+            this.dataService.save([{
                 type: Model.subject,
                 data: {
                     name: this.newSubject,
                     study_id: this.study.id
                 }
-            }).then((data) => {
-                this.study.subjects.push(data);
+            }]).then((data) => {
+                this.study.subjects.push(...data);
             }).catch(this.err);
             this.newSubject = "";
             document.getElementById("newSubject").focus();
@@ -26,13 +27,13 @@ export default class extends _controller{
 
     updateSubject = (id, name, form) => {
         if(form.$dirty) {
-            this.dataService.save({
+            this.dataService.save([{
                 type: Model.subject,
                 data: {
                     id: id,
                     name: name
                 }
-            }).catch(e => this.$log.error(e));
+            }]).catch(e => this.$log.error(e));
             form.$setPristine();
         }
     };
@@ -50,14 +51,16 @@ export default class extends _controller{
 
     addQuestion = ()=>{
         if(this.newQuestion.length > 0) {
-            this.dataService.save({
+            this.dataService.save([{
                 type: Model.question,
                 data: {
-                    name: this.newQuestion,
-                    study_id: this.study.id
+                    question: this.newQuestion,
+                    study_id: this.study.id,
+                    per_subject: true,
+                    allow_null: true
                 }
-            }).then((data) => {
-                this.study.questions.push(data);
+            }]).then((data) => {
+                this.study.questions.push(...data);
             });
             this.newQuestion = "";
             document.getElementById("newQuestion").focus();
@@ -66,13 +69,13 @@ export default class extends _controller{
 
     updateQuestion = (id, name, form) => {
         if(form.$dirty) {
-            this.dataService.save({
+            this.dataService.save([{
                 type: Model.question,
                 data: {
                     id: id,
                     name: name
                 }
-            }).catch(e => this.$log.error(e));
+            }]).catch(e => this.$log.error(e));
             form.$setPristine();
         }
     };

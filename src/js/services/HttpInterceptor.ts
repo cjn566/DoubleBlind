@@ -13,11 +13,15 @@ export default class {
     }
 
     responseError = (rej)=>{
-        if(rej.status ===401){ // Not logged in
-            console.error("Not logged in.")
-            console.log(rej);
-            window.location.href = rej.data;
-            return this.$q.reject(rej);
+        switch (rej.status){
+            case 401:
+                break;
+            case 403:   // Not Authorized
+                console.error("You aren't allowed to access that resource.");
+                break;
+            case 500:   // Server Error
+                console.error("The server has experienced an error. Contact Colten.");
+                break;
         }
         return this.$q.reject(rej);
     }

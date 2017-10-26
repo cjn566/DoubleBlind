@@ -1,5 +1,5 @@
 "use strict";
-import {Model} from "./js/interfaces/Istudy";
+import {Model} from "./js/interfaces/study";
 
 /// <reference path="Scripts/typings/bookshelf.d.ts" />
 
@@ -40,7 +40,7 @@ app.use((req, res, next)=>{
         return res.redirect(redirect);
     */
         // AUTO LOG IN FOR DEV PURPOSES!
-        req.login({id: 1}, (err) =>{
+        req.login({id: 2}, (err) =>{
             return next();
         });
         /*

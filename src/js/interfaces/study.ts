@@ -22,7 +22,9 @@ export interface Subject {
 
 export interface Question {
     id: number,
-    name: string
+    name: string,
+    perSubject: boolean,
+    require: boolean
 }
 
 export interface Study {
@@ -30,5 +32,7 @@ export interface Study {
     name: string,
     stage: Stage,
     subjects: Subject[],
-    questions: Question[]
+    questions: Question[],
+    anonParts: boolean,
+    lockResponses: boolean
 }

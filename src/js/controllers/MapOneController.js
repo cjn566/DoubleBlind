@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Istudy_1 = require("../interfaces/Istudy");
+const study_1 = require("../interfaces/study");
 const AbstractStudy_1 = require("./AbstractStudy");
 class default_1 extends AbstractStudy_1.default {
     constructor(a, b, c, d) {
@@ -28,7 +28,7 @@ class default_1 extends AbstractStudy_1.default {
         };
         this.updateMap = (id, name) => {
             this.dataService.save({
-                type: Istudy_1.Model.subject,
+                type: study_1.Model.subject,
                 data: {
                     id: id,
                     map1: name

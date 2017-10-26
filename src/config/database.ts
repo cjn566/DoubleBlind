@@ -19,10 +19,16 @@ export let User = bookshelf.Model.extend({
 
 export let Subject = bookshelf.Model.extend({
     tableName: 'subject',
+    study: function() {
+        return this.belongsTo(Study);
+    }
 });
 
 export let Question = bookshelf.Model.extend({
-    tableName: 'question'
+    tableName: 'question',
+    study: function() {
+        return this.belongsTo(Study);
+    }
 });
 
 export let Answer = bookshelf.Model.extend({

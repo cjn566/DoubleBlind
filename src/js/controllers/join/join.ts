@@ -1,4 +1,4 @@
-import {Model, Study} from "../../interfaces/Istudy";
+import {Model, Study} from "../../interfaces/study";
 
 export default class{
     $log;
@@ -19,25 +19,29 @@ export default class{
         }
     }
 
-    updateAnswer = (id: number, answer: string, form) => {
-        if(form.$dirty) {
-            this.dataService.save([{
+    updateAnswers = () => {
+        this.dataService.save(this.study.questions
+            .filter((q)=>{return q.answer != null})
+            .map((Q)=>{
+            return {
                 type: Model.answer,
-                data: {
-                    study_id: this.study.id,
-                    question_id: id,
-                    subject_id: this.subject.id,
-                    value: answer
-                }
-            }]).catch(e => this.err(e));
-            form.$setPristine();
-        }
+                data:
+                    {
+                        study_id: this.study.id,
+                        question_id: Q.id,
+                        subject_id: this.subject.id,
+                        value: Q.answer
+                    }
+            }
+        })).then(()=>{
+            this.state.go('join.select');
+        }).catch(this.err);
     };
 
     selectSubject = (id:number) =>{
         this.state.go('join.answer', {subId: id});
     };
 
-    log = (m) => {this.$log.log(m)};
-    err = (e)=>{this.$log.error(e)};
+    log=(m)=>{this.$log.log(m)};
+    err=(e)=>{this.$log.error(e)};
 }
