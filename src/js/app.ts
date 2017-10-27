@@ -40,7 +40,7 @@ import Base from "./controllers/base";
                     abstract:"true",
                     controller: "Join",
                     controllerAs: "ctrl",
-                    templateUrl:"join/join-shell.html",
+                    templateUrl:"join-shell.html",
                     params: {
                         link: null
                     },
@@ -59,13 +59,13 @@ import Base from "./controllers/base";
                     url:"",///subjects",
                     controller: "Join",
                     controllerAs: "ctrl",
-                    templateUrl:"join/select-subject.html"
+                    templateUrl:"select-subject.html"
                 })
                 .state("join.answer",{
                     url:"/subject=:subId",
                     controller: "Join",
                     controllerAs: "ctrl",
-                    templateUrl:"join/answer-questions.html",
+                    templateUrl:"answer-questions.html",
                     params: {
                         subId: null
                     }
@@ -93,21 +93,21 @@ import Base from "./controllers/base";
                         id: null
                     }
                 })
-                .state("map1",{
+                .state("subjects",{
                     url:"/build/:id",
-                    controller: "mapOneController",
+                    controller: "manageController",
                     controllerAs: "ctrl",
-                    templateUrl:"firstmap.html",
+                    templateUrl:"add_subjects.html",
                     params: {
                         study: null,
                         id: null
                     }
                 })
-                .state("map2",{
+                .state("map",{
                     url:"/build/:id",
-                    controller: "mapTwoController",
+                    controller: "mapOneController",
                     controllerAs: "ctrl",
-                    templateUrl:"secondmap.html",
+                    templateUrl:"firstmap.html",
                     params: {
                         study: null,
                         id: null
@@ -137,7 +137,8 @@ import Base from "./controllers/base";
             $compileProvider.debugInfoEnabled(true);
         }])
         .run(['$state', function( state){
-            state.go('home');
+            if(state.current.name === "")
+                state.go('home');
         }])
 }());
 

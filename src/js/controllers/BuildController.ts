@@ -7,6 +7,7 @@ export default class extends _controller{
     constructor(a,b,c,d){super(a,b,c,d)}
 
     newQuestion:string = "";
+    newPreQuestion:string = "";
     newSubject:string = "";
 
     addSubject = ()=>{
@@ -57,7 +58,7 @@ export default class extends _controller{
                     question: this.newQuestion,
                     study_id: this.study.id,
                     per_subject: true,
-                    allow_null: true
+                    required: true
                 }
             }]).then((data) => {
                 this.study.questions.push(...data);
@@ -67,13 +68,31 @@ export default class extends _controller{
         }
     };
 
+    addPreQuestion = ()=>{
+        if(this.newPreQuestion.length > 0) {
+            this.dataService.save([{
+                type: Model.question,
+                data: {
+                    question: this.newPreQuestion,
+                    study_id: this.study.id,
+                    per_subject: false,
+                    required: true
+                }
+            }]).then((data) => {
+                this.study.preQuestions.push(...data);
+            });
+            this.newPreQuestion = "";
+            document.getElementById("newPreQuestion").focus();
+        }
+    };
+
     updateQuestion = (id, name, form) => {
         if(form.$dirty) {
             this.dataService.save([{
                 type: Model.question,
                 data: {
                     id: id,
-                    name: name
+                    question: name
                 }
             }]).catch(e => this.$log.error(e));
             form.$setPristine();
@@ -82,9 +101,12 @@ export default class extends _controller{
 
     deleteQuestion = (question, idx) => {
         this.log("delete " + idx);
-        if(confirm("Delete '" + question.name + "'?")) {
+        if(confirm("Delete '" + question.question + "'?")) {
             this.dataService.delete({type: Model.question, id:question.id}).then(()=>{
-                this.study.questions.splice(idx, 1);
+                if(question.per_subject)
+                    this.study.questions.splice(idx, 1);
+                else
+                    this.study.preQuestions.splice(idx, 1);
             })
         }
     };
@@ -92,7 +114,18 @@ export default class extends _controller{
 
     buildToMap1 = () =>{
         if(confirm("Save changes and begin to alias?")){
-            this.state.go('map1', {name: this.study.name, study: this.study});
+
+            this.dataService.save({type: Model.study,
+                data:
+                    {
+                        id: this.study.id,
+                        name: this.study.name,
+                        anon_participants: this.study.anonParts,
+                        lock_responses: this.study.lockResponses
+                    }})
+                .then((data)=>{
+                    this.state.go('subjects', {name: this.study.name, study: this.study});
+                });
         }
     }
 }

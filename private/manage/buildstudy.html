@@ -1,4 +1,3 @@
-<div>
 
     <div>Study Selected: {{ctrl.study.name}}</div>
 
@@ -18,19 +17,20 @@
 
         <hr/>
 
-        List all subjects in the study
-        <div ng-repeat="subject in ctrl.study.subjects">
-            <input ng-model="subject.name"
-                   ng-blur="ctrl.updateSubject(subject.id, subject.name, buildForm)">
-            <span ng-click="ctrl.deleteSubject(subject, $index)" class="glyphicon glyphicon-trash" ></span>
+        List all preliminary questions
+        <div ng-repeat="question in ctrl.study.preQuestions">
+            <input ng-model="question.question"
+                   ng-blur="ctrl.updateQuestion(question.id, question.question, buildForm)">
+            <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
         </div>
-        <input id="newSubject"
-               ng-model="ctrl.newSubject"
-               ng-blur="ctrl.addSubject()">
+        <input id="newPreQuestion"
+               ng-model="ctrl.newPreQuestion"
+               ng-blur="ctrl.addPreQuestion()"
+               ng-keyup="$event.keyCode == 13 && ctrl.addPreQuestion()">
 
         <hr/>
 
-        <div>List all questions to ask participants</div>
+        <div>List all per-subject questions</div>
         <div ng-repeat="question in ctrl.study.questions">
             <input ng-model="question.question"
                    ng-blur="ctrl.updateQuestion(question.id, question.name, build-form)">
@@ -46,11 +46,11 @@
         </div>
         <input id="newQuestion"
                ng-model="ctrl.newQuestion"
-               ng-blur="ctrl.addQuestion()">
+               ng-blur="ctrl.addQuestion()"
+               ng-keyup="$event.keyCode == 13 && ctrl.addQuestion()">
     </ng-form>
 
     <div>
         <button ui-sref="select">Back</button>
         <button ng-click="ctrl.buildToMap1()">Continue</button>
     </div>
-</div>

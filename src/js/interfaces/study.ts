@@ -33,6 +33,17 @@ export interface Study {
     stage: Stage,
     subjects: Subject[],
     questions: Question[],
+    preQuestions: Question[],
     anonParts: boolean,
     lockResponses: boolean
+}
+
+export interface SaveBundle {
+    type: Model,
+    data: object
+}
+
+export interface DeleteBundle {
+    type: Model,
+    id: number
 }

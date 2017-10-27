@@ -1,6 +1,7 @@
 import {Model} from "../js/interfaces/study";
-import {error} from "util";
+import {error, isArray} from "util";
 import {ApiCode, ApiError} from "../js/interfaces/codes";
+import {isOwnerOf} from "../util/Owner";
 let makeId = require('../util/makeID');
 
 let context = require('../config/database');
@@ -31,6 +32,10 @@ module.exports = function(app) {
                             message: 'Not the owner of this study.'
                         }, res);
                     }
+                    let preQuestions = study.questions.filter((q)=>{return !q.per_subject});
+                    let questions = study.questions.filter((q)=>{return q.per_subject});
+                    study.questions = questions;
+                    study.preQuestions = preQuestions;
                     return res.json(study);
                 }
                 console.warn('Study model is null. ID: ' + req.query.id);
@@ -55,153 +60,106 @@ module.exports = function(app) {
         });
     });
 
-    let getOwnerTree = (id:number) => {
-        return context.Study.where({'owner_id':id}).fetchAll({'columns':'id'}).then((data)=>{
-            let studies = data.toJSON().map(e => e.id);
-            return Promise.all([
-                Promise.all(studies.map((e)=>{
-                    return context.Subject.where({'study_id':e}).fetchAll({'columns':'id'})
-                })).then((data)=>{
-                    let newdata = [];
-                    data.map((s:any)=>{
-                        return s.toJSON().map((e)=>{
-                            newdata.push(e.id);
-                        })
-                    });
-                    return newdata;
-                }),
-                Promise.all(studies.map((e)=>{
-                    return context.Question.where({'study_id':e}).fetchAll({'columns':'id'})
-                })).then((data)=>{
-                    let newdata = [];
-                    data.map((q:any)=>{
-                        return q.toJSON().map((e)=>{
-                            newdata.push(e.id);
-                        })
-                    });
-                    return newdata;
-                })
-            ]).then((data)=>{
-                console.log(data);
-                return {
-                    'studies': studies,
-                    'subjects': data[0],
-                    'questions': data[1]
-                }
-            });
-        })
-    };
-
-    let getOwnerOf = (type: Model, id: number) =>{
-        let model, options = {};
-        switch(type){
-            case Model.subject:
-                model = context.Subject;
-                options = {withRelated:'study'};
-                break;
-            case Model.question:
-                model = context.Subject;
-                options = {withRelated:'study'};
-                break;
+    let doSave = (save, userId) => {
+        switch (save.type) {
             case Model.study:
-                model = context.Study;
-                break;
-            case Model.question:
-                model = context.Question;
-            default:
-                return Promise.reject(new Error('invalid type request'));
-        }
-        return model.where({'id':id}).fetch(options).then((data)=>{
-            switch(type){
-                case Model.subject:
-                case Model.question:
-                    return data.toJSON().study.owner_id;
-                case Model.study:
-                    return data.toJSON().owner_id;
-                case Model.question:
-                    return data.toJSON().participant_id;
-                default:
-                    return Promise.reject(new Error('invalid type request'));
-            }
-        });
-    };
-
-    app.post('/save', function (req, res) {
-        getOwnerOf(Model.answer, 57).then((id)=>{
-            console.log(id)
-        }, (err)=>{console.error(err)});
-
-        Promise.all(req.body.map((save)=>{
-            switch (save.type) {
-                case Model.study:
-                    if(save.data.id){
-                        return getOwnerOf(Model.study, save.data.id).then((owner_id)=>{
-                            if(owner_id == req.user.id){
+                if (save.data.id) {
+                    return isOwnerOf(Model.study, save.data.id, userId).then((authed) => {
+                        if (authed) {
+                            return new context.Study(save.data).save();
+                        }
+                        return Promise.reject({
+                            code: ApiCode.notAuth,
+                            message: "You aren't the owner of that study."
+                        });
+                    })
+                } else {
+                    let tryId = () => {
+                        let Id = makeId(10);
+                        return context.Study.where('link', Id).count().then((count) => {
+                            if (count > 0) { // Exists, try again
+                                return tryId();
+                            }
+                            else {
+                                save.data["link"] = Id;
+                                save.data["owner_id"] = userId;
                                 return new context.Study(save.data).save();
                             }
-                            return Promise.reject({code: ApiCode.notAuth, message: "You aren't the owner of that study."});
-                        })
-                    } else {
-                        let tryId = () => {
-                            let Id = makeId(10);
-                            return context.Study.where('link', Id).count().then((count) => {
-                                if (count > 0) { // Exists, try again
-                                    return tryId();
-                                }
-                                else {
-                                    save.data["link"] = Id;
-                                    save.data["owner_id"] = req.user.id;
-                                    return new context.Study(save.data).save();
-                                }
-                            });
-                        };
-                        return tryId();
-                    }
-                case Model.subject:
-                    return getOwnerOf((save.data.id? Model.subject : Model.study), (save.data.id? save.data.id : save.data.study_id))
-                        .then((owner_id)=>{
-                            if(owner_id == req.user.id){
-                                return new context.Subject(save.data).save();
-                            }
-                            return Promise.reject({code: ApiCode.notAuth, message: "You aren't the owner of that subject."});
                         });
-                case Model.question:
-                    return getOwnerOf((save.data.id? Model.question : Model.study), (save.data.id? save.data.id : save.data.study_id))
-                        .then((owner_id)=>{
-                            if(owner_id == req.user.id){
-                                return new context.Subject(save.data).save();
-                            }
-                            return Promise.reject({code: ApiCode.notAuth, message: "You aren't the owner of that question."});
+                    };
+                    return tryId();
+                }
+            case Model.subject:
+                return isOwnerOf((save.data.id ? Model.subject : Model.study), (save.data.id ? save.data.id : save.data.study_id), userId)
+                    .then((authed) => {
+                        if (authed) {
+                            return new context.Subject(save.data).save();
+                        }
+                        return Promise.reject({
+                            code: ApiCode.notAuth,
+                            message: "You aren't the owner of that subject."
                         });
-                case Model.answer:
-                    save.data["participant_id"] = req.user.id;
-                    return new context.Answer(save.data).save();
-            }
-        })).then((data)=>{res.json(data)}).catch((err)=>{
-            apiReject(err, res);
-        });
+                    });
+            case Model.question:
+                return isOwnerOf((save.data.id ? Model.question : Model.study), (save.data.id ? save.data.id : save.data.study_id), userId)
+                    .then((authed) => {
+                        if (authed) {
+                            return new context.Question(save.data).save();
+                        }
+                        return Promise.reject({
+                            code: ApiCode.notAuth,
+                            message: "You aren't the owner of that question."
+                        });
+                    });
+            case Model.answer:
+                save.data["participant_id"] = userId;
+                return new context.Answer(save.data).save();
+        }
+    };
+
+
+    app.post('/save', function (req, res) {
+        let saveWithId = (save) => {doSave(save, req.user.id)}
+        if(isArray(req.body)) {
+            Promise.all(req.body.map(saveWithId)).then((data) => {
+                res.json(data)
+            }).catch((err) => {
+                apiReject(err, res);
+            });
+        }
+        else{
+            doSave(req.body, req.user.id).then((data) => {
+                res.json(data)
+            }).catch((err) => {
+                apiReject(err, res);
+            });
+        }
     });
 
     app.post('/delete', function (req, res) {
-        console.log(req.body);
-        let model;
-        switch (req.body.type) {
-            case Model.subject:
-                model = new context.Subject("id", req.body.id);
-                break;
-            case Model.question:
-                model = new context.Question("id", req.body.id);
-                break;
-            case Model.study:
-                model = new context.Study("id", req.body.id);
-                break;
-        }
-        model.destroy().then((result) => {
-            res.json(result);
-        }).catch((err)=>{
-            apiReject(err, res);
+        isOwnerOf(req.body.type, req.body.id, req.user.id).then((authed)=>{
+            if(authed){
+                let model;
+                switch (req.body.type) {
+                    case Model.subject:
+                        model = new context.Subject("id", req.body.id);
+                        break;
+                    case Model.question:
+                        model = new context.Question("id", req.body.id);
+                        break;
+                    case Model.study:
+                        model = new context.Study("id", req.body.id);
+                        break;
+                }
+                model.destroy().then((result) => {
+                    res.json(result);
+                }).catch((err)=>{
+                    apiReject(err, res);
+                });
+            } else {
+                apiReject({code:ApiCode.notAuth, message: "Cannot delete, you are not the owner."}, res);
+            }
         });
-
     });
 
 

@@ -27,6 +27,11 @@ class default_1 {
                 return response.data;
             }, this.err);
         };
+        this.delete = (data) => {
+            return this.$http.post('/delete', data).then((response) => {
+                return response.data;
+            }, this.err);
+        };
         this.whoami = () => {
             return this.$http.get('/whoami').then((res) => {
                 return res.data;

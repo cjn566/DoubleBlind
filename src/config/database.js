@@ -45,13 +45,10 @@ exports.Study = bookshelf.Model.extend({
     subjects: function () {
         return this.hasMany(exports.Subject);
     },
-    participants: function () {
-        return this.hasMany(exports.User);
-    },
     questions: function () {
         return this.hasMany(exports.Question);
     }
 }, {
-    dependents: ['subjectList', 'participants', 'questions']
+    dependents: ['subjects', 'questions']
 });
 //# sourceMappingURL=database.js.map

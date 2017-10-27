@@ -1,0 +1,14 @@
+
+
+List all subjects in the study
+<div ng-repeat="subject in ctrl.study.subjects">
+    <input ng-model="subject.name"
+           ng-blur="ctrl.updateSubject(subject.id, subject.name, buildForm)">
+    <span ng-click="ctrl.deleteSubject(subject, $index)" class="glyphicon glyphicon-trash" ></span>
+</div>
+<input id="newSubject"
+       ng-model="ctrl.newSubject"
+       ng-blur="ctrl.addSubject()"
+       ng-keyup="$event.keyCode == 13 && ctrl.addSubject()">
+
+<hr/>

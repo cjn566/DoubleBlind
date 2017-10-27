@@ -46,7 +46,7 @@ export default class extends _controller{
     deleteStudy = (id, name) => {
         if(confirm("Delete '" + name + "'?")) {
             if(confirm("Are you sure?!")) {
-                this.dataService.delete({type: 'study', id: id}).then(() => {
+                this.dataService.delete({type: Model.study, id: id}).then(() => {
                     this.dataService.getStudies().then((studies)=>{
                         this.studies = studies;
                     })

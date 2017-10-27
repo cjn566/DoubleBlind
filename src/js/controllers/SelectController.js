@@ -39,7 +39,7 @@ class default_1 extends AbstractStudy_1.default {
         this.deleteStudy = (id, name) => {
             if (confirm("Delete '" + name + "'?")) {
                 if (confirm("Are you sure?!")) {
-                    this.dataService.delete({ type: 'study', id: id }).then(() => {
+                    this.dataService.delete({ type: study_1.Model.study, id: id }).then(() => {
                         this.dataService.getStudies().then((studies) => {
                             this.studies = studies;
                         });

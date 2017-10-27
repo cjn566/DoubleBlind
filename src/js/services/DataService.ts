@@ -1,5 +1,7 @@
 
 
+import {DeleteBundle, SaveBundle} from "../interfaces/study";
+
 export default class {
 
     $http;
@@ -37,8 +39,15 @@ export default class {
         }, this.err)
     };
 
-    save = (data) => {
+    save = (data: SaveBundle) => {
         return this.$http.post('/save', data
+        ).then((response)=>{
+            return response.data;
+        }, this.err)
+    };
+
+    delete = (data: DeleteBundle) => {
+        return this.$http.post('/delete', data
         ).then((response)=>{
             return response.data;
         }, this.err)
@@ -48,9 +57,9 @@ export default class {
         return this.$http.get('/whoami').then((res) => {
             return res.data;
         });
-    }
+    };
 
-    answers = (study_id)=>{
+    answers = (study_id: number)=>{
         return this.$http.get('/myAnswers',
             {
                 'params': {'study_id': study_id}
