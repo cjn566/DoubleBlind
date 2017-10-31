@@ -1,14 +1,38 @@
 
 
 List all subjects in the study
-<div ng-repeat="subject in ctrl.study.subjects">
-    <input ng-model="subject.name"
-           ng-blur="ctrl.updateSubject(subject.id, subject.name, buildForm)">
-    <span ng-click="ctrl.deleteSubject(subject, $index)" class="glyphicon glyphicon-trash" ></span>
-</div>
-<input id="newSubject"
-       ng-model="ctrl.newSubject"
-       ng-blur="ctrl.addSubject()"
-       ng-keyup="$event.keyCode == 13 && ctrl.addSubject()">
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th ng-if="ctrl.study.aliases >= 1">{{ctrl.study.aliases == 1? "Alias":"First Alias"}}</th>
+    </tr>
+    <tr ng-repeat="subject in ctrl.study.subjects">
+        <td>
+            <input ng-model="subject.name">
+        </td>
+        <td ng-if="ctrl.study.aliases >= 1">
+            <input ng-model="subject.map1">
+        </td>
+        <td>
+            <span ng-click="ctrl.deleteSubject(subject, $index)" class="glyphicon glyphicon-trash" ></span>
+        </td>
+    </tr>
+</table>
 
 <hr/>
+
+Add another subject:
+
+<div id="subject-feedback-parent" class="form-group has-danger">
+    <input id="newSubject"
+           class="form-control"
+           ng-model="ctrl.newSubject"
+           ng-blur="ctrl.addSubjectable()"
+           ng-keyup="$event.keyCode == 13 && ctrl.addSubject()">
+    <div class="form-control-feedback" id="subject-feedback">this is where feedback should be</div>
+</div>
+
+<div>
+    <button ng-click="ctrl.map1tomap2()">Continue</button>
+</div>

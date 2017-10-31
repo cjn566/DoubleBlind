@@ -4,22 +4,44 @@
     <ng-form name="buildForm">
         <div class="checkbox" data-toggle="tooltip" title="When exporting results, usernames will be replaced by anonymous identites.">
             <label>
-                <input type="checkbox" ng-model="ctrl.study.anonParts">
+                <input type="checkbox" ng-model="ctrl.study.anon_participants">
                 Anonymize participants
             </label>
         </div>
         <div class="checkbox" data-toggle="tooltip" title="Participants will not be able to overwrite their responses.">
             <label>
-                <input type="checkbox" ng-model="ctrl.study.lockResponses">
+                <input type="checkbox" ng-model="ctrl.study.lock_responses">
                 Lock responses
             </label>
+        </div>
+
+        <label>Aliases</label>
+        <div class="form-group" data-toggle="tooltip" title="Number of times to alias the identity of each subject.">
+            <div class="radio">
+                <label>
+                    <input type="radio" value="0" ng-model="ctrl.study.aliases">
+                    0
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" value="1" ng-model="ctrl.study.aliases">
+                    1
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" value="2" ng-model="ctrl.study.aliases">
+                    2
+                </label>
+            </div>
         </div>
 
         <hr/>
 
         List all preliminary questions
         <div ng-repeat="question in ctrl.study.preQuestions">
-            <input ng-model="question.question"
+            <input ng-model="question.text"
                    ng-blur="ctrl.updateQuestion(question.id, question.question, buildForm)">
             <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
         </div>
@@ -32,7 +54,7 @@
 
         <div>List all per-subject questions</div>
         <div ng-repeat="question in ctrl.study.questions">
-            <input ng-model="question.question"
+            <input ng-model="question.text"
                    ng-blur="ctrl.updateQuestion(question.id, question.name, build-form)">
 
             <div class="checkbox" data-toggle="tooltip" title="Require participants to provide a response to this question.">
