@@ -31,7 +31,7 @@ export default class {
     getStudyForParticipant = (link: string) => {
         return this.$http.get('/getStudyForParticipant',
             {
-                'params': link
+                'params': {link:link}
             }
         ).then((response) => {
             return response.data

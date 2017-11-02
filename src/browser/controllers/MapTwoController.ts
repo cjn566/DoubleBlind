@@ -43,12 +43,19 @@ export default class extends _controller{
     map2toStartTrial = ()=>{
         if(confirm("Begin Trial?")){
             this.study.stage = Stage.live;
-            this.dataService.save({
+            this.dataService.save([{
                 type: Model.study,
                 data: {
                     id: this.study.id,
                     stage: this.study.stage
-                }}).then(()=>{
+                }}, ...this.study.subjects.map((s)=>{
+                    return {
+                        type: Model.subject,
+                        data: {
+                            id: s.id,
+                            map2: s.map2
+                        }}
+            })]).then(()=>{
                     this.state.go('live', {id:this.study.id, study: this.study})
                 })
         }

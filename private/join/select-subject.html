@@ -1,8 +1,22 @@
 <div class="show-box">
-Select subject:
-<ul>
-    <li ng-repeat="subject in ctrl.study.subjects" ng-click="ctrl.selectSubject(subject.id)">
-        {{subject.name}}
-    </li>
-</ul>
+
+    Preliminary questions:
+    <ul>
+        <li ng-repeat="question in ctrl.study.preQuestions">
+            <div>
+                <label for="question.id">{{question.question}}</label>
+                <input id="question.id" ng-model="question.answer">
+            </div>
+        </li>
+    </ul>
+    <button ng-click="ctrl.updatePreAnswers()">commit</button>
+
+
+
+    Select subject:
+    <ul>
+        <li ng-repeat="subject in ctrl.study.subjects" ng-click="ctrl.selectSubject(subject.id)">
+            {{subject.name}}
+        </li>
+    </ul>
 </div>

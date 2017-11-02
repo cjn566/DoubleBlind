@@ -2,7 +2,7 @@ import {Model} from "../../common/interfaces/study";
 import {isArray} from "util";
 import {ApiCode, ApiError} from "../../common/interfaces/codes";
 import {isOwnerOf} from "../util/Owner";
-import {doSave} from "../persist";
+import {doSave, getMyAnswers, getStudyForParticipant} from "../persist";
 
 let context = require('../config/database');
 
@@ -16,7 +16,9 @@ module.exports = function(app) {
     });
 
     app.get('/getStudyForParticipant', function (req, res) {
-
+        getStudyForParticipant(req.query.link, req.user.id).then((study)=>{
+            return res.json(study);
+        })
     });
 
     app.get('/getStudyForOwner', function (req, res) {
@@ -103,12 +105,6 @@ module.exports = function(app) {
             }
         });
     });
-
-    let getMyAnswers = (study_id, part_id) => {
-        return context.Answer.where({"participant_id":part_id, "study_id":study_id}, ).fetchAll().then((models)=>{
-            return models.toJSON();
-        })
-    };
 
     app.get('/myAnswers', function(req, res){
         getMyAnswers(req.query.study_id, req.user.id).then((models)=>{

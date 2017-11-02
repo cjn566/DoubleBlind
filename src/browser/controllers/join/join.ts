@@ -19,6 +19,25 @@ export default class{
         }
     }
 
+    updatePreAnswers = () => {
+        this.dataService.save(this.study.preQuestions
+            .filter((q)=>{return q.answer != null})
+            .map((Q)=>{
+                return {
+                    type: Model.answer,
+                    data:
+                        {
+                            study_id: this.study.id,
+                            question_id: Q.id,
+                            subject_id: this.subject.id,
+                            value: Q.answer
+                        }
+                }
+            })).then(()=>{
+            this.state.go('join.select');
+        }).catch(this.err);
+    };
+
     updateAnswers = () => {
         this.dataService.save(this.study.questions
             .filter((q)=>{return q.answer != null})

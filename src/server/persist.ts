@@ -2,6 +2,7 @@ import {isOwnerOf} from "./util/Owner";
 import {ApiCode} from "../common/interfaces/codes";
 import {Model} from "../common/interfaces/study";
 import {makeId} from "./util/makeID";
+import * as context from './config/database';
 
 export function doSave(save, userId) {
     switch (save.type) {
@@ -58,44 +59,53 @@ export function doSave(save, userId) {
             save.data["participant_id"] = userId;
             return new context.Answer(save.data).save();
     }
-};
+}
 
-/*
-*
-                    if(req.query.link){ // Return for participants
-                        getMyAnswers(study.id, req.user.id).then((answers)=>{
-                            study['answers'] = answers;
-                            delete study.id;
-                            delete study.owner_id;
-                            delete study.anon_participants;
-                            switch (study.aliases){
-                                case 1:
-                                    study.subjects.map((s)=>{
-                                        s.name = s.map1;
-                                    });
-                                    break;
-                                case 2:
-                                    study.subjects.map((s)=>{
-                                        s.name = s.map2;
-                                    });
-                                    break;
-                            }
-                            delete study.aliases;
-                            study.subjects.map((s)=>{
-                                delete s.map1;
-                                delete s.map2;
-                                delete s.study_id;
-                            });
-                            study.questions.map((s)=>{
-                                delete s.study_id;
-                                delete s.per_subject;
-                            });
-                            study.preQuestions = study.questions.filter((q)=>{return !q.per_subject});
-                            study.questions = study.questions.filter((q)=>{return q.per_subject});
-                            return res.json(study);
+export function getMyAnswers(study_id, part_id) {
+    return context.Answer.where({"participant_id":part_id, "study_id":study_id}, ).fetchAll().then((models)=>{
+        return models.toJSON();
+    })
+}
+
+export function getStudyForParticipant(link: string, user: number) {
+    return context.Study.where({'link':link}).fetch(
+        {
+            withRelated: ['subjects', 'questions'],
+            columns: ['id', 'name', 'link', 'lock_responses', 'aliases']
+        })
+        .then(function (studyModel) {
+            let study = studyModel.toJSON();
+            return getMyAnswers(study.id, user).then((answers) => {
+                study['answers'] = answers;
+                delete study.id;
+                switch (study.aliases) {
+                    case 1:
+                        study.subjects.map((s) => {
+                            s.name = s.map1;
                         });
-
-
-                    } else
-*
-* */
+                        break;
+                    case 2:
+                        study.subjects.map((s) => {
+                            s.name = s.map2;
+                        });
+                        break;
+                }
+                delete study.aliases;
+                study.subjects.map((s) => {
+                    delete s.map1;
+                    delete s.map2;
+                    delete s.study_id;
+                });
+                study.questions.map((s) => {
+                    delete s.study_id;
+                });
+                study['preQuestions'] = study.questions.filter((q) => {
+                    return !q.per_subject
+                });
+                study.questions = study.questions.filter((q) => {
+                    return q.per_subject
+                });
+                return study;
+            });
+        });
+}
