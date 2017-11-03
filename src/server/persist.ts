@@ -25,7 +25,7 @@ export function doSave(save, userId) {
                             return tryId();
                         }
                         else {
-                            save.data["link"] = Id;
+                            save.data.id = Id;
                             save.data["owner_id"] = userId;
                             return new context.Study(save.data).save();
                         }
@@ -67,45 +67,50 @@ export function getMyAnswers(study_id, part_id) {
     })
 }
 
-export function getStudyForParticipant(link: string, user: number) {
-    return context.Study.where({'link':link}).fetch(
-        {
-            withRelated: ['subjects', 'questions'],
-            columns: ['id', 'name', 'link', 'lock_responses', 'aliases']
-        })
+export function getStudy(link: string, user: number, manage: boolean) {
+    let options = {
+        withRelated: ['subjects', 'questions']
+    };
+    if(!manage) options['columns'] = ['id', 'name', 'link', 'lock_responses', 'aliases'];
+
+    return context.Study.where({'id':link}).fetch(options)
         .then(function (studyModel) {
             let study = studyModel.toJSON();
-            return getMyAnswers(study.id, user).then((answers) => {
-                study['answers'] = answers;
-                delete study.id;
-                switch (study.aliases) {
-                    case 1:
-                        study.subjects.map((s) => {
-                            s.name = s.map1;
-                        });
-                        break;
-                    case 2:
-                        study.subjects.map((s) => {
-                            s.name = s.map2;
-                        });
-                        break;
-                }
-                delete study.aliases;
-                study.subjects.map((s) => {
-                    delete s.map1;
-                    delete s.map2;
-                    delete s.study_id;
+
+            study.lock_responses = study.lock_responses==1;
+            study.questions.map((q)=>{q.required = q.required == 1});
+            study.preQuestions = study.questions.filter((q)=>{return !q.per_subject});
+            study.questions = study.questions.filter((q)=>{return q.per_subject});
+
+            if(!manage) {
+                return getMyAnswers(study.id, user).then((answers) => {
+                    study['answers'] = answers;
+                    switch (study.aliases) {
+                        case 1:
+                            study.subjects.map((s) => {
+                                s.name = s.map1;
+                            });
+                            break;
+                        case 2:
+                            study.subjects.map((s) => {
+                                s.name = s.map2;
+                            });
+                            break;
+                    }
+                    delete study.aliases;
+                    study.subjects.map((s) => {
+                        delete s.map1;
+                        delete s.map2;
+                    });
+                    return study;
                 });
-                study.questions.map((s) => {
-                    delete s.study_id;
-                });
-                study['preQuestions'] = study.questions.filter((q) => {
-                    return !q.per_subject
-                });
-                study.questions = study.questions.filter((q) => {
-                    return q.per_subject
-                });
+            }
+            if(study.owner_id == user) {
+                study.anon_participants = study.anon_participants==1;
                 return study;
-            });
+            } else {
+                return Promise.reject({code: ApiCode.notAuth, message: 'Not the owner of the study'})
+            }
+
         });
 }

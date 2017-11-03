@@ -2,75 +2,112 @@
     <div>Study Selected: {{ctrl.study.name}}</div>
 
     <ng-form name="buildForm">
-        <div class="checkbox" data-toggle="tooltip" title="When exporting results, usernames will be replaced by anonymous identites.">
-            <label>
-                <input type="checkbox" ng-model="ctrl.study.anon_participants">
-                Anonymize participants
-            </label>
-        </div>
-        <div class="checkbox" data-toggle="tooltip" title="Participants will not be able to overwrite their responses.">
-            <label>
-                <input type="checkbox" ng-model="ctrl.study.lock_responses">
-                Lock responses
-            </label>
-        </div>
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4>Options</h4></div>
+                <div class="panel-body">
 
-        <label>Aliases</label>
-        <div class="form-group" data-toggle="tooltip" title="Number of times to alias the identity of each subject.">
-            <div class="radio">
-                <label>
-                    <input type="radio" value="0" ng-model="ctrl.study.aliases">
-                    0
-                </label>
-            </div>
-            <div class="radio">
-                <label>
-                    <input type="radio" value="1" ng-model="ctrl.study.aliases">
-                    1
-                </label>
-            </div>
-            <div class="radio">
-                <label>
-                    <input type="radio" value="2" ng-model="ctrl.study.aliases">
-                    2
-                </label>
-            </div>
-        </div>
+                    <div class="checkbox" data-toggle="tooltip" title="When exporting results, usernames will be replaced by anonymous identites.">
+                        <label>
+                            <input type="checkbox" ng-model="ctrl.study.anon_participants">
+                            Anonymize participants
+                        </label>
+                    </div>
 
-        <hr/>
+                    <div class="checkbox" data-toggle="tooltip" title="Participants will not be able to overwrite their responses.">
+                        <label>
+                            <input type="checkbox" ng-model="ctrl.study.lock_responses">
+                            Lock responses
+                        </label>
+                    </div>
 
-        List all preliminary questions
-        <div ng-repeat="question in ctrl.study.preQuestions">
-            <input ng-model="question.text"
-                   ng-blur="ctrl.updateQuestion(question.id, question.question, buildForm)">
-            <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
-        </div>
-        <input id="newPreQuestion"
-               ng-model="ctrl.newPreQuestion"
-               ng-blur="ctrl.addPreQuestion()"
-               ng-keyup="$event.keyCode == 13 && ctrl.addPreQuestion()">
+                    <div class="form-group" data-toggle="tooltip" title="Number of times to alias the identity of each subject.">
+                        <label>Aliases</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" ng-value="0" ng-model="ctrl.study.aliases">
+                                None - Everyone knows the identity of each subject
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" ng-value="1" ng-model="ctrl.study.aliases">
+                                Single Blind - Only you know the identity of each subject
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" ng-value="2" ng-model="ctrl.study.aliases" aria-describedby="reqCoop">
+                                Double Blind - Nobody knows the identity of each subject
+                                <small id="reqCoop" class="form-text text-muted" style="display:block">
+                                    requires cooperation with a participant
+                                </small>
+                            </label>
+                        </div>
+                    </div>
 
-        <hr/>
-
-        <div>List all per-subject questions</div>
-        <div ng-repeat="question in ctrl.study.questions">
-            <input ng-model="question.text"
-                   ng-blur="ctrl.updateQuestion(question.id, question.name, build-form)">
-
-            <div class="checkbox" data-toggle="tooltip" title="Require participants to provide a response to this question.">
-                <label>
-                    <input type="checkbox" ng-model="question.require">
-                    required
-                </label>
+                </div>
             </div>
 
-            <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Preliminary questions</div>
+                <div class="panel-body">
+
+                <div class="input-group">
+                    <input type="text" class="form-control"
+                           ng-model="ctrl.newPreQuestion"
+                           ng-keyup="$event.keyCode == 13 && ctrl.addPreQuestion()"
+                           placeholder="New Study Question...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-mouseup="ctrl.addPreQuestion()">Add Question</button>
+                    </span>
+                </div>
+
+                <div class="panel _question" ng-repeat="question in ctrl.study.preQuestions">
+                    <input class="form-control" ng-model="question.text">
+                    <div class="checkbox" data-toggle="tooltip" title="Require participants to provide a response to this question.">
+                        <label>
+                            <input type="checkbox" ng-model="question.required">
+                            required
+                        </label>
+                    </div>
+                    <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
+                </div>
+
+
+            </div>
+            </div>
+
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Subject questions</div>
+                    <div class="panel-body">
+
+                <div ng-repeat="question in ctrl.study.questions">
+                    <input ng-model="question.text">
+                    <div class="checkbox" data-toggle="tooltip" title="Require participants to provide a response to this question.">
+                        <label>
+                            <input type="checkbox" ng-model="question.required">
+                            required
+                        </label>
+                    </div>
+
+                    <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" class="form-control"
+                           ng-model="ctrl.newQuestion"
+                           ng-keyup="$event.keyCode == 13 && ctrl.addQuestion()"
+                           placeholder="New Subject Question...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-mouseup="ctrl.addQuestion()">Add Question</button>
+                    </span>
+                </div>
+            </div>
+            </div>
         </div>
-        <input id="newQuestion"
-               ng-model="ctrl.newQuestion"
-               ng-blur="ctrl.addQuestion()"
-               ng-keyup="$event.keyCode == 13 && ctrl.addQuestion()">
-    </ng-form>
 
     <div>
         <button ui-sref="select">Back</button>

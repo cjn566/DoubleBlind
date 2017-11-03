@@ -47,6 +47,7 @@ app.use((req, res, next)=>{
 else return next();
 });
 
+app.use('/', express.static(path.join(__dirname, '../../private')));
 app.use('/', express.static(path.join(__dirname, '../../private/join')));
 app.use('/', express.static(path.join(__dirname, '../../private/manage')));
 

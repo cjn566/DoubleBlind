@@ -35,9 +35,9 @@
         <div ng-controller="base as base" class="row  align-items-center justify-content-center full-height">
             <h1>Double Blind</h1>
             <div class="loading" ng-show="base.loading">Loading...</div>
-            <div id="wait-for-load" ng-hide="base.loading">
-                <p>Welcome, <b>{{base.user.username}}!</b> <a ng-click="base.logout()">not you?</a></p>
-                <ui-view class="col-12 col-md-8 col-lg-6 col-xl-4"></ui-view>
+            <div id="wait-for-load" ng-cloak ng-hide="base.loading">
+                <p>Welcome, <b>{{base.user}}!</b> <a ng-click="base.logout()">not you?</a></p>
+                <ui-view></ui-view>
             </div>
         </div>
     </body>

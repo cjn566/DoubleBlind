@@ -5,7 +5,9 @@ import _controller from './AbstractStudy'
 import {invalid, resetValidations} from "../Misc";
 
 export default class extends _controller{
-    constructor(a,b,c,d){super(a,b,c,d)}
+    constructor(a,b,c,d){
+        super(a,b,c,d);
+    }
 
     newQuestion:string = "";
     newPreQuestion:string = "";
@@ -15,7 +17,7 @@ export default class extends _controller{
             this.study.questions.push({
                 id: -1,
                 text: this.newQuestion,
-                require: false,
+                required: false,
                 perSubject: true
             });
             this.newQuestion = "";
@@ -28,7 +30,7 @@ export default class extends _controller{
             this.study.preQuestions.push({
                 id: -1,
                 text: this.newPreQuestion,
-                require: false,
+                required: false,
                 perSubject: false
             });
             this.newPreQuestion = "";
@@ -76,7 +78,7 @@ export default class extends _controller{
                         id: s.id,
                         text: s.text,
                         per_subject: s.perSubject,
-                        required: s.require
+                        required: s.required
                     }
                 }
             }));
@@ -88,7 +90,7 @@ export default class extends _controller{
                         study_id: this.study.id,
                         text: s.text,
                         per_subject: s.perSubject,
-                        required: s.require
+                        required: s.required
                     }
                 }
             }));

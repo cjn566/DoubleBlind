@@ -9,3 +9,19 @@ td {
 .show-box {
     border: 1px solid blue
 }
+
+
+body {
+    background-color: #f2f2f2;
+}
+
+._section {
+    background-color: #efe5ff;
+    padding: 1rem;
+}
+
+._question {
+    background-color: #deeaf2;
+    padding: 1rem;
+    margin: 1rem;
+}

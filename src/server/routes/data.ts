@@ -2,7 +2,7 @@ import {Model} from "../../common/interfaces/study";
 import {isArray} from "util";
 import {ApiCode, ApiError} from "../../common/interfaces/codes";
 import {isOwnerOf} from "../util/Owner";
-import {doSave, getMyAnswers, getStudyForParticipant} from "../persist";
+import {doSave, getMyAnswers, getStudy} from "../persist";
 
 let context = require('../config/database');
 
@@ -10,43 +10,25 @@ module.exports = function(app) {
 
     app.get('/whoami', (req, res) => {
         if (req.user) {
-            return res.json(req.user);
+            return res.json(req.user.username);
         }
         return res.sendStatus(500);
     });
 
     app.get('/getStudyForParticipant', function (req, res) {
-        getStudyForParticipant(req.query.link, req.user.id).then((study)=>{
+        getStudy(req.query.link, req.user.id, false).then((study)=>{
             return res.json(study);
-        })
+        }).catch((err)=>{
+            apiReject(err, res);
+        });
     });
 
     app.get('/getStudyForOwner', function (req, res) {
-        context.Study.where({'id':req.query.id}).fetch({withRelated: ['subjects', 'questions']})
-            .then(function (studyModel) {
-                if(studyModel) {
-                    let study = studyModel.toJSON();
-                    if(study.owner_id === req.user.id){ // Return for owner
-                        study.preQuestions = study.questions.filter((q)=>{return !q.per_subject});
-                        study.questions = study.questions.filter((q)=>{return q.per_subject});
-                        return res.json(study);
-                    } else {
-                        return apiReject({
-                            code: ApiCode.notAuth,
-                            message: 'Not the owner of this study.'
-                        }, res);
-                    }
-                }
-                else {
-                    console.warn('Study model is null. ID: ' + req.query.id);
-                    return apiReject({
-                        code: ApiCode.badRequest,
-                        message: "That study doesn't exist."
-                    }, res);
-                }
-            }).catch((err)=>{
-                apiReject(err, res);
-            });
+        getStudy(req.query.id, req.user.id, true).then((study)=>{
+            return res.json(study);
+        }).catch((err)=>{
+            apiReject(err, res);
+        });
     });
 
     app.get('/studies', function (req, res) {

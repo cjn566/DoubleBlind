@@ -24,7 +24,7 @@ export interface Question {
     id: number,
     text: string,
     perSubject: boolean,
-    require: boolean
+    required: boolean
 }
 
 export interface Study {
