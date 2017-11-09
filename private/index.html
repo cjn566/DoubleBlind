@@ -10,7 +10,7 @@
         <link rel="mask-icon" href="/assets/icons/safari-pinned-tab.svg" color="#5bbad5">
         <meta name="theme-color" content="#ffffff">
         <meta charset="utf-8" />
-        <title>Manage or Create a Study</title>
+        <title>Double Blind</title>
 
         <script
                 src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
@@ -33,7 +33,11 @@
 
     <body ng-app="DoubleBlind"  class="container full-height">
         <div ng-controller="base as base" class="row  align-items-center justify-content-center full-height">
-            <h1>Double Blind</h1>
+            <h1 >
+                <span class="is-link" ng-click="base.goHome()">
+                    Double Blind
+                </span>
+            </h1>
             <div class="loading" ng-show="base.loading">Loading...</div>
             <div id="wait-for-load" ng-cloak ng-hide="base.loading">
                 <p>Welcome, <b>{{base.user}}!</b> <a ng-click="base.logout()">not you?</a></p>

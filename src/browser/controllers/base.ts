@@ -6,10 +6,12 @@ export default class{
     dataService;
     user;
     loading = true;
+    state;
 
-    constructor(log, dataService) {
+    constructor(log, dataService, state) {
         this.dataService = dataService;
         this.$log = log;
+        this.state = state;
         dataService.whoami().then((user) => {
             this.user  = user;
             this.loading = false;
@@ -19,6 +21,10 @@ export default class{
     logout = ()=>{
         jscookie.remove('connect.sid');
         window.location.href = '/login.html';
+    };
+
+    goHome = ()=>{
+        this.state.go('home')
     };
 
     log = (m) => {this.$log.log(m)};

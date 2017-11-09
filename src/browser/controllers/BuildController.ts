@@ -40,7 +40,7 @@ export default class extends _controller{
 
     deleteQuestion = (question, idx) => {
         this.log("delete " + idx);
-        if(confirm("Delete '" + question.question + "'?")) {
+        if(confirm("Delete question?")) {
             this.dataService.delete({type: Model.question, id:question.id}).then(()=>{
                 if(question.per_subject)
                     this.study.questions.splice(idx, 1);

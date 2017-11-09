@@ -1,19 +1,32 @@
 
-Select Study:
-<ul>
-    <div class="list-group">
-        <a class="list-group-item"  ng-repeat="study in ctrl.studies">
-            <div class="input-group">
-                <span ng-click="ctrl.selectStudy(study.id)">{{study.name}}</span>
-                <span ng-click="ctrl.deleteStudy(study.id, study.name)" class="input-group-addon glyphicon glyphicon-trash"></span>
-            </div>
-        </a>
-    </div>
+<form ng-submit="ctrl.newStudy()">
+    <input type="text" ng-model="ctrl.newStudyName" required="true" placeholder="New Study.."/>
+    <button class="btn-success" ng-click="submit">
+        <span class="glyphicon glyphicon-plus"></span>
+    </button>
+</form>
 
-    <form ng-submit="ctrl.newStudy()">
-        <input type="text" ng-model="ctrl.newStudyName" required="true"/>
-        <button class="btn-success" ng-click="submit">
-            <span class="glyphicon glyphicon-plus"></span>
-        </button>
-    </form>
-</ul>
+Active Aasdfasdftudies:
+<div class="list-group">
+    <a class="list-group-item study-stage-{{study.stage}}"  ng-repeat="study in ctrl.active">
+            <span class="" ng-click="ctrl.selectStudy(study.id)">
+                {{study.name}}
+            </span>
+        <span style="float: right">
+                <button class="btn btn-default"  ng-click="ctrl.joinStudy(study.id, study.name)">
+                    Join
+                </button>
+                <button class="btn btn-default"  ng-click="ctrl.deleteStudy(study.id, study.name)">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </button>
+            </span>
+    </a>
+</div>
+
+
+Archive:
+<div class="list-group">
+    <a class="list-group-item"  ng-repeat="study in ctrl.archive" ng-click="ctrl.selectStudy(study.id)">
+        {{study.name}}
+    </a>
+</div>

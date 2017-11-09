@@ -1,4 +1,4 @@
-import {Model, Study} from "../../../common/interfaces/study";
+import {Model, Stage, Study} from "../../../common/interfaces/study";
 
 export default class{
     $log;
@@ -14,8 +14,21 @@ export default class{
         this.state = state;
         this.params = params;
         this.study = study;
+        /*
+        switch (study.stage){
+            case Stage.build:
+                state.go('not-live');
+                break;
+            case Stage.concluded:
+                state.go('is-concluded');
+                break;
+        }
+        */
+        let reqs = study.preQuestions.filter( e => e.required).map(e=>e.id);
+
+
         if(params.subId){
-            this.subject = study.subjects.filter((e)=>{return e.id == params.subId})[0];
+            this.subject = study.subjects.find((e)=>{return e.id == params.subId});
         }
     }
 

@@ -4,7 +4,7 @@
     <ng-form name="buildForm">
         <div class="panel-group">
             <div class="panel panel-default">
-                <div class="panel-heading"><h4>Options</h4></div>
+                <div class="panel-heading">Options</div>
                 <div class="panel-body">
 
                     <div class="checkbox" data-toggle="tooltip" title="When exporting results, usernames will be replaced by anonymous identites.">
@@ -51,60 +51,66 @@
 
 
             <div class="panel panel-default">
-                <div class="panel-heading">Preliminary questions</div>
+                <div class="panel-heading">Preliminary questions - asked once per participant before they review any subjects</div>
                 <div class="panel-body">
 
-                <div class="input-group">
-                    <input type="text" class="form-control"
-                           ng-model="ctrl.newPreQuestion"
-                           ng-keyup="$event.keyCode == 13 && ctrl.addPreQuestion()"
-                           placeholder="New Study Question...">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" ng-mouseup="ctrl.addPreQuestion()">Add Question</button>
-                    </span>
-                </div>
-
-                <div class="panel _question" ng-repeat="question in ctrl.study.preQuestions">
-                    <input class="form-control" ng-model="question.text">
-                    <div class="checkbox" data-toggle="tooltip" title="Require participants to provide a response to this question.">
-                        <label>
-                            <input type="checkbox" ng-model="question.required">
-                            required
-                        </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control"
+                               id="newPreQuestion"
+                               ng-model="ctrl.newPreQuestion"
+                               ng-keyup="$event.keyCode == 13 && ctrl.addPreQuestion()"
+                               placeholder="New Study Question...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-mouseup="ctrl.addPreQuestion()">Add Question</button>
+                        </span>
                     </div>
-                    <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
+
+                    <div class="panel _question-panel" ng-repeat="question in ctrl.study.preQuestions">
+                        <input class="form-control _question-text" ng-model="question.text">
+                            <div class="checkbox _question-req" data-toggle="tooltip" title="Require participants to provide a response to this question.">
+                                <label>
+                                    <input type="checkbox" ng-model="question.required">
+                                    required
+                                </label>
+                            </div>
+                        <div  class="_question-del" ng-click="ctrl.deleteQuestion(question, $index)">
+                            <span class="glyphicon glyphicon-remove" ></span>
+                        </div>
+                    </div>
+
+
                 </div>
-
-
-            </div>
             </div>
 
 
                 <div class="panel panel-default">
-                    <div class="panel-heading">Subject questions</div>
+                    <div class="panel-heading">Subject questions - Asked for each subject</div>
                     <div class="panel-body">
 
-                <div ng-repeat="question in ctrl.study.questions">
-                    <input ng-model="question.text">
-                    <div class="checkbox" data-toggle="tooltip" title="Require participants to provide a response to this question.">
-                        <label>
-                            <input type="checkbox" ng-model="question.required">
-                            required
-                        </label>
-                    </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control"
+                                   id="newQuestion"
+                                   ng-model="ctrl.newQuestion"
+                                   ng-keyup="$event.keyCode == 13 && ctrl.addQuestion()"
+                                   placeholder="New Subject Question...">
+                            <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-mouseup="ctrl.addQuestion()">Add Question</button>
+                        </span>
+                        </div>
 
-                    <span ng-click="ctrl.deleteQuestion(question, $index)" class="glyphicon glyphicon-trash" ></span>
-                </div>
+                        <div class="panel _question-panel" ng-repeat="question in ctrl.study.questions">
+                            <input class="form-control _question-text" ng-model="question.text">
+                            <div class="checkbox _question-req" data-toggle="tooltip" title="Require participants to provide a response to this question.">
+                                <label>
+                                    <input type="checkbox" ng-model="question.required">
+                                    required
+                                </label>
+                            </div>
+                            <div  class="_question-del" ng-click="ctrl.deleteQuestion(question, $index)">
+                                <span class="glyphicon glyphicon-remove" ></span>
+                            </div>
+                        </div>
 
-                <div class="input-group">
-                    <input type="text" class="form-control"
-                           ng-model="ctrl.newQuestion"
-                           ng-keyup="$event.keyCode == 13 && ctrl.addQuestion()"
-                           placeholder="New Subject Question...">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" ng-mouseup="ctrl.addQuestion()">Add Question</button>
-                    </span>
-                </div>
             </div>
             </div>
         </div>

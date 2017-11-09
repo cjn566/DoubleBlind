@@ -106,15 +106,16 @@ module.exports = function(app) {
             er(err.message);
             switch (err.code) {
                 case ApiCode.notAuth:
-                    res.sendStatus(403);
+                    res.status(403);
                     break;
                 case ApiCode.badRequest:
-                    res.sendStatus(400);
+                    res.status(400);
                     break;
                 case ApiCode.serverErr:
                 default:
-                    res.sendStatus(500);
+                    res.status(500);
             }
+            return res.json(err);
         }
         else {
             er(err);

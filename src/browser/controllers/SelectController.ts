@@ -3,10 +3,21 @@ import _controller from './AbstractStudy'
 
 export default class extends _controller{
     constructor(a,b,c,d){
-        super(a,b,c,{study: true})
+        super(a,b,c,{study: true});
         this.studies = d;
+        this.active = this.studies.filter((s)=>{return s.stage != Stage.concluded});
+        this.archive = this.studies.filter((s)=>{return s.stage == Stage.concluded});
+
+
+            console.log('tock')
+        setTimeout(()=>{
+            console.log('tick')
+            this.state.reload();
+        }, 1000);
     }
 
+    active;
+    archive;
     studies;
     newStudyName;
     selectStudy = (id:number) =>{

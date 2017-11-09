@@ -1,7 +1,7 @@
 import {isOwnerOf} from "./util/Owner";
 import {ApiCode} from "../common/interfaces/codes";
-import {Model} from "../common/interfaces/study";
-import {makeId} from "./util/makeID";
+import {Model, Stage} from "../common/interfaces/study";
+import {makeId, makeReject} from "./util/makeID";
 import * as context from './config/database';
 
 export function doSave(save, userId) {
@@ -20,14 +20,14 @@ export function doSave(save, userId) {
             } else {
                 let tryId = () => {
                     let Id = makeId(10);
-                    return context.Study.where('link', Id).count().then((count) => {
+                    return context.Study.where('id', Id).count().then((count) => {
                         if (count > 0) { // Exists, try again
                             return tryId();
                         }
                         else {
                             save.data.id = Id;
                             save.data["owner_id"] = userId;
-                            return new context.Study(save.data).save();
+                            return new context.Study().save(save.data,{method: 'insert'});
                         }
                     });
                 };
@@ -71,7 +71,7 @@ export function getStudy(link: string, user: number, manage: boolean) {
     let options = {
         withRelated: ['subjects', 'questions']
     };
-    if(!manage) options['columns'] = ['id', 'name', 'link', 'lock_responses', 'aliases'];
+    if(!manage) options['columns'] = ['id', 'name', 'link', 'lock_responses', 'aliases', 'stage'];
 
     return context.Study.where({'id':link}).fetch(options)
         .then(function (studyModel) {
@@ -83,33 +83,41 @@ export function getStudy(link: string, user: number, manage: boolean) {
             study.questions = study.questions.filter((q)=>{return q.per_subject});
 
             if(!manage) {
-                return getMyAnswers(study.id, user).then((answers) => {
-                    study['answers'] = answers;
-                    switch (study.aliases) {
-                        case 1:
+                switch (study.stage) {
+                    case Stage.build:
+                    case Stage.concluded:
+                        // return {stage: study.stage};
+                    case Stage.live:
+                        return getMyAnswers(study.id, user).then((answers) => {
+                            study['answers'] = answers;
+                            switch (study.aliases) {
+                                case 1:
+                                    study.subjects.map((s) => {
+                                        s.name = s.map1;
+                                    });
+                                    break;
+                                case 2:
+                                    study.subjects.map((s) => {
+                                        s.name = s.map2;
+                                    });
+                                    break;
+                            }
+                            delete study.aliases;
                             study.subjects.map((s) => {
-                                s.name = s.map1;
+                                delete s.map1;
+                                delete s.map2;
                             });
-                            break;
-                        case 2:
-                            study.subjects.map((s) => {
-                                s.name = s.map2;
-                            });
-                            break;
-                    }
-                    delete study.aliases;
-                    study.subjects.map((s) => {
-                        delete s.map1;
-                        delete s.map2;
-                    });
-                    return study;
-                });
+                            return study;
+                        });
+                    default:
+                        return makeReject({code: ApiCode.serverErr, message: "Study stage failure"});
+                }
             }
             if(study.owner_id == user) {
                 study.anon_participants = study.anon_participants==1;
                 return study;
             } else {
-                return Promise.reject({code: ApiCode.notAuth, message: 'Not the owner of the study'})
+                return makeReject({code: ApiCode.notAuth, message: 'Not the owner of the study'})
             }
 
         });

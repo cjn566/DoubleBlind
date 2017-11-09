@@ -19,8 +19,8 @@ import Base from "./controllers/base";
 
     angular.module("DoubleBlind", ["ui.router"])
         .factory("dataService", ["$http", "$log", DataService])
-        .factory('httpInterceptor', ['$q', '$rootScope', '$location', httpInterceptor])
-        .controller('base', ["$log", "dataService", Base])
+        .factory('httpInterceptor', ['$q', '$rootScope', '$location', '$state', httpInterceptor])
+        .controller('base', ["$log", "dataService", '$state', Base])
         .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
         .controller('subjectsController', ["$log", "dataService", "$state", "$stateParams", SubjectsController])
         .controller('selectController', ["$log", "dataService", "$state", "studies", SelectController])
@@ -28,7 +28,8 @@ import Base from "./controllers/base";
         .controller('liveController', ["$log", "dataService", "$state", "$stateParams", LiveController])
         .controller('concludedController', ["$log", "dataService", "$state", "$stateParams", ConcludedController])
         .controller('Join', ["$log", "dataService", "$state", "$stateParams", 'study', '$scope', Join])
-        .config(['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider',
+        .config(
+            ['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider',
             function( $stateProvider, $logProvider, $urlRouterProvider, $httpProvider, $compileProvider){
             $logProvider.debugEnabled(true);
 
@@ -53,7 +54,7 @@ import Base from "./controllers/base";
                     }
                 })
                 .state("join.select",{
-                    url:"",///subjects",
+                    url:"/join=:link",
                     controller: "Join",
                     controllerAs: "ctrl",
                     templateUrl:"select-subject.html"
@@ -67,6 +68,20 @@ import Base from "./controllers/base";
                         subId: null
                     }
                 })
+                /*
+                .state("join.prequestions",{
+                    url:"/join=:link",
+                    controller: "Join",
+                    controllerAs: "ctrl",
+                    templateUrl:"prequestions.html"
+                })
+                .state("not-live",{
+                    template:"<p>The study you are trying to join is not yet ready.</p>"
+                })
+                .state("is-concluded",{
+                    template:"<p>The study you are trying to join has already concluded.</p>"
+                })
+                */
 
                 // Build states
                 .state("home",{
@@ -133,9 +148,7 @@ import Base from "./controllers/base";
             $httpProvider.interceptors.push('httpInterceptor');
             $compileProvider.debugInfoEnabled(true);
         }])
-        .run(['$state', function( state){
-            if(state.current.name === "")
-                state.go('home');
+        .run(['$state', '$templateCache', function( state, cache){
         }])
 }());
 

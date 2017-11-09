@@ -20,8 +20,45 @@ body {
     padding: 1rem;
 }
 
-._question {
+._question-panel {
     background-color: #deeaf2;
     padding: 1rem;
     margin: 1rem;
+    position: relative;
+}
+
+._question-text {
+    width: 50%;
+    display: inline;
+}
+
+._question-req {
+    position: relative;
+    background-color: antiquewhite;
+    margin: 0rem 1rem;
+    padding: 0rem 1rem;
+    float: right;
+}
+
+._question-del {
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+
+.study-stage-0 {
+    background-color: #deeaf2;
+}
+
+.study-stage-1 {
+    background-color: lightgreen;
+}
+
+.study-stage-2 {
+    background-color: lightpink;
+}
+
+.is-link {
+    cursor: pointer;
 }

@@ -10,7 +10,8 @@ export enum ApiCode {
     notAuth,
     serverErr,
     badRequest,
-    ok
+    ok,
+    notReady
 }
 
 export interface ApiError {
