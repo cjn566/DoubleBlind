@@ -1,25 +1,34 @@
 import {Model, Stage, Study} from "../../common/interfaces/study";
 import _controller from './AbstractStudy'
+import {autoRefresh} from "../Misc";
+
+import * as copy from 'copy-to-clipboard';
+
 
 export default class extends _controller{
-    constructor(a,b,c,d){
+    constructor(a,b,c,d, cache){
         super(a,b,c,{study: true});
         this.studies = d;
+        this.studies.map((s)=>{
+            s.link = "localhost:3000/#!/join=" + s.id;
+        });
         this.active = this.studies.filter((s)=>{return s.stage != Stage.concluded});
         this.archive = this.studies.filter((s)=>{return s.stage == Stage.concluded});
 
 
-            console.log('tock')
-        setTimeout(()=>{
-            console.log('tick')
-            this.state.reload();
-        }, 1000);
+        autoRefresh(this.state, cache);
     }
 
     active;
     archive;
     studies;
     newStudyName;
+
+    copyLink = (link) => {
+        console.log(link)
+        copy(link, {debug:true});
+    };
+
     selectStudy = (id:number) =>{
         this.dataService.getStudyForOwner(id).then((study:Study)=>{
             this.log(study.stage)

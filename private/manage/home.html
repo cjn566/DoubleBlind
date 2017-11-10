@@ -6,12 +6,14 @@
     </button>
 </form>
 
-Active Aasdfasdftudies:
+Active Studies:
 <div class="list-group">
-    <a class="list-group-item study-stage-{{study.stage}}"  ng-repeat="study in ctrl.active">
+    <div class="list-group-item panel study-stage-{{study.stage}}"  ng-repeat="study in ctrl.active">
             <span class="" ng-click="ctrl.selectStudy(study.id)">
                 {{study.name}}
             </span>
+        <a href="{{study.link}}">localhost:3000/#!/join={{study.id}}</a>
+        <button ng-click="ctrl.copyLink(study.link)">Copy</button>
         <span style="float: right">
                 <button class="btn btn-default"  ng-click="ctrl.joinStudy(study.id, study.name)">
                     Join
@@ -20,7 +22,7 @@ Active Aasdfasdftudies:
                     <span class="glyphicon glyphicon-trash"></span>
                 </button>
             </span>
-    </a>
+    </div>
 </div>
 
 

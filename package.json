@@ -17,6 +17,7 @@
     "bookshelf": "^0.10.2",
     "bookshelf-cascade-delete": "^2.0.1",
     "cookie-parser": "^1.4.3",
+    "copy-to-clipboard": "^3.0.8",
     "es6-enum": "^1.1.0",
     "express": "^4.16.0",
     "express-session": "^1.15.5",

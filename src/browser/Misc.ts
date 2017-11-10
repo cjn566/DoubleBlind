@@ -42,3 +42,12 @@ export function resetValidations(elementNames){
         message.text('').hide();
     });
 }
+
+export function autoRefresh(state, cache) {
+
+    setTimeout(() => {
+        cache.removeAll();
+        state.reload();
+    }, 1000);
+
+}
