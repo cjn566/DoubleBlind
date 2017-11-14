@@ -1,17 +1,16 @@
 
 import 'angular-ui-router';
 import * as angular from 'angular';
-import DataService from './services/DataService';
-import httpInterceptor from './services/HttpInterceptor';
+import DataService from '../services/DataService';
+import httpInterceptor from '../services/HttpInterceptor';
 
-import SelectController from "./controllers/SelectController";
-import MapTwoController from "./controllers/MapTwoController";
-import ManageController from "./controllers/BuildController";
-import SubjectsController from "./controllers/Subjects";
-import LiveController from "./controllers/LiveController";
-import ConcludedController from "./controllers/ConcludedController";
-import Join from "./controllers/join/join";
-import Base from "./controllers/base";
+import SelectController from "../manage/controllers/SelectController";
+import MapTwoController from "../manage/controllers/MapTwoController";
+import ManageController from "../manage/controllers/BuildController";
+import SubjectsController from "../manage/controllers/Subjects";
+import LiveController from "../manage/controllers/LiveController";
+import ConcludedController from "../manage/controllers/ConcludedController";
+import Base from "../manage/controllers/base";
 
 
 
@@ -27,63 +26,13 @@ import Base from "./controllers/base";
         .controller('mapTwoController', ["$log", "dataService", "$state", "$stateParams", MapTwoController])
         .controller('liveController', ["$log", "dataService", "$state", "$stateParams", LiveController])
         .controller('concludedController', ["$log", "dataService", "$state", "$stateParams", ConcludedController])
-        .controller('Join', ["$log", "dataService", "$state", "$stateParams", 'study', '$scope', Join])
         .config(
-            ['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider',
-            function( $stateProvider, $logProvider, $urlRouterProvider, $httpProvider, $compileProvider){
+            ['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider', '$locationProvider',
+            function( $stateProvider, $logProvider, $urlRouterProvider, $httpProvider, $compileProvider, $lp){
+                $lp.html5Mode(true);
             $logProvider.debugEnabled(true);
 
             $stateProvider
-
-                // JOIN Study States
-                .state("join",{
-                    url:"/join=:link",
-                    abstract:"true",
-                    controller: "Join",
-                    controllerAs: "ctrl",
-                    templateUrl:"join-shell.html",
-                    params: {
-                        link: null
-                    },
-                    resolve:{
-                        study: ["dataService", '$stateParams', function(dataService, $stateParams){
-                            return dataService.getStudyForParticipant($stateParams.link).then((study)=>{
-                                return study;
-                            });
-                        }]
-                    }
-                })
-                .state("join.select",{
-                    url:"/join=:link",
-                    controller: "Join",
-                    controllerAs: "ctrl",
-                    templateUrl:"select-subject.html"
-                })
-                .state("join.answer",{
-                    url:"/subject=:subId",
-                    controller: "Join",
-                    controllerAs: "ctrl",
-                    templateUrl:"answer-questions.html",
-                    params: {
-                        subId: null
-                    }
-                })
-                /*
-                .state("join.prequestions",{
-                    url:"/join=:link",
-                    controller: "Join",
-                    controllerAs: "ctrl",
-                    templateUrl:"prequestions.html"
-                })
-                .state("not-live",{
-                    template:"<p>The study you are trying to join is not yet ready.</p>"
-                })
-                .state("is-concluded",{
-                    template:"<p>The study you are trying to join has already concluded.</p>"
-                })
-                */
-
-                // Build states
                 .state("home",{
                     url:"/",
                     controller: "selectController",
@@ -99,9 +48,9 @@ import Base from "./controllers/base";
                     url:"/build/:id",
                     controller: "manageController",
                     controllerAs: "ctrl",
-                    templateUrl:"buildstudy.html",
+                    templateUrl:"buildexperiment.html",
                     params: {
-                        study: null,
+                        experiment: null,
                         id: null
                     }
                 })
@@ -111,7 +60,7 @@ import Base from "./controllers/base";
                     controllerAs: "ctrl",
                     templateUrl:"add_subjects.html",
                     params: {
-                        study: null,
+                        experiment: null,
                         id: null
                     }
                 })
@@ -121,7 +70,7 @@ import Base from "./controllers/base";
                     controllerAs: "ctrl",
                     templateUrl:"secondmap.html",
                     params: {
-                        study: null,
+                        experiment: null,
                         id: null
                     }
                 })
@@ -131,7 +80,7 @@ import Base from "./controllers/base";
                     controllerAs: "ctrl",
                     templateUrl:"live.html",
                     params: {
-                        study: null,
+                        experiment: null,
                         id: null
                     }
                 })
@@ -141,14 +90,15 @@ import Base from "./controllers/base";
                     controllerAs: "ctrl",
                     templateUrl:"concluded.html",
                     params: {
-                        study: null,
+                        experiment: null,
                         id: null
                     }
                 });
             $httpProvider.interceptors.push('httpInterceptor');
             $compileProvider.debugInfoEnabled(true);
         }])
-        .run(['$state', '$templateCache', function( state, cache){
-        }])
+        .run(['$rootScope', '$state', function($rootScope, state) {
+            $rootScope.$on("$stateChangeError", console.log.bind(console));
+        }]);
 }());
 

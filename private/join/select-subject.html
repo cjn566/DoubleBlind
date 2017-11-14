@@ -2,7 +2,7 @@
 
     Preliminary questions:
     <ul>
-        <li ng-repeat="question in ctrl.study.preQuestions">
+        <li ng-repeat="question in ctrl.experiment.preQuestions">
             <div>
                 <label for="question.id">{{question.question}}</label>
                 <input id="question.id" ng-model="question.answer">
@@ -15,7 +15,7 @@
 
     Select subject:
     <ul>
-        <li ng-repeat="subject in ctrl.study.subjects" ng-click="ctrl.selectSubject(subject.id)">
+        <li ng-repeat="subject in ctrl.experiment.subjects" ng-click="ctrl.selectSubject(subject.id)">
             {{subject.name}}
         </li>
     </ul>

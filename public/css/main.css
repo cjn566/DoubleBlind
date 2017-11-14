@@ -47,15 +47,15 @@ body {
     cursor: pointer;
 }
 
-.study-stage-0 {
+.experiment-stage-0 {
     background-color: #deeaf2;
 }
 
-.study-stage-1 {
+.experiment-stage-1 {
     background-color: lightgreen;
 }
 
-.study-stage-2 {
+.experiment-stage-2 {
     background-color: lightpink;
 }
 

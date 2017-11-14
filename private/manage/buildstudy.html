@@ -1,5 +1,5 @@
 
-    <div>Study Selected: {{ctrl.study.name}}</div>
+    <div>Experiment Selected: {{ctrl.experiment.name}}</div>
 
     <ng-form name="buildForm">
         <div class="panel-group">
@@ -9,14 +9,14 @@
 
                     <div class="checkbox" data-toggle="tooltip" title="When exporting results, usernames will be replaced by anonymous identites.">
                         <label>
-                            <input type="checkbox" ng-model="ctrl.study.anon_participants">
+                            <input type="checkbox" ng-model="ctrl.experiment.anon_participants">
                             Anonymize participants
                         </label>
                     </div>
 
                     <div class="checkbox" data-toggle="tooltip" title="Participants will not be able to overwrite their responses.">
                         <label>
-                            <input type="checkbox" ng-model="ctrl.study.lock_responses">
+                            <input type="checkbox" ng-model="ctrl.experiment.lock_responses">
                             Lock responses
                         </label>
                     </div>
@@ -25,19 +25,19 @@
                         <label>Aliases</label>
                         <div class="radio">
                             <label>
-                                <input type="radio" ng-value="0" ng-model="ctrl.study.aliases">
+                                <input type="radio" ng-value="0" ng-model="ctrl.experiment.aliases">
                                 None - Everyone knows the identity of each subject
                             </label>
                         </div>
                         <div class="radio">
                             <label>
-                                <input type="radio" ng-value="1" ng-model="ctrl.study.aliases">
+                                <input type="radio" ng-value="1" ng-model="ctrl.experiment.aliases">
                                 Single Blind - Only you know the identity of each subject
                             </label>
                         </div>
                         <div class="radio">
                             <label>
-                                <input type="radio" ng-value="2" ng-model="ctrl.study.aliases" aria-describedby="reqCoop">
+                                <input type="radio" ng-value="2" ng-model="ctrl.experiment.aliases" aria-describedby="reqCoop">
                                 Double Blind - Nobody knows the identity of each subject
                                 <small id="reqCoop" class="form-text text-muted" style="display:block">
                                     requires cooperation with a participant
@@ -59,13 +59,13 @@
                                id="newPreQuestion"
                                ng-model="ctrl.newPreQuestion"
                                ng-keyup="$event.keyCode == 13 && ctrl.addPreQuestion()"
-                               placeholder="New Study Question...">
+                               placeholder="New Experiment Question...">
                         <span class="input-group-btn">
                             <button class="btn btn-default" type="button" ng-mouseup="ctrl.addPreQuestion()">Add Question</button>
                         </span>
                     </div>
 
-                    <div class="panel _question-panel" ng-repeat="question in ctrl.study.preQuestions">
+                    <div class="panel _question-panel" ng-repeat="question in ctrl.experiment.preQuestions">
                         <input class="form-control _question-text" ng-model="question.text">
                             <div class="checkbox _question-req" data-toggle="tooltip" title="Require participants to provide a response to this question.">
                                 <label>
@@ -98,7 +98,7 @@
                         </span>
                         </div>
 
-                        <div class="panel _question-panel" ng-repeat="question in ctrl.study.questions">
+                        <div class="panel _question-panel" ng-repeat="question in ctrl.experiment.questions">
                             <input class="form-control _question-text" ng-model="question.text">
                             <div class="checkbox _question-req" data-toggle="tooltip" title="Require participants to provide a response to this question.">
                                 <label>

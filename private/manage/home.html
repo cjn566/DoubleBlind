@@ -1,6 +1,6 @@
 
-<form ng-submit="ctrl.newStudy()">
-    <input type="text" ng-model="ctrl.newStudyName" required="true" placeholder="New Study.."/>
+<form ng-submit="ctrl.newExperiment()">
+    <input type="text" ng-model="ctrl.newExperimentName" required="true" placeholder="New Experiment.."/>
     <button class="btn-success" ng-click="submit">
         <span class="glyphicon glyphicon-plus"></span>
     </button>
@@ -8,17 +8,18 @@
 
 Active Studies:
 <div class="list-group">
-    <div class="list-group-item panel study-stage-{{study.stage}}"  ng-repeat="study in ctrl.active">
-            <span class="" ng-click="ctrl.selectStudy(study.id)">
-                {{study.name}}
+    <div class="list-group-item panel experiment-stage-{{experiment.stage}}" ng-repeat="experiment in ctrl.active">
+            <span class="" ng-click="ctrl.selectExperiment(experiment.id)">
+                {{experiment.name}}
             </span>
-        <a href="{{study.link}}">localhost:3000/#!/join={{study.id}}</a>
-        <button ng-click="ctrl.copyLink(study.link)">Copy</button>
+        Status: {{experiment.stage? 'setup':'live'}}
+        <a href="{{experiment.link}}">localhost:3000/#!/join={{experiment.id}}</a>
+        <button ng-click="ctrl.copyLink(experiment.link)">Copy</button>
         <span style="float: right">
-                <button class="btn btn-default"  ng-click="ctrl.joinStudy(study.id, study.name)">
+                <button class="btn btn-default" ng-click="ctrl.join(experiment.link)">
                     Join
                 </button>
-                <button class="btn btn-default"  ng-click="ctrl.deleteStudy(study.id, study.name)">
+                <button class="btn btn-default"  ng-click="ctrl.deleteExperiment(experiment.id, experiment.name)">
                     <span class="glyphicon glyphicon-trash"></span>
                 </button>
             </span>
@@ -28,7 +29,7 @@ Active Studies:
 
 Archive:
 <div class="list-group">
-    <a class="list-group-item"  ng-repeat="study in ctrl.archive" ng-click="ctrl.selectStudy(study.id)">
-        {{study.name}}
+    <a class="list-group-item"  ng-repeat="experiment in ctrl.archive" ng-click="ctrl.selectExperiment(experiment.id)">
+        {{experiment.name}}
     </a>
 </div>

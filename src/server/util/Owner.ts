@@ -1,15 +1,15 @@
 
 
-import {Model} from "../../common/interfaces/study";
+import {Model} from "../../common/interfaces/experiment";
 import {ApiCode, ApiError} from "../../common/interfaces/codes";
 let context = require('../config/database');
 
 export function getOwnerTree(id:number) {
-    return context.Study.where({'owner_id':id}).fetchAll({'columns':'id'}).then((data)=>{
+    return context.Experiment.where({'owner_id':id}).fetchAll({'columns':'id'}).then((data)=>{
         let studies = data.toJSON().map(e => e.id);
         return Promise.all([
             Promise.all(studies.map((e)=>{
-                return context.Subject.where({'study_id':e}).fetchAll({'columns':'id'})
+                return context.Subject.where({'experiment_id':e}).fetchAll({'columns':'id'})
             })).then((data)=>{
                 let newdata = [];
                 data.map((s:any)=>{
@@ -20,7 +20,7 @@ export function getOwnerTree(id:number) {
                 return newdata;
             }),
             Promise.all(studies.map((e)=>{
-                return context.Question.where({'study_id':e}).fetchAll({'columns':'id'})
+                return context.Question.where({'experiment_id':e}).fetchAll({'columns':'id'})
             })).then((data)=>{
                 let newdata = [];
                 data.map((q:any)=>{
@@ -46,14 +46,14 @@ export function getOwnerOf(type: Model, id: number) {
     switch(type){
         case Model.subject:
             model = context.Subject;
-            options = {withRelated:'study'};
+            options = {withRelated:'experiment'};
             break;
         case Model.question:
             model = context.Question;
-            options = {withRelated:'study'};
+            options = {withRelated:'experiment'};
             break;
-        case Model.study:
-            model = context.Study;
+        case Model.experiment:
+            model = context.Experiment;
             break;
         case Model.question:
             model = context.Question;
@@ -65,8 +65,8 @@ export function getOwnerOf(type: Model, id: number) {
             switch (type) {
                 case Model.subject:
                 case Model.question:
-                    return data.toJSON().study.owner_id;
-                case Model.study:
+                    return data.toJSON().experiment.owner_id;
+                case Model.experiment:
                     return data.toJSON().owner_id;
                 case Model.question:
                     return data.toJSON().participant_id;

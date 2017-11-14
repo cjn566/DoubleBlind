@@ -1,17 +1,17 @@
 
 
-List all subjects in the study
+List all subjects in the experiment
 
 <table>
     <tr>
         <th>Name</th>
-        <th ng-if="ctrl.study.aliases >= 1">{{ctrl.study.aliases == 1? "Alias":"First Alias"}}</th>
+        <th ng-if="ctrl.experiment.aliases >= 1">{{ctrl.experiment.aliases == 1? "Alias":"First Alias"}}</th>
     </tr>
-    <tr ng-repeat="subject in ctrl.study.subjects">
+    <tr ng-repeat="subject in ctrl.experiment.subjects">
         <td>
             <input ng-model="subject.name">
         </td>
-        <td ng-if="ctrl.study.aliases >= 1">
+        <td ng-if="ctrl.experiment.aliases >= 1">
             <input ng-model="subject.map1">
         </td>
         <td>

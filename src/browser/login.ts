@@ -79,7 +79,7 @@ $( document ).ready(function() {
             let destination;
             let join = $.urlParam('join');
             if(join) {
-                destination = "/#!/join=" + join;
+                destination = "/#!/controllers=" + join;
             }
             else destination = "/#!/";
             window.location.href = destination;

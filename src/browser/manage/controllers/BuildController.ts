@@ -1,8 +1,8 @@
 
 
-import {Model, Study} from "../../common/interfaces/study";
-import _controller from './AbstractStudy'
-import {invalid, resetValidations} from "../Misc";
+import {Model, Experiment} from "../../../common/interfaces/experiment";
+import _controller from './AbstractExperiment'
+import {invalid, resetValidations} from "../../Misc";
 
 export default class extends _controller{
     constructor(a,b,c,d){
@@ -14,7 +14,7 @@ export default class extends _controller{
 
     addQuestion = ()=>{
         if(this.newQuestion.length > 0) {
-            this.study.questions.push({
+            this.experiment.questions.push({
                 id: -1,
                 text: this.newQuestion,
                 required: false,
@@ -27,7 +27,7 @@ export default class extends _controller{
 
     addPreQuestion = ()=>{
         if(this.newPreQuestion.length > 0) {
-            this.study.preQuestions.push({
+            this.experiment.preQuestions.push({
                 id: -1,
                 text: this.newPreQuestion,
                 required: false,
@@ -43,9 +43,9 @@ export default class extends _controller{
         if(confirm("Delete question?")) {
             this.dataService.delete({type: Model.question, id:question.id}).then(()=>{
                 if(question.per_subject)
-                    this.study.questions.splice(idx, 1);
+                    this.experiment.questions.splice(idx, 1);
                 else
-                    this.study.preQuestions.splice(idx, 1);
+                    this.experiment.preQuestions.splice(idx, 1);
             })
         }
     };
@@ -56,20 +56,20 @@ export default class extends _controller{
 
             let saves = [];
             saves.push({
-                type: Model.study,
+                type: Model.experiment,
                 data: {
-                    id: this.study.id,
-                    name: this.study.name,
-                    anon_participants: this.study.anon_participants,
-                    lock_responses: this.study.lock_responses,
-                    aliases: this.study.aliases
+                    id: this.experiment.id,
+                    name: this.experiment.name,
+                    anon_participants: this.experiment.anon_participants,
+                    lock_responses: this.experiment.lock_responses,
+                    aliases: this.experiment.aliases
                 }
             });
 
-            let oldQuestions = this.study.questions.filter((e)=>{ return (e.id > 0)});
-            let newQuestions = this.study.questions.filter((e)=>{ return (e.id == -1)});
-            oldQuestions = oldQuestions.concat(this.study.preQuestions.filter((e)=>{ return (e.id > 0)}));
-            newQuestions = newQuestions.concat(this.study.preQuestions.filter((e)=>{ return (e.id == -1)}));
+            let oldQuestions = this.experiment.questions.filter((e)=>{ return (e.id > 0)});
+            let newQuestions = this.experiment.questions.filter((e)=>{ return (e.id == -1)});
+            oldQuestions = oldQuestions.concat(this.experiment.preQuestions.filter((e)=>{ return (e.id > 0)}));
+            newQuestions = newQuestions.concat(this.experiment.preQuestions.filter((e)=>{ return (e.id == -1)}));
 
             saves = saves.concat(oldQuestions.map((s)=>{
                 return {
@@ -87,7 +87,7 @@ export default class extends _controller{
                 return {
                     type: Model.question,
                     data:{
-                        study_id: this.study.id,
+                        experiment_id: this.experiment.id,
                         text: s.text,
                         per_subject: s.perSubject,
                         required: s.required
@@ -97,7 +97,7 @@ export default class extends _controller{
 
             this.dataService.save(saves)
                 .then(()=>{
-                    this.state.go('subjects', {id: this.study.id, study: this.study});
+                    this.state.go('subjects', {id: this.experiment.id, experiment: this.experiment});
                 });
         }
     };

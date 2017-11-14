@@ -12,7 +12,7 @@ This application is intended to be used to facilitate a type of social experimen
 - Exports the data in an easy to analyze format.
 
 ## How it works
-1. The host uses the management software to create the study, specify the subjects and the questions, and set options.
+1. The host uses the management software to create the experiment, specify the subjects and the questions, and set options.
 2. The subjects are twice anonymized. Assuming the subjects are in indistinguishable vessels, one or two people give each subject an alias and record it in the software. This happens out of view of anyone else. Then a different person or persons scrambles or re-alias the subjects and records this. Now there is nobody who knows the true identity of any of the subjects.
 3. Begin the trial. Participants may use their smartphone to privately submit reviews.
 4. Conclude the trial. The results may be exported in '.csv' format.

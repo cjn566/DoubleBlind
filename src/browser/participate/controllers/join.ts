@@ -1,21 +1,21 @@
-import {Model, Stage, Study} from "../../../common/interfaces/study";
+import {Model, Stage, Experiment} from "../../../common/interfaces/experiment";
 
 export default class{
     $log;
     dataService;
     state;
     params;
-    study;
+    experiment;
     subject;
 
-    constructor(log, dataService, state, params, study, $scope) {
+    constructor(log, dataService, state, params, experiment, $scope) {
         this.$log = log;
         this.dataService = dataService;
         this.state = state;
         this.params = params;
-        this.study = study;
+        this.experiment = experiment;
         /*
-        switch (study.stage){
+        switch (experiment.stage){
             case Stage.build:
                 state.go('not-live');
                 break;
@@ -24,23 +24,23 @@ export default class{
                 break;
         }
         */
-        let reqs = study.preQuestions.filter( e => e.required).map(e=>e.id);
+        let reqs = experiment.preQuestions.filter( e => e.required).map(e=>e.id);
 
 
         if(params.subId){
-            this.subject = study.subjects.find((e)=>{return e.id == params.subId});
+            this.subject = experiment.subjects.find((e)=>{return e.id == params.subId});
         }
     }
 
     updatePreAnswers = () => {
-        this.dataService.save(this.study.preQuestions
+        this.dataService.save(this.experiment.preQuestions
             .filter((q)=>{return q.answer != null})
             .map((Q)=>{
                 return {
                     type: Model.answer,
                     data:
                         {
-                            study_id: this.study.id,
+                            experiment_id: this.experiment.id,
                             question_id: Q.id,
                             subject_id: this.subject.id,
                             value: Q.answer
@@ -52,14 +52,14 @@ export default class{
     };
 
     updateAnswers = () => {
-        this.dataService.save(this.study.questions
+        this.dataService.save(this.experiment.questions
             .filter((q)=>{return q.answer != null})
             .map((Q)=>{
             return {
                 type: Model.answer,
                 data:
                     {
-                        study_id: this.study.id,
+                        experiment_id: this.experiment.id,
                         question_id: Q.id,
                         subject_id: this.subject.id,
                         value: Q.answer

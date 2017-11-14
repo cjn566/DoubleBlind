@@ -1,4 +1,5 @@
 "use strict";
+import {options} from "../common/options";
 /// <reference path="Scripts/typings/bookshelf.d.ts" />
 
 let devmode = true;
@@ -34,7 +35,7 @@ app.use((req, res, next)=>{
         if(!devmode) {
             let redirect = loginURL;
             if (req.query.join) {
-                redirect += "?join=" + req.query.join
+                redirect += "?controllers=" + req.query.join
             }
             return res.redirect(redirect);
         } else {
@@ -47,16 +48,22 @@ app.use((req, res, next)=>{
 else return next();
 });
 
+
 app.use('/', express.static(path.join(__dirname, '../../private')));
 app.use('/', express.static(path.join(__dirname, '../../private/join')));
 app.use('/', express.static(path.join(__dirname, '../../private/manage')));
+
+app.all('/join/*', function(req, res, next) {
+    res.sendFile(path.join(__dirname, '../../private/join.html'));
+});
 
 require('./routes/data')(app);
 
 //Nothing found
 app.use((req, res)=>{
-res.redirect('/notfound.html');
+    res.end();
+    //res.redirect('/notfound.html');
 });
 
-app.listen(3000);
+app.listen(options.port);
 console.log("READY");

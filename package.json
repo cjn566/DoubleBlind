@@ -4,7 +4,8 @@
   "description": "DoubleBlind",
   "main": "server.js",
   "scripts": {
-    "build": "watchify src/browser/app.ts -v --debug -p [ tsify ] -o public/Bundle.js -t [ babelify --presets [ es2015 ] ]",
+    "manage": "watchify src/browser/manage/manage.ts -v --debug -p [ tsify ] -o public/manage.js -t [ babelify --presets [ es2015 ] ]",
+    "part": "watchify src/browser/participate/participate.ts -v --debug -p [ tsify ] -o public/participate.js -t [ babelify --presets [ es2015 ] ]",
     "login": "watchify src/browser/login.ts -v --debug -p [ tsify ] -o public/login.js -t [ babelify --presets [ es2015 ] ]"
   },
   "author": {

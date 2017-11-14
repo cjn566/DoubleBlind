@@ -1,7 +1,7 @@
 DATA STRUCTURE:
 
 DoubleBlind App
-	Study[]
+	Experiment[]
 		Name
 		current stage
 		isOpen
@@ -31,19 +31,19 @@ DoubleBlind App
 			comments
 			
 In Relational Database form:
-	Study
+	Experiment
 		ID
 		Name
 		Stage
 		
 	ElementField
 		ID
-		Study ID
+		Experiment ID
 		Name
 		
 	Element
 		ID
-		Study ID
+		Experiment ID
 		Name
 		
 	ElementFieldValue
@@ -54,12 +54,12 @@ In Relational Database form:
 		
 	TesterField
 		ID
-		Study ID
+		Experiment ID
 		Name
 		
 	Tester
 		ID
-		Study ID
+		Experiment ID
 		Name
 		
 	TesterFieldValue
@@ -70,7 +70,7 @@ In Relational Database form:
 		
 	SubmissionField
 		ID
-		StudyID
+		ExperimentID
 		Name
 		
 	Submission
@@ -90,12 +90,12 @@ In Relational Database form:
 				
 BEHAVIOR:
 
-	Join a study >
+	Join a experiment >
 		(only currently open studies)
 		Studies[] (First time, no cookie) >
 			"Privide your information"
 			{
-				Study setup tester data
+				Experiment setup tester data
 			}
 			Continue > (give cookie) V
 		Studies[] (with cookie) >
@@ -106,11 +106,11 @@ BEHAVIOR:
 					comments
 				}
 				submit ^
-	Manage a study >
+	Manage a experiment >
 		Studies[] >
 			Advance stage >
-		New Study >
-			"Provide information about the study"
+		New Experiment >
+			"Provide information about the experiment"
 			{
 				Name
 				Info to know about each element
@@ -139,26 +139,26 @@ BEHAVIOR:
 					Continue to second mapping >
 						"Scramble the identifiers and note the reordering"
 						%identifier% = ""[]
-						Begin Study >
+						Begin Experiment >
 							"Currently Accepting Reviews"
 							(becomes available for joining)
-							Close Study >
-								"Study is concluded"
+							Close Experiment >
+								"Experiment is concluded"
 								Export results >
 				
 			
 			
 			
-STAGES OF A STUDY:
+STAGES OF A EXPERIMENT:
 	- Setup
 		list all elements, questions for participants
 	- Map stage 1
 		arbitrary new identifiers
 	- Map stage 2
 		Scramble identifiers
-	- Open study
+	- Open experiment
 		accept reviews
-	- Close study, export data
+	- Close experiment, export data
 		reverse mappings
 			
 			
