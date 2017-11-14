@@ -22,9 +22,6 @@ export function shuffle(array) {
     return array;
 }
 
-
-
-
 export function invalid(e : string, msg : string){
     let element = $('#' + e + '-feedback-parent')
     if(!element.hasClass("has-danger")){
@@ -43,11 +40,10 @@ export function resetValidations(elementNames){
     });
 }
 
+// DEV:
 export function autoRefresh(state, cache) {
-
     setTimeout(() => {
         cache.removeAll();
         state.reload();
     }, 1000);
-
 }

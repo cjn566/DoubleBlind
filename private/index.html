@@ -28,7 +28,7 @@
 
         <script src="Bundle.js" type="text/javascript"></script>
 
-        <link rel="stylesheet" href="/css/main.css">
+        <link id="mainss" rel="stylesheet" href="/css/main.css">
     </head>
 
     <body ng-app="DoubleBlind"  class="container full-height">
@@ -39,7 +39,7 @@
                 </span>
             </h1>
             <div class="loading" ng-show="base.loading">Loading...</div>
-            <div id="wait-for-load" ng-cloak ng-hide="base.loading">
+            <div id="wait-for-load" ng-cloak ng-hide="base.loading" class="row">
                 <p>Welcome, <b>{{base.user}}!</b> <a ng-click="base.logout()">not you?</a></p>
                 <ui-view></ui-view>
             </div>

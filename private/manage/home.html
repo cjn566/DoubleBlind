@@ -6,25 +6,23 @@
     </button>
 </form>
 
+<div>
 Active Studies:
 <div class="list-group">
-    <div class="list-group-item panel study-stage-{{study.stage}}"  ng-repeat="study in ctrl.active">
-            <span class="" ng-click="ctrl.selectStudy(study.id)">
-                {{study.name}}
-            </span>
-        <a href="{{study.link}}">localhost:3000/#!/join={{study.id}}</a>
-        <button ng-click="ctrl.copyLink(study.link)">Copy</button>
-        <span style="float: right">
-                <button class="btn btn-default"  ng-click="ctrl.joinStudy(study.id, study.name)">
-                    Join
-                </button>
-                <button class="btn btn-default"  ng-click="ctrl.deleteStudy(study.id, study.name)">
-                    <span class="glyphicon glyphicon-trash"></span>
-                </button>
-            </span>
-    </div>
-</div>
+    <a class="list-group-item panel active-study study-stage-{{study.stage}}"  ng-repeat="study in ctrl.active" ng-click="ctrl.selectStudy(study.id)">
+        <h4>
+            {{study.name}}
+        </h4>
 
+        <div> status: {{study.stage? 'live':'setup'}} </div>
+
+        <div class="panel link-box">
+            <button class="btn-sm btn-default" ng-click="ctrl.joinStudy(study.link); $event.stopPropagation()">Join Study</button>
+            <button class="btn-sm btn-default" ng-click="ctrl.copyLink(study.link); $event.stopPropagation()">Copy Link</button>
+        </div>
+    </a>
+</div>
+</div>
 
 Archive:
 <div class="list-group">

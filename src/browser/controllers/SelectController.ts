@@ -15,7 +15,7 @@ export default class extends _controller{
         this.active = this.studies.filter((s)=>{return s.stage != Stage.concluded});
         this.archive = this.studies.filter((s)=>{return s.stage == Stage.concluded});
 
-
+        // Dev
         autoRefresh(this.state, cache);
     }
 
@@ -25,8 +25,11 @@ export default class extends _controller{
     newStudyName;
 
     copyLink = (link) => {
-        console.log(link)
-        copy(link, {debug:true});
+        copy(link);
+    };
+
+    joinStudy = (link) => {
+        console.log(link);
     };
 
     selectStudy = (id:number) =>{

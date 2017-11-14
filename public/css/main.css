@@ -47,6 +47,14 @@ body {
     cursor: pointer;
 }
 
+.active-study {
+    text-align: center;
+    border: 1px solid lightgray;
+    width:42rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .study-stage-0 {
     background-color: #deeaf2;
 }
@@ -61,4 +69,14 @@ body {
 
 .is-link {
     cursor: pointer;
+}
+
+.link-box {
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.copy-btn {
+    margin: 0
 }

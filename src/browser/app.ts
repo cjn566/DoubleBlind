@@ -23,15 +23,19 @@ import Base from "./controllers/base";
         .controller('base', ["$log", "dataService", '$state', Base])
         .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
         .controller('subjectsController', ["$log", "dataService", "$state", "$stateParams", SubjectsController])
+        // Dev: template cache
         .controller('selectController', ["$log", "dataService", "$state", "studies", '$templateCache', SelectController])
         .controller('mapTwoController', ["$log", "dataService", "$state", "$stateParams", MapTwoController])
         .controller('liveController', ["$log", "dataService", "$state", "$stateParams", LiveController])
         .controller('concludedController', ["$log", "dataService", "$state", "$stateParams", ConcludedController])
         .controller('Join', ["$log", "dataService", "$state", "$stateParams", 'study', '$scope', Join])
         .config(
-            ['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider',
-            function( $stateProvider, $logProvider, $urlRouterProvider, $httpProvider, $compileProvider){
+            ['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider', '$locationProvider',
+            function( $stateProvider, $logProvider, $urlRouterProvider, $httpProvider, $compileProvider, $locationProvider){
             $logProvider.debugEnabled(true);
+
+
+                $locationProvider.html5Mode(true);
 
             $stateProvider
 
