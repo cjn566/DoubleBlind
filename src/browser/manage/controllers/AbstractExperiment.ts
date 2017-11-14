@@ -1,23 +1,23 @@
-import {Model, Stage, Study} from "../../common/interfaces/study";
+import {Model, Stage, Experiment} from "../../../common/interfaces/experiment";
 
 export default abstract class{
     $log;
     dataService;
     state;
     id: number;
-    study: Study;
+    experiment: Experiment;
 
     constructor(log, dataService, state, params) {
         this.dataService = dataService;
         this.$log = log;
         this.state = state;
         this.id = params.id;
-        if(params.study) {
-            this.study = params.study;
+        if(params.experiment) {
+            this.experiment = params.experiment;
         }
         else {
-            dataService.getStudyForOwner(params.id).then((study) => {
-                this.study = study;
+            dataService.getExperimentForOwner(params.id).then((experiment) => {
+                this.experiment = experiment;
             });
         }
     }

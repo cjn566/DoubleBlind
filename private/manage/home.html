@@ -1,32 +1,31 @@
 
-<form ng-submit="ctrl.newStudy()">
-    <input type="text" ng-model="ctrl.newStudyName" required="true" placeholder="New Study.."/>
+<form ng-submit="ctrl.newExperiment()">
+    <input type="text" ng-model="ctrl.newExperimentName" required="true" placeholder="New Experiment.."/>
     <button class="btn-success" ng-click="submit">
         <span class="glyphicon glyphicon-plus"></span>
     </button>
 </form>
 
-<div>
 Active Studies:
 <div class="list-group">
-    <a class="list-group-item panel active-study study-stage-{{study.stage}}"  ng-repeat="study in ctrl.active" ng-click="ctrl.selectStudy(study.id)">
+    <a class="list-group-item panel active-experiment study-stage-{{experiment.stage}}"  ng-repeat="study in ctrl.active" ng-click="ctrl.selectExperiment(study.id)">
         <h4>
-            {{study.name}}
+            {{experiment.name}}
         </h4>
 
-        <div> status: {{study.stage? 'live':'setup'}} </div>
+        <div> status: {{experiment.stage? 'live':'setup'}} </div>
 
         <div class="panel link-box">
-            <button class="btn-sm btn-default" ng-click="ctrl.joinStudy(study.link); $event.stopPropagation()">Join Study</button>
-            <button class="btn-sm btn-default" ng-click="ctrl.copyLink(study.link); $event.stopPropagation()">Copy Link</button>
+            <button class="btn-sm btn-default" ng-click="ctrl.joinExperiment(experiment.link); $event.stopPropagation()">Join Experiment</button>
+            <button class="btn-sm btn-default" ng-click="ctrl.copyLink(experiment.link); $event.stopPropagation()">Copy Link</button>
         </div>
     </a>
 </div>
-</div>
+
 
 Archive:
 <div class="list-group">
-    <a class="list-group-item"  ng-repeat="study in ctrl.archive" ng-click="ctrl.selectStudy(study.id)">
-        {{study.name}}
+    <a class="list-group-item"  ng-repeat="experiment in ctrl.archive" ng-click="ctrl.selectExperiment(experiment.id)">
+        {{experiment.name}}
     </a>
 </div>

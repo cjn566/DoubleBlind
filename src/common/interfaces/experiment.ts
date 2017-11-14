@@ -6,10 +6,10 @@ export enum Stage {
 }
 
 export enum Model {
-    study,
+    experiment,
     subject,
     question,
-    participant,
+    user,
     answer
 }
 
@@ -27,7 +27,7 @@ export interface Question {
     required: boolean
 }
 
-export interface Study {
+export interface Experiment {
     id: number,
     name: string,
     stage: Stage,

@@ -1,8 +1,8 @@
-import {Model} from "../../common/interfaces/study";
+import {Model} from "../../common/interfaces/experiment";
 import {isArray} from "util";
 import {ApiCode, ApiError} from "../../common/interfaces/codes";
 import {isOwnerOf} from "../util/Owner";
-import {doSave, getMyAnswers, getStudy} from "../persist";
+import {doSave, getMyAnswers, getExperiment} from "../persist";
 
 let context = require('../config/database');
 
@@ -15,26 +15,26 @@ module.exports = function(app) {
         return res.sendStatus(500);
     });
 
-    app.get('/getStudyForParticipant', function (req, res) {
-        getStudy(req.query.link, req.user.id, false).then((study)=>{
-            return res.json(study);
+    app.get('/getExperimentForParticipant', function (req, res) {
+        getExperiment(req.query.link, req.user.id, false).then((experiment)=>{
+            return res.json(experiment);
         }).catch((err)=>{
             apiReject(err, res);
         });
     });
 
-    app.get('/getStudyForOwner', function (req, res) {
-        getStudy(req.query.id, req.user.id, true).then((study)=>{
-            return res.json(study);
+    app.get('/getExperimentForOwner', function (req, res) {
+        getExperiment(req.query.id, req.user.id, true).then((experiment)=>{
+            return res.json(experiment);
         }).catch((err)=>{
             apiReject(err, res);
         });
     });
 
     app.get('/studies', function (req, res) {
-        context.Study.where("owner_id", req.user.id).fetchAll({columns:['id', 'name', 'stage']}).then(function (studyModel) {
-            if(studyModel) {
-                return res.json(studyModel.toJSON());
+        context.Experiment.where("owner_id", req.user.id).fetchAll({columns:['id', 'name', 'stage']}).then(function (experimentModel) {
+            if(experimentModel) {
+                return res.json(experimentModel.toJSON());
             }
             console.error('Studies model is null');
             return res.sendStatus(404);
@@ -73,8 +73,8 @@ module.exports = function(app) {
                     case Model.question:
                         model = new context.Question("id", req.body.id);
                         break;
-                    case Model.study:
-                        model = new context.Study("id", req.body.id);
+                    case Model.experiment:
+                        model = new context.Experiment("id", req.body.id);
                         break;
                 }
                 model.destroy().then((result) => {
@@ -89,7 +89,7 @@ module.exports = function(app) {
     });
 
     app.get('/myAnswers', function(req, res){
-        getMyAnswers(req.query.study_id, req.user.id).then((models)=>{
+        getMyAnswers(req.query.experiment_id, req.user.id).then((models)=>{
             return res.json(models);
         }).catch((err)=>{
             apiReject(err, res);

@@ -1,7 +1,7 @@
 <div class="show-box">
     Subject: {{ctrl.subject.name}}
     <ng-form name="buildForm">
-        <div  ng-repeat="question in ctrl.study.questions">
+        <div  ng-repeat="question in ctrl.experiment.questions">
             <label for="question.id">{{question.question}}</label>
             <input id="question.id" ng-model="question.answer">
         </div>

@@ -1,6 +1,6 @@
 
-import _controller from './AbstractStudy'
-import {Model, Stage} from "../../common/interfaces/study";
+import _controller from './AbstractExperiment'
+import {Model, Stage} from "../../../common/interfaces/experiment";
 
 export default class extends _controller{
     constructor(a,b,c,d){super(a,b,c,d)}
@@ -8,12 +8,12 @@ export default class extends _controller{
     finish = ()=>{
         if(confirm("Finish Trial?")){
             this.dataService.save({
-                type: Model.study,
+                type: Model.experiment,
                 data: {
                     id: this.id,
                     stage: Stage.concluded
                 }}).then(()=>{
-                    this.state.go('concluded', {id:this.id, study: this.study})
+                    this.state.go('concluded', {id:this.id, experiment: this.experiment})
                 })
         }
     }

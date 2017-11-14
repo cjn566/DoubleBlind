@@ -1,16 +1,17 @@
-import {Model, Stage, Study} from "../../common/interfaces/study";
-import _controller from './AbstractStudy'
-import {autoRefresh} from "../Misc";
+import {Model, Stage, Experiment} from "../../../common/interfaces/experiment";
+import _controller from './AbstractExperiment'
+import {autoRefresh} from "../../Misc";
 
 import * as copy from 'copy-to-clipboard';
+import {options} from "../../../common/options";
 
 
 export default class extends _controller{
     constructor(a,b,c,d, cache){
-        super(a,b,c,{study: true});
+        super(a,b,c,{experiment: true});
         this.studies = d;
         this.studies.map((s)=>{
-            s.link = "localhost:3000/#!/join=" + s.id;
+            s.link = options.address + ':' + options.port + "/join/" + s.id;
         });
         this.active = this.studies.filter((s)=>{return s.stage != Stage.concluded});
         this.archive = this.studies.filter((s)=>{return s.stage == Stage.concluded});
@@ -22,7 +23,7 @@ export default class extends _controller{
     active;
     archive;
     studies;
-    newStudyName;
+    newExperimentName;
 
     copyLink = (link) => {
         copy(link);
@@ -32,45 +33,50 @@ export default class extends _controller{
         console.log(link);
     };
 
-    selectStudy = (id:number) =>{
-        this.dataService.getStudyForOwner(id).then((study:Study)=>{
-            this.log(study.stage)
-            switch (study.stage) {
+    join = (link) => {
+        //let windo = window.open().location.href = link;
+        window.location.href = link;
+    };
+
+    selectExperiment = (id:number) =>{
+        this.dataService.getExperimentForOwner(id).then((experiment:Experiment)=>{
+            this.log(experiment.stage)
+            switch (experiment.stage) {
                 case Stage.build:
-                    this.state.go('build', {id: id, study: study});
+                    this.state.go('build', {id: id, experiment: experiment});
                     break;
                 case Stage.live:
-                    this.state.go('live', {id: id, name: study.name});
+                    this.state.go('live', {id: id, name: experiment.name});
                     break;
                 case Stage.concluded:
-                    this.state.go('concluded', {id: id, name: study.name});
+                    this.state.go('concluded', {id: id, name: experiment.name});
                     break;
 
             }
         })
     };
 
-    newStudy = () =>{
+    newExperiment = () =>{
         this.dataService.save([{
-            type: Model.study,
+            type: Model.experiment,
             data: {
-                name: this.newStudyName,
+                name: this.newExperimentName,
                 stage : 0,
                 anon_participants: false,
                 lock_responses: false,
                 aliases: 2
             }
         }]).then((data)=>{
-            console.log("newstudy callback:")
+            console.log("newexperiment callback:")
             console.log(data);
             this.state.go('build', {id: data[0].id});
         })
     };
 
-    deleteStudy = (id, name) => {
+    deleteExperiment = (id, name) => {
         if(confirm("Delete '" + name + "'?")) {
             if(confirm("Are you sure?!")) {
-                this.dataService.delete({type: Model.study, id: id}).then(() => {
+                this.dataService.delete({type: Model.experiment, id: id}).then(() => {
                     this.dataService.getStudies().then((studies)=>{
                         this.studies = studies;
                     })

@@ -1,7 +1,7 @@
 
 <div>
 
-    <div>Study Selected: {{ctrl.study.name}}</div>
+    <div>Experiment Selected: {{ctrl.experiment.name}}</div>
 
     <h2>Second Map</h2>
     <table border="1px solid black" align="center">
@@ -9,7 +9,7 @@
             <td>First Alias</td>
             <td>Second Alias</td>
         </tr>
-        <tr ng-form="mapForm" ng-repeat="subject in ctrl.study.subjects">
+        <tr ng-form="mapForm" ng-repeat="subject in ctrl.experiment.subjects">
             <td>{{subject.map1}}</td>
             <td>
                 <input

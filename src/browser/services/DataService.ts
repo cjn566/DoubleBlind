@@ -1,6 +1,6 @@
 
 
-import {DeleteBundle, SaveBundle} from "../../common/interfaces/study";
+import {DeleteBundle, SaveBundle} from "../../common/interfaces/experiment";
 
 export default class {
 
@@ -19,8 +19,8 @@ export default class {
         }, this.err)
     };
 
-    getStudyForOwner = (id: number) => {
-        return this.$http.get('/getStudyForOwner',
+    getExperimentForOwner = (id: number) => {
+        return this.$http.get('/getExperimentForOwner',
             {
                 'params': {'id': id}
             }).then((response) => {
@@ -28,8 +28,8 @@ export default class {
         }, this.err)
     };
 
-    getStudyForParticipant = (link: string) => {
-        return this.$http.get('/getStudyForParticipant',
+    getExperimentForParticipant = (link: string) => {
+        return this.$http.get('/getExperimentForParticipant',
             {
                 'params': {link:link}
             }
@@ -58,10 +58,10 @@ export default class {
         });
     };
 
-    answers = (study_id: number)=>{
+    answers = (experiment_id: number)=>{
         return this.$http.get('/myAnswers',
             {
-                'params': {'study_id': study_id}
+                'params': {'experiment_id': experiment_id}
             }).then((res)=>{return res.data})
     }
 
