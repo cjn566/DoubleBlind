@@ -1,5 +1,10 @@
 
 
+@font-face {
+    font-family: "Earth2073";
+    src: url("/assets/Earth2073.ttf") format("truetype");
+}
+
 td {
     padding-left: 10px;
     padding-right: 10px;
@@ -12,7 +17,7 @@ td {
 
 
 body {
-    background-color: #f2f2f2;
+    background-color: darkslategray;
 }
 
 ._section {
@@ -47,20 +52,21 @@ body {
     cursor: pointer;
 }
 
-.active-study {
+.active-exp {
     text-align: center;
     border: 1px solid lightgray;
-    width:42rem;
+    width: fit-content;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 1rem;
 }
 
 .study-stage-0 {
-    background-color: #deeaf2;
+    background-color: lightblue;
 }
 
 .study-stage-1 {
-    background-color: lightgreen;
+    background-color: lightpink;
 }
 
 .study-stage-2 {
@@ -73,10 +79,90 @@ body {
 
 .link-box {
     width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0;
+    background-color: inherit;
+    border: none
 }
 
 .copy-btn {
     margin: 0
 }
+
+.status-box {
+    margin-bottom: 1rem;
+}
+
+.archive-item {
+    text-align: center;
+}
+
+.current-studies-panel {
+    background-color: #deeaf2;
+    box-shadow: none
+}
+
+.current-studies-list {
+    border: none;
+    box-shadow: none;
+}
+
+#main-view {
+    width: 50%
+}
+
+#logo {
+    font-family: "Earth2073";
+    text-align: center;
+    padding: 2rem;
+    margin: 1rem 0;
+    background-color: sandybrown;
+    border-style: outset;
+    border-radius: 1rem;
+}
+
+#main-div {
+
+}
+
+#user-info-outer {
+    height: fit-content;
+    padding-top: 1rem;
+}
+
+
+#user-info-inner {
+    background-color: #deeaf2;
+    padding: 0.8rem;
+    width: fit-content;
+    margin-left: auto;
+    border-radius: 0.5rem;
+}
+
+#wait-for-load {
+    padding-top: 3rem;
+}
+
+.exp-name {
+    font-family: Earth2073;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

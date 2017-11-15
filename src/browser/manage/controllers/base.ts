@@ -1,5 +1,6 @@
 
 import * as jscookie from 'js-cookie';
+import {autoRefresh} from "../../Misc";
 
 export default class{
     $log;
@@ -8,7 +9,7 @@ export default class{
     loading = true;
     state;
 
-    constructor(log, dataService, state) {
+    constructor(log, dataService, state, cache) {
         this.dataService = dataService;
         this.$log = log;
         this.state = state;
@@ -16,6 +17,8 @@ export default class{
             this.user  = user;
             this.loading = false;
         });
+
+        autoRefresh(state,cache )
     }
 
     logout = ()=>{

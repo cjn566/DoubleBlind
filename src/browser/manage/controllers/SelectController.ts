@@ -11,13 +11,13 @@ export default class extends _controller{
         super(a,b,c,{experiment: true});
         this.studies = d;
         this.studies.map((s)=>{
-            s.link = options.address + ':' + options.port + "/join/" + s.id;
+            s.link = "/join/" + s.id;
         });
         this.active = this.studies.filter((s)=>{return s.stage != Stage.concluded});
         this.archive = this.studies.filter((s)=>{return s.stage == Stage.concluded});
 
         // Dev
-        autoRefresh(this.state, cache);
+        //autoRefresh(this.state, cache);
     }
 
     active;
@@ -26,7 +26,7 @@ export default class extends _controller{
     newExperimentName;
 
     copyLink = (link) => {
-        copy(link);
+        copy(options.address + ':' + options.port + link);
     };
 
     joinStudy = (link) => {
@@ -34,8 +34,8 @@ export default class extends _controller{
     };
 
     join = (link) => {
-        //let windo = window.open().location.href = link;
-        window.location.href = link;
+        console.log(link)
+        window.open(link);
     };
 
     selectExperiment = (id:number) =>{

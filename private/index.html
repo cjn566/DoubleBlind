@@ -33,16 +33,20 @@
     </head>
 
     <body ng-app="DoubleBlind"  class="container full-height">
-        <div ng-controller="base as base" class="row  align-items-center justify-content-center full-height">
-            <h1 >
+        <div ng-controller="base as base" div="main-div" class="align-items-center justify-content-center full-height row">
+            <div id="user-info-outer">
+                <div id="user-info-inner">
+                    Welcome, <b>{{base.user}}!</b>
+                    <a ng-click="base.logout()">not you?</a>
+                </div>
+            </div>
+            <h1 id="logo">
                 <span class="is-link" ng-click="base.goHome()">
                     Double Blind
                 </span>
             </h1>
-            <div class="loading" ng-show="base.loading">Loading...</div>
-            <div id="wait-for-load" ng-cloak ng-hide="base.loading" class="row">
-                <p>Welcome, <b>{{base.user}}!</b> <a ng-click="base.logout()">not you?</a></p>
-                <ui-view></ui-view>
+            <div id="wait-for-load" ng-cloak ng-hide="base.loading">
+                <ui-view id="main-view"></ui-view>
             </div>
         </div>
     </body>

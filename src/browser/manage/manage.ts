@@ -19,7 +19,7 @@ import Base from "../manage/controllers/base";
     angular.module("DoubleBlind", ["ui.router"])
         .factory("dataService", ["$http", "$log", DataService])
         .factory('httpInterceptor', ['$q', '$rootScope', '$location', '$state', httpInterceptor])
-        .controller('base', ["$log", "dataService", '$state', Base])
+        .controller('base', ["$log", "dataService", '$state', '$templateCache', Base])
         .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
         .controller('subjectsController', ["$log", "dataService", "$state", "$stateParams", SubjectsController])
         .controller('selectController', ["$log", "dataService", "$state", "studies", '$templateCache', SelectController])
