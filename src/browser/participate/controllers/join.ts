@@ -42,7 +42,7 @@ export default class{
                         {
                             experiment_id: this.experiment.id,
                             question_id: Q.id,
-                            subject_id: this.subject.id,
+                            subject_id: -1,
                             value: Q.answer
                         }
                 }

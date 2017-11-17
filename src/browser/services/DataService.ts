@@ -63,6 +63,12 @@ export default class {
             {
                 'params': {'experiment_id': experiment_id}
             }).then((res)=>{return res.data})
-    }
+    };
+
+    answersForHost = (experiment_id: number) =>{
+        return this.$http.get('/answersForHost', {
+            'params': {'experiment_id': experiment_id}
+        }).then((res)=>{return res.data})
+    };
 
 }

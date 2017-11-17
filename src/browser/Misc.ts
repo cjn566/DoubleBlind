@@ -42,8 +42,8 @@ export function resetValidations(elementNames){
 
 // DEV:
 export function autoRefresh(state, cache) {
-    setTimeout(() => {
+    setInterval(() => {
         cache.removeAll();
         state.reload();
-    }, 1000);
+    }, 2000);
 }

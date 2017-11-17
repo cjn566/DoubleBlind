@@ -27,6 +27,14 @@ export interface Question {
     required: boolean
 }
 
+export interface Answer {
+    id: number,
+    participant_id: number,
+    question_id: number,
+    subject_id: number,
+    timestamp
+}
+
 export interface Experiment {
     id: number,
     name: string,

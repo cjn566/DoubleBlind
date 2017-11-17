@@ -7,14 +7,18 @@ import httpInterceptor from '../services/HttpInterceptor';
 import Join from "./controllers/join";
 import Base from "../manage/controllers/base";
 
-
+document.addEventListener('load', function() {
+    let scale = 1 / (window.devicePixelRatio || 1);
+    let content = 'width=device-width, initial-scale=' + scale;
+    document.querySelector('meta[name="viewport"]').setAttribute('content', content)
+}, false);
 
 (function(){
 
     angular.module("DoubleBlind", ["ui.router"])
         .factory("dataService", ["$http", "$log", DataService])
         .factory('httpInterceptor', ['$q', '$rootScope', '$location', '$state', httpInterceptor])
-        .controller('base', ["$log", "dataService", '$state', Base])
+        .controller('base', ["$log", "dataService", '$state', '$templateCache', Base])
         .controller('Join', ["$log", "dataService", "$state", "$stateParams", 'experiment', '$scope', Join])
         .config(
             ['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider', '$locationProvider',
@@ -43,16 +47,16 @@ import Base from "../manage/controllers/base";
                         }]
                     }
                 })
+                .state("join.prelim",{
+                    url:"",
+                    templateUrl:"prelim-questions.html"
+                })
                 .state("join.select",{
                     url:"",
-                    controller: "Join",
-                    controllerAs: "ctrl",
                     templateUrl:"select-subject.html"
                 })
                 .state("join.answer",{
                     url:"/:subId",
-                    controller: "Join",
-                    controllerAs: "ctrl",
                     templateUrl:"answer-questions.html",
                     params: {
                         subId: null

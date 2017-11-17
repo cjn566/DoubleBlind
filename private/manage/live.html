@@ -1,9 +1,22 @@
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Submissions</div>
 
-<div>
-
-    <div>Experiment Selected: {{ctrl.experimentName}}</div>
-
-    Experiment is in progress
-
-    <button ng-click="ctrl.finish()">Finish</button>
+    <!-- Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Participant</th>
+                <th ng-if="ctrl.experiment.preQuestions.length > 0">Pre</th>
+                <th ng-repeat="subject in ctrl.experiment.subjects">{{subject.name}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="user in ctrl.users">
+                <th>{{user}}</th>
+                <td ng-if="ctrl.experiment.preQuestions.length > 0">{{ctrl.answered(user, -1)}}</td>
+                <td ng-repeat="subject in ctrl.experiment.subjects">{{ctrl.answered(user, subject.id)}}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>

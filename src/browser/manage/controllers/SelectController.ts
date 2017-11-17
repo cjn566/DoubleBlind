@@ -40,16 +40,15 @@ export default class extends _controller{
 
     selectExperiment = (id:number) =>{
         this.dataService.getExperimentForOwner(id).then((experiment:Experiment)=>{
-            this.log(experiment.stage)
             switch (experiment.stage) {
                 case Stage.build:
-                    this.state.go('build', {id: id, experiment: experiment});
+                    this.state.go('build.setup', {id: id});
                     break;
                 case Stage.live:
-                    this.state.go('live', {id: id, name: experiment.name});
+                    this.state.go('live', {id: id});
                     break;
                 case Stage.concluded:
-                    this.state.go('concluded', {id: id, name: experiment.name});
+                    this.state.go('results', {id: id});
                     break;
 
             }

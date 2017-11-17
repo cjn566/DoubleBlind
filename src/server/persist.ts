@@ -67,6 +67,12 @@ export function getMyAnswers(experiment_id, part_id) {
     })
 }
 
+export function getAnswersForHost(experiment_id) {
+    return context.Answer.where({"experiment_id":experiment_id}).fetchAll({columns: ['id', 'question_id', 'subject_id', 'participant_id', 'timestamp']}).then((models)=>{
+        return models.toJSON();
+    })
+}
+
 export function getExperiment(link: string, user: number, manage: boolean) {
     let options = {
         withRelated: ['subjects', 'questions']

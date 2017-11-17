@@ -13,6 +13,8 @@
     <meta charset="utf-8" />
     <title>Join Experiment</title>
 
+    <script src="/participate.js" type="text/javascript"></script>
+
     <script
             src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
             integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
@@ -27,22 +29,24 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-    <script src="/participate.js" type="text/javascript"></script>
 
     <link rel="stylesheet" href="/css/main.css">
 </head>
 
 <body ng-app="DoubleBlind"  class="container full-height">
-<div ng-controller="base as base" class="row  align-items-center justify-content-center full-height">
-    <h1 >
-        <span class="is-link" ng-click="base.goHome()">
-            Double Blind
-        </span>
+<div ng-controller="base as base" id="main-div" class="align-items-center justify-content-center full-height row">
+
+    <div id="user-info">
+        Welcome, <b>{{base.user}}!</b>
+        <a ng-click="base.logout()">not you?</a>
+    </div>
+    <h1 id="logo">
+                <span class="is-link" ng-click="base.goHome()">
+                    Double Blind
+                </span>
     </h1>
-    <div class="loading" ng-show="base.loading">Loading...</div>
     <div id="wait-for-load" ng-cloak ng-hide="base.loading">
-        <p>Welcome, <b>{{base.user}}!</b> <a ng-click="base.logout()">not you?</a></p>
-        <ui-view></ui-view>
+        <ui-view id="main-view"></ui-view>
     </div>
 </div>
 </body>

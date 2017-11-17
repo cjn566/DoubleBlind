@@ -46,36 +46,35 @@ import Base from "../manage/controllers/base";
                 })
                 .state("build",{
                     url:"/build/:id",
+                    abstract:true,
                     controller: "manageController",
                     controllerAs: "ctrl",
-                    templateUrl:"buildexperiment.html",
+                    templateUrl:"build-shell.html",
                     params: {
                         experiment: null,
                         id: null
                     }
                 })
-                .state("subjects",{
-                    url:"/subjects/:id",
+                .state("build.setup",{
+                    url:"",
+                    controller: "manageController",
+                    controllerAs: "ctrl",
+                    templateUrl:"buildstudy.html"
+                })
+                .state("build.subjects",{
+                    url:"",
                     controller: "subjectsController",
                     controllerAs: "ctrl",
-                    templateUrl:"add_subjects.html",
-                    params: {
-                        experiment: null,
-                        id: null
-                    }
+                    templateUrl:"add_subjects.html"
                 })
-                .state("map",{
-                    url:"/map/:id",
+                .state("build.map",{
+                    url:"",
                     controller: "mapTwoController",
                     controllerAs: "ctrl",
-                    templateUrl:"secondmap.html",
-                    params: {
-                        experiment: null,
-                        id: null
-                    }
+                    templateUrl:"secondmap.html"
                 })
                 .state("live",{
-                    url:"/build/:id",
+                    url:"/live/:id",
                     controller: "liveController",
                     controllerAs: "ctrl",
                     templateUrl:"live.html",
@@ -84,8 +83,8 @@ import Base from "../manage/controllers/base";
                         id: null
                     }
                 })
-                .state("concluded",{
-                    url:"/build/:id",
+                .state("results",{
+                    url:"/results/:id",
                     controller: "concludedController",
                     controllerAs: "ctrl",
                     templateUrl:"concluded.html",

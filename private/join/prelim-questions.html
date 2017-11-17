@@ -1,0 +1,10 @@
+Preliminary questions:
+<ul>
+    <li ng-repeat="question in ctrl.experiment.preQuestions">
+        <div>
+            <label for="question.id">{{question.text}}</label>
+            <input id="question.id" ng-model="question.answer">
+        </div>
+    </li>
+</ul>
+<button ng-click="ctrl.updatePreAnswers()">commit</button>

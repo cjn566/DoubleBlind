@@ -33,13 +33,12 @@
     </head>
 
     <body ng-app="DoubleBlind"  class="container full-height">
-        <div ng-controller="base as base" div="main-div" class="align-items-center justify-content-center full-height row">
-            <div id="user-info-outer">
-                <div id="user-info-inner">
+        <div ng-controller="base as base" id="main-div" class="align-items-center justify-content-center full-height row">
+
+                <div id="user-info">
                     Welcome, <b>{{base.user}}!</b>
                     <a ng-click="base.logout()">not you?</a>
                 </div>
-            </div>
             <h1 id="logo">
                 <span class="is-link" ng-click="base.goHome()">
                     Double Blind

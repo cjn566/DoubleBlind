@@ -40,7 +40,7 @@ app.use((req, res, next)=>{
             return res.redirect(redirect);
         } else {
             // AUTO LOG IN FOR DEV PURPOSES!
-            req.login({id: 6}, (err) => {
+            req.login({id: 2}, (err) => {
                 return next();
             });
         }
@@ -53,11 +53,15 @@ app.use('/', express.static(path.join(__dirname, '../../private')));
 app.use('/', express.static(path.join(__dirname, '../../private/join')));
 app.use('/', express.static(path.join(__dirname, '../../private/manage')));
 
+require('./routes/data')(app);
+
 app.all('/join/*', function(req, res, next) {
     res.sendFile(path.join(__dirname, '../../private/join.html'));
 });
 
-require('./routes/data')(app);
+app.all('/*', function(req, res, next) {
+    res.sendFile(path.join(__dirname, '../../private/index.html'));
+});
 
 //Nothing found
 app.use((req, res)=>{

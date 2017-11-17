@@ -2,7 +2,7 @@ import {Model} from "../../common/interfaces/experiment";
 import {isArray} from "util";
 import {ApiCode, ApiError} from "../../common/interfaces/codes";
 import {isOwnerOf} from "../util/Owner";
-import {doSave, getMyAnswers, getExperiment} from "../persist";
+import {doSave, getMyAnswers, getExperiment, getAnswersForHost} from "../persist";
 
 let context = require('../config/database');
 
@@ -90,6 +90,14 @@ module.exports = function(app) {
 
     app.get('/myAnswers', function(req, res){
         getMyAnswers(req.query.experiment_id, req.user.id).then((models)=>{
+            return res.json(models);
+        }).catch((err)=>{
+            apiReject(err, res);
+        });
+    });
+
+    app.get('/answersForHost', function(req, res){
+        getAnswersForHost(req.query.experiment_id).then((models)=>{
             return res.json(models);
         }).catch((err)=>{
             apiReject(err, res);

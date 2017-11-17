@@ -12,7 +12,8 @@ td {
 }
 
 .show-box {
-    border: 1px solid blue
+    border: 1px solid blue;
+    background-color: white;
 }
 
 
@@ -98,7 +99,6 @@ body {
 
 .current-studies-panel {
     background-color: #deeaf2;
-    box-shadow: none
 }
 
 .current-studies-list {
@@ -107,14 +107,15 @@ body {
 }
 
 #main-view {
-    width: 50%
+    background-color: lightgrey;
+    height: 50rem;
 }
 
 #logo {
     font-family: "Earth2073";
     text-align: center;
     padding: 2rem;
-    margin: 1rem 0;
+    margin: 1rem 0 0;
     background-color: sandybrown;
     border-style: outset;
     border-radius: 1rem;
@@ -124,33 +125,36 @@ body {
 
 }
 
-#user-info-outer {
-    height: fit-content;
-    padding-top: 1rem;
-}
-
-
-#user-info-inner {
-    background-color: #deeaf2;
+#user-info {
+    background-color: lightgoldenrodyellow;
     padding: 0.8rem;
     width: fit-content;
-    margin-left: auto;
+    margin: 1rem 0 1rem auto;
     border-radius: 0.5rem;
 }
 
 #wait-for-load {
-    padding-top: 3rem;
+    padding-top: 2rem;
 }
 
 .exp-name {
     font-family: Earth2073;
 }
 
+#exp {
+    width: fit-content;
+    margin: 0 auto 1rem;
+    padding: 1rem 4rem;
+}
 
+#exp h3 {
+    margin: 0;
+}
 
-
-
-
+.bot-btns {
+    width: fit-content;
+    margin-left: auto;
+}
 
 
 
