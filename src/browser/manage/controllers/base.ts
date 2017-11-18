@@ -18,7 +18,7 @@ export default class{
             this.loading = false;
         });
 
-        autoRefresh(state,cache )
+        //autoRefresh(state,cache )
     }
 
     logout = ()=>{

@@ -55,7 +55,7 @@ export default class extends _controller{
                 }
             }
         })).then(()=>{
-            this.state.go('map', {id: this.experiment.id, experiment: this.experiment})
+            this.state.go('build.map', {id: this.experiment.id, experiment: this.experiment})
         })
     }
 }

@@ -97,7 +97,7 @@ export default class extends _controller{
 
             this.dataService.save(saves)
                 .then(()=>{
-                    this.state.go('subjects', {id: this.experiment.id, experiment: this.experiment});
+                    this.state.go('build.subjects', {id: this.experiment.id, experiment: this.experiment});
                 });
         }
     };

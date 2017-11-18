@@ -66,7 +66,7 @@
                         </span>
                 </div>
 
-                <div class="panel _question-panel" ng-repeat="question in ctrl.study.preQuestions">
+                <div class="panel _question-panel" ng-repeat="question in ctrl.experiment.preQuestions">
                     <input class="form-control _question-text" ng-model="question.text">
                     <div class="checkbox _question-req" data-toggle="tooltip" title="Require participants to provide a response to this question.">
                         <label>
@@ -98,7 +98,7 @@
                         </span>
                 </div>
 
-                <div class="panel _question-panel" ng-repeat="question in ctrl.study.questions">
+                <div class="panel _question-panel" ng-repeat="question in ctrl.experiment.questions">
                     <input class="form-control _question-text" ng-model="question.text">
                     <div class="checkbox _question-req" data-toggle="tooltip" title="Require participants to provide a response to this question.">
                         <label>
