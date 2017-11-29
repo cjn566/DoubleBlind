@@ -10,7 +10,9 @@ let bodyParser = require('body-parser');
 let express = require('express');
 let app  = express();
 
-app.use('/', express.static(path.join(__dirname, '../../public')));
+app.use('/', express.static(path.join(__dirname, '../../public'), {
+    extensions: ['html', 'htm']
+}));
 
 app.use(require('cookie-parser')());
 
@@ -48,10 +50,13 @@ app.use((req, res, next)=>{
 else return next();
 });
 
+app.use('/', express.static(path.join(__dirname, '../../private'), {
+    extensions: ['html', 'htm']
+}));
 
-app.use('/', express.static(path.join(__dirname, '../../private')));
-app.use('/', express.static(path.join(__dirname, '../../private/join')));
-app.use('/', express.static(path.join(__dirname, '../../private/manage')));
+app.use('/', express.static(path.join(__dirname, '../../private/manage'), {
+    extensions: ['html', 'htm']
+}));
 
 require('./routes/data')(app);
 

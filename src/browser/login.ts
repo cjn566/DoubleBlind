@@ -76,13 +76,7 @@ $( document ).ready(function() {
 
     let handleResponse = (res)=>{
         if(res === LoginCode.ok) {
-            let destination;
-            let join = $.urlParam('join');
-            if(join) {
-                destination = "/#!/controllers=" + join;
-            }
-            else destination = "/#!/";
-            window.location.href = destination;
+            window.location.href = "/manage.html";
         } else {
             switch (res) {
                 case LoginCode.userExist:

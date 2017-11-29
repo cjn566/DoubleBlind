@@ -34,7 +34,7 @@ import Base from "../manage/controllers/base";
 
             $stateProvider
                 .state("home",{
-                    url:"/",
+                    url:"/manage.html",
                     controller: "selectController",
                     controllerAs: "ctrl",
                     templateUrl:"home.html",
