@@ -1,8 +1,8 @@
 
 import 'angular-ui-router';
 import * as angular from 'angular';
-import DataService from '../services/DataService';
-import httpInterceptor from '../services/HttpInterceptor';
+import DataService from './services/DataService';
+import httpInterceptor from './services/HttpInterceptor';
 
 import SelectController from "../manage/controllers/SelectController";
 import MapTwoController from "../manage/controllers/MapTwoController";
@@ -40,7 +40,7 @@ import Base from "../manage/controllers/base";
                     templateUrl:"home.html",
                     resolve: {
                         studies: function(dataService){
-                            return dataService.getStudies()
+                            return dataService.getExperiments()
                         }
                     }
                 })
@@ -48,12 +48,18 @@ import Base from "../manage/controllers/base";
                     url:"/build/:id",
                     abstract:true,
                     controller: "manageController",
-                    controllerAs: "ctrl",
+                    controllerAs: "shell",
                     templateUrl:"build-shell.html",
                     params: {
                         experiment: null,
                         id: null
                     }
+                })
+                .state("build.name",{
+                    url:"",
+                    controller: "manageController",
+                    controllerAs: "ctrl",
+                    templateUrl:"buildname.html"
                 })
                 .state("build.setup",{
                     url:"",
@@ -63,13 +69,13 @@ import Base from "../manage/controllers/base";
                 })
                 .state("build.subjects",{
                     url:"",
-                    controller: "subjectsController",
+                    controller: "manageController",
                     controllerAs: "ctrl",
                     templateUrl:"add_subjects.html"
                 })
                 .state("build.map",{
                     url:"",
-                    controller: "mapTwoController",
+                    controller: "manageController",
                     controllerAs: "ctrl",
                     templateUrl:"secondmap.html"
                 })

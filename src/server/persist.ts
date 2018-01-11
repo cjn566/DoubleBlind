@@ -19,7 +19,7 @@ export function doSave(save, userId) {
                 })
             } else {
                 let tryId = () => {
-                    let Id = makeId(10);
+                    let Id = makeId(4);
                     return context.Experiment.where('id', Id).count().then((count) => {
                         if (count > 0) { // Exists, try again
                             return tryId();
@@ -55,9 +55,6 @@ export function doSave(save, userId) {
                         message: "You aren't the owner of that question."
                     });
                 });
-        case Model.answer:
-            save.data["participant_id"] = userId;
-            return new context.Answer(save.data).save();
     }
 }
 
@@ -73,7 +70,7 @@ export function getAnswersForHost(experiment_id) {
     })
 }
 
-export function getExperiment(link: string, user: number, manage: boolean) {
+export function getExperiment(link: string, manage: boolean, user?: number) {
     let options = {
         withRelated: ['subjects', 'questions']
     };
@@ -94,27 +91,24 @@ export function getExperiment(link: string, user: number, manage: boolean) {
                     case Stage.concluded:
                         // return {stage: experiment.stage};
                     case Stage.live:
-                        return getMyAnswers(experiment.id, user).then((answers) => {
-                            experiment['answers'] = answers;
-                            switch (experiment.aliases) {
-                                case 1:
-                                    experiment.subjects.map((s) => {
-                                        s.name = s.map1;
-                                    });
-                                    break;
-                                case 2:
-                                    experiment.subjects.map((s) => {
-                                        s.name = s.map2;
-                                    });
-                                    break;
-                            }
-                            delete experiment.aliases;
-                            experiment.subjects.map((s) => {
-                                delete s.map1;
-                                delete s.map2;
-                            });
-                            return experiment;
+                        switch (experiment.aliases) {
+                            case 1:
+                                experiment.subjects.map((s) => {
+                                    s.name = s.map1;
+                                });
+                                break;
+                            case 2:
+                                experiment.subjects.map((s) => {
+                                    s.name = s.map2;
+                                });
+                                break;
+                        }
+                        delete experiment.aliases;
+                        experiment.subjects.map((s) => {
+                            delete s.map1;
+                            delete s.map2;
                         });
+                        return experiment;
                     default:
                         return makeReject({code: ApiCode.serverErr, message: "Experiment stage failure"});
                 }

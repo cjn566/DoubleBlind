@@ -36,9 +36,6 @@ export let Answer = bookshelf.Model.extend({
     question: function(){
         return this.belongsTo(Question);
     },
-    participant: function(){
-        return this.belongsTo(User);
-    },
     subject: function(){
         return this.belongsTo(Subject);
     },

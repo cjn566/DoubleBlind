@@ -1,10 +1,13 @@
 Preliminary questions:
-<ul>
-    <li ng-repeat="question in ctrl.experiment.preQuestions">
+
+<div id="prequestion-feedback-parent" class="form-group">
+    <div ng-repeat="question in ctrl.experiment.preQuestions">
         <div>
-            <label for="question.id">{{question.text}}</label>
-            <input id="question.id" ng-model="question.answer">
+            <label for="question.id">{{question.text}}<span style="color:red">{{question.required?"*":""}}</span></label>
+            <input class="form-control" id="question.id" ng-model="question.answer" ng-disabled="question.locked"/>
         </div>
-    </li>
-</ul>
+    </div>
+
+    <div class="form-control-feedback" id="prequestion-feedback" style="display:none"></div>
+</div>
 <button ng-click="ctrl.updatePreAnswers()">commit</button>

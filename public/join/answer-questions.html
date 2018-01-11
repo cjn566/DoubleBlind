@@ -1,10 +1,15 @@
 <div class="show-box">
     Subject: {{ctrl.subject.name}}
     <ng-form name="buildForm">
-        <div  ng-repeat="question in ctrl.experiment.questions">
-            <label for="question.id">{{question.question}}</label>
-            <input id="question.id" ng-model="question.answer">
+        <div id="question-feedback-parent" class="form-group">
+            <div  ng-repeat="question in ctrl.experiment.questions">
+                <label for="question.id">{{question.text}}<span style="color:red">{{question.required?"*":""}}</span></label>
+                <input class="form-control" id="question.id" ng-model="question.answer" ng-disabled="question.locked">
+            </div>
+            <div class="form-control-feedback" id="question-feedback" style="display:none"></div>
         </div>
+
+        <button ng-click="ctrl.state.go('join.select')">Back</button>
         <button ng-click="ctrl.updateAnswers()">Submit</button>
     </ng-form>
 </div>

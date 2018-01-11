@@ -1,22 +1,10 @@
 <div class="panel">
-
-    Preliminary questions:
+    <a ui-sref="join.prelim">change preliminary answers</a>
+    <p>Select subject:</p>
     <ul>
-        <li ng-repeat="question in ctrl.experiment.preQuestions">
-            <div>
-                <label for="question.id">{{question.question}}</label>
-                <input id="question.id" ng-model="question.answer">
-            </div>
+        <li ng-repeat="subject in ctrl.experiment.subjects" ng-click="ctrl.loadSubject(subject.id)">
+            {{subject.name}}<span ng-if="subject.complete"> **Complete**</span>
         </li>
     </ul>
-    <button ng-click="ctrl.updatePreAnswers()">commit</button>
-
-
-
-    Select subject:
-    <ul>
-        <li ng-repeat="subject in ctrl.experiment.subjects" ng-click="ctrl.selectSubject(subject.id)">
-            {{subject.name}}
-        </li>
-    </ul>
+    <span ng-if="ctrl.complete">You've reviewed all subjects. Thank you for your time!</span>
 </div>

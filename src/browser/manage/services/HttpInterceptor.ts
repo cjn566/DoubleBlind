@@ -1,6 +1,6 @@
 
 
-import {ApiCode} from "../../common/interfaces/codes";
+import {ApiCode} from "../../../common/interfaces/codes";
 
 export default class {
 

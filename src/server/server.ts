@@ -2,7 +2,7 @@
 import {options} from "../common/options";
 /// <reference path="Scripts/typings/bookshelf.d.ts" />
 
-let devmode = false;
+let devmode = true;
 
 let loginURL: string = '/login.html';
 let path = require('path');
@@ -31,13 +31,22 @@ require('./config/passport')(app);
 
 app.use('/auth', require('./routes/auth')());
 
+
+app.all('/join/*', function(req, res, next) {
+    res.sendFile(path.join(__dirname, '../../public/join.html'));
+});
+
+
+require('./routes/join_API')(app);
+
+
 // Ensure logged in
 app.use((req, res, next)=>{
     if(!req.user) {
         if(!devmode) {
             let redirect = loginURL;
             if (req.query.join) {
-                redirect += "?controllers=" + req.query.join
+                redirect += "?join=" + req.query.join
             }
             return res.redirect(redirect);
         } else {
@@ -50,6 +59,10 @@ app.use((req, res, next)=>{
 else return next();
 });
 
+app.all('/build/*', function(req, res, next) {
+    res.sendFile(path.join(__dirname, '../../private/manage.html'));
+});
+
 app.use('/', express.static(path.join(__dirname, '../../private'), {
     extensions: ['html', 'htm']
 }));
@@ -58,14 +71,11 @@ app.use('/', express.static(path.join(__dirname, '../../private/manage'), {
     extensions: ['html', 'htm']
 }));
 
-require('./routes/data')(app);
+require('./routes/manage_API')(app);
 
-app.all('/join/*', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '../../private/join.html'));
-});
 
 app.all('/*', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '../../private/index.html'));
+    res.sendFile(path.join(__dirname, '../../public/index.html'));
 });
 
 //Nothing found

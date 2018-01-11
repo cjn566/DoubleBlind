@@ -29,10 +29,6 @@ export default class extends _controller{
         copy(options.address + ':' + options.port + link);
     };
 
-    joinStudy = (link) => {
-        console.log(link);
-    };
-
     join = (link) => {
         console.log(link)
         window.open(link);
@@ -42,7 +38,7 @@ export default class extends _controller{
         this.dataService.getExperimentForOwner(id).then((experiment:Experiment)=>{
             switch (experiment.stage) {
                 case Stage.build:
-                    this.state.go('build.setup', {id: id});
+                    this.state.go('build.name', {id: id});
                     break;
                 case Stage.live:
                     this.state.go('live', {id: id});
@@ -61,7 +57,6 @@ export default class extends _controller{
             data: {
                 name: this.newExperimentName,
                 stage : 0,
-                anon_participants: false,
                 lock_responses: false,
                 aliases: 2
             }
@@ -76,7 +71,7 @@ export default class extends _controller{
         if(confirm("Delete '" + name + "'?")) {
             if(confirm("Are you sure?!")) {
                 this.dataService.delete({type: Model.experiment, id: id}).then(() => {
-                    this.dataService.getStudies().then((studies)=>{
+                    this.dataService.getExperiments().then((studies)=>{
                         this.studies = studies;
                     })
                 })

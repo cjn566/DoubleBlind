@@ -4,16 +4,16 @@
 <ng-form name="buildForm">
     <div class="panel-group">
 
+
+        <p>Describe your study. This information will be shown to each participant when they first join your experiment.</p>
+        <input ng-model="ctrl.experiment.description">
+
+        <p>Conclusion text. This will be shown to participants when they have reviewed all {{ctrl.experiment.plural}}.</p>
+        <input ng-model="ctrl.experiment.conclusion">
+
         <div class="panel panel-default">
             <div class="panel-heading">Options</div>
             <div class="panel-body">
-
-                <div class="checkbox" data-toggle="tooltip" title="When exporting results, usernames will be replaced by anonymous identites.">
-                    <label>
-                        <input type="checkbox" ng-model="ctrl.study.anon_participants">
-                        Anonymize participants
-                    </label>
-                </div>
 
                 <div class="checkbox" data-toggle="tooltip" title="Participants will not be able to overwrite their responses.">
                     <label>
@@ -22,24 +22,24 @@
                     </label>
                 </div>
 
-                <div class="form-group" data-toggle="tooltip" title="Number of times to alias the identity of each subject.">
+                <div class="form-group" data-toggle="tooltip" title="Number of times to alias the identity of each {{ctrl.experiment.moniker}}.">
                     <label>Aliases</label>
                     <div class="radio">
                         <label>
                             <input type="radio" ng-value="0" ng-model="ctrl.study.aliases">
-                            None - Everyone knows the identity of each subject
+                            None - Everyone knows the identity of each {{ctrl.experiment.moniker}}
                         </label>
                     </div>
                     <div class="radio">
                         <label>
                             <input type="radio" ng-value="1" ng-model="ctrl.study.aliases">
-                            Single Blind - Only you know the identity of each subject
+                            Single Blind - Only you know the identity of each {{ctrl.experiment.moniker}}
                         </label>
                     </div>
                     <div class="radio">
                         <label>
                             <input type="radio" ng-value="2" ng-model="ctrl.study.aliases" aria-describedby="reqCoop">
-                            Double Blind - Nobody knows the identity of each subject
+                            Double Blind - Nobody knows the identity of each {{ctrl.experiment.moniker}}
                             <small id="reqCoop" class="form-text text-muted" style="display:block">
                                 *requires cooperation with a participant
                             </small>
@@ -52,7 +52,7 @@
 
 
         <div class="panel panel-default">
-            <div class="panel-heading">Preliminary questions - asked once per participant before they review any subjects</div>
+            <div class="panel-heading">Preliminary questions - asked once per participant before they review any {{ctrl.experiment.plural}}</div>
             <div class="panel-body">
 
                 <div class="input-group">
@@ -84,7 +84,7 @@
         </div>
 
         <div class="panel panel-default">
-            <div class="panel-heading">Subject questions - Asked for each subject</div>
+            <div class="panel-heading">Subject questions - Asked for each {{ctrl.experiment.moniker}}</div>
             <div class="panel-body">
 
                 <div class="input-group">
@@ -114,9 +114,4 @@
             </div>
         </div>
 
-    </div>
-
-    <div class="bot-btns">
-        <button ui-sref="select">Back</button>
-        <button ng-click="ctrl.buildToMap1()">Continue</button>
     </div>

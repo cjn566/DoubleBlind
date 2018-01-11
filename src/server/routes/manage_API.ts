@@ -15,16 +15,8 @@ module.exports = function(app) {
         return res.sendStatus(500);
     });
 
-    app.get('/getExperimentForParticipant', function (req, res) {
-        getExperiment(req.query.link, req.user.id, false).then((experiment)=>{
-            return res.json(experiment);
-        }).catch((err)=>{
-            apiReject(err, res);
-        });
-    });
-
     app.get('/getExperimentForOwner', function (req, res) {
-        getExperiment(req.query.id, req.user.id, true).then((experiment)=>{
+        getExperiment(req.query.id, true, req.user.id).then((experiment)=>{
             return res.json(experiment);
         }).catch((err)=>{
             apiReject(err, res);
@@ -62,6 +54,7 @@ module.exports = function(app) {
         }
     });
 
+
     app.post('/delete', function (req, res) {
         isOwnerOf(req.body.type, req.body.id, req.user.id).then((authed)=>{
             if(authed){
@@ -88,14 +81,6 @@ module.exports = function(app) {
         });
     });
 
-    app.get('/myAnswers', function(req, res){
-        getMyAnswers(req.query.experiment_id, req.user.id).then((models)=>{
-            return res.json(models);
-        }).catch((err)=>{
-            apiReject(err, res);
-        });
-    });
-
     app.get('/answersForHost', function(req, res){
         getAnswersForHost(req.query.experiment_id).then((models)=>{
             return res.json(models);
@@ -103,7 +88,6 @@ module.exports = function(app) {
             apiReject(err, res);
         });
     });
-
 
     let er = (e)=>{
         console.error(e);

@@ -36,6 +36,10 @@ export interface Answer {
 }
 
 export interface Experiment {
+    plural: string;
+    moniker: string;
+    conclusion: string;
+    description: string;
     id: number,
     name: string,
     stage: Stage,
@@ -43,7 +47,6 @@ export interface Experiment {
     questions: Question[],
     preQuestions: Question[],
     aliases: number,
-    anon_participants: boolean,
     lock_responses: boolean
 }
 

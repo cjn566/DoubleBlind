@@ -1,7 +1,6 @@
 import {LoginCode} from '../common/interfaces/codes'
 import {invalid, resetValidations} from "./Misc";
-import * as $ from 'jquery';
-//declare let $: any;
+declare let $: any;
 
 
 document.addEventListener('load', function() {

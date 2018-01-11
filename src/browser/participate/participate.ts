@@ -1,11 +1,10 @@
 
 import 'angular-ui-router';
 import * as angular from 'angular';
-import DataService from '../services/DataService';
-import httpInterceptor from '../services/HttpInterceptor';
+import DataService from './services/DataService';
+import httpInterceptor from '../manage/services/HttpInterceptor';
 
 import Join from "./controllers/join";
-import Base from "../manage/controllers/base";
 
 document.addEventListener('load', function() {
     let scale = 1 / (window.devicePixelRatio || 1);
@@ -18,8 +17,7 @@ document.addEventListener('load', function() {
     angular.module("DoubleBlind", ["ui.router"])
         .factory("dataService", ["$http", "$log", DataService])
         .factory('httpInterceptor', ['$q', '$rootScope', '$location', '$state', httpInterceptor])
-        .controller('base', ["$log", "dataService", '$state', '$templateCache', Base])
-        .controller('Join', ["$log", "dataService", "$state", "$stateParams", 'experiment', '$scope', Join])
+        .controller('Join', ["$log", "dataService", "$state", "$stateParams", 'experiment', 'answers', '$scope', Join])
         .config(
             ['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider', '$locationProvider',
             function( $stateProvider, $logProvider, $urlRouterProvider, $httpProvider, $compileProvider, $lp){
@@ -44,11 +42,16 @@ document.addEventListener('load', function() {
                             return dataService.getExperimentForParticipant($stateParams.link).then((experiment)=>{
                                 return experiment;
                             });
+                        }],
+                        answers: ["dataService", "$stateParams", function(dataService, params){
+                            return dataService.getAnswers(params.link).then((answers)=>{
+                                return answers;
+                            })
                         }]
                     }
                 })
                 .state("join.prelim",{
-                    url:"",
+                    url:"/prelim",
                     templateUrl:"prelim-questions.html"
                 })
                 .state("join.select",{
