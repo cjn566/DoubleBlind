@@ -3,6 +3,6 @@
 <ui-view></ui-view>
 
 <div class="bot-btns">
-    <button ng-click="shell.back()" ng-hide="shell.state.current.name == 'build.name'">Back</button>
-    <button ng-click="shell.next()">{{shell.nextText}}</button>
+    <button ng-click="shell.goBackAStep()" ng-hide="shell.state.current.name == 'build.name'">Back</button>
+    <button ng-click="shell.gotoNextStep()">{{shell.nextText}}</button>
 </div>

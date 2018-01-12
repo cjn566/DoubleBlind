@@ -1,20 +1,104 @@
 
 
-import {Model, Experiment} from "../../../common/interfaces/experiment";
+import {Model, Experiment, Stage} from "../../../common/interfaces/experiment";
 import _controller from './AbstractExperiment'
-import {invalid, resetValidations} from "../../Misc";
+import {invalid, resetValidations, shuffle} from "../../Misc";
 import subject from './Subjects'
 
 export default class extends _controller{
     constructor(a,b,c,d){
         super(a,b,c,d);
-        this.Subject = subject(this.experiment);
-        this.Subject.map1tomap2()
     }
 
     newQuestion:string = "";
     newPreQuestion:string = "";
-    Subject;
+    newSubject:string = "";
+    step = 0;
+
+    checkName = () => {return 1};
+    checkSetup = () => {return 1};
+    checkSubjects = () => {return 1};
+    checkMap = () => {return 1};
+
+
+    steps = [
+        {
+            name: 'build.name',
+            nextText: ()=>{return 'Continue'},
+            nextFunction: this.checkName
+        },
+        {
+            name: 'build.setup',
+            nextText: ()=>{return 'Add ' + this.experiment.plural},
+            nextFunction: this.checkSetup
+        },
+        {
+            name: 'build.subjects',
+            nextText: ()=>{return this.experiment.aliases == 2? "Rename " + this.experiment.plural : "Start"},
+            nextFunction: this.checkSubjects
+        },
+        {
+            name: 'build.map',
+            nextText: ()=>{return 'Start'},
+            nextFunction: this.checkMap
+        },
+        {
+            name: 'build.live',
+            nextText: ()=>{return 'Wut'},
+            nextFunction: ()=>{return 1}
+        }
+    ];
+
+    nextText = this.steps[0].nextText();
+
+    addSubject = ()=>{
+        resetValidations(['subject']);
+        if(this.experiment.subjects.some((e)=>{return e.name === this.newSubject})){
+            return invalid('subject', 'That subject already exists.')
+        }
+        if(this.newSubject.length > 0) {
+            this.experiment.subjects.push({
+                id: -1,
+                name: this.newSubject,
+                map1: '',
+                map2: ''
+            });
+            this.newSubject = "";
+            document.getElementById("newSubject").focus();
+        }
+    };
+
+    deleteSubject = (subject, idx) => {
+        this.log("delete " + idx);
+        confirm("Delete '" + subject.name + "'?") && this.dataService.delete({type: Model.subject, id:subject.id}).then(()=>{
+            this.experiment.subjects.splice(idx, 1);
+        })
+    };
+
+    map1tomap2 = ()=>{
+        if(this.experiment.aliases > 0 && this.experiment.subjects.some((s)=>{return !s.map1}))
+            return alert("Must not leave blank aliases");
+        return this.dataService.save(this.experiment.subjects.map((s)=>{
+            if (s.id > 0){
+                return {
+                    type: Model.subject,
+                    data:{
+                        id: s.id,
+                        name: s.name,
+                        map1: s.map1
+                    }
+                }
+            }
+            return {
+                type: Model.subject,
+                data:{
+                    experiment_id: this.experiment.id,
+                    name: s.name,
+                    map1: s.map1
+                }
+            }
+        }))
+    };
 
 
     addQuestion = ()=>{
@@ -55,27 +139,76 @@ export default class extends _controller{
         }
     };
 
-    next = () => {
-        switch(this.state.current.name){
-            case 'build.name':
-                this.state.go('build.setup');
-                break;
-            case 'build.setup':
-                this.buildToMap1()
-                    .then(()=>{
-                        this.state.go('build.subjects');
-                    });
-                break;
-            case 'build.subjects':
-                this.state.go('build.map');
-                break;
-            case 'build.map':
-                this.state.go('live', {'experiment':this.experiment, 'id':this.experiment.id});
-                break;
+    updateMapFromUI = (subject, form)=>{
+        if(form.$dirty) {
+            this.log("saving mapping");
+            this.updateMap(subject.id, subject.name);
+            form.$setPristine();
         }
     };
 
-    buildToMap1 = () =>{
+    updateMap = (id, name)=>{
+        this.dataService.save({
+            type: Model.subject,
+            data: {
+                id: id,
+                map1: name
+            }
+        }).catch(this.err)
+    };
+
+    clearAll = () =>{
+
+    }
+
+    copyScramble = ()=> {
+        shuffle(this.experiment.subjects.map(s=>s.map1)).map((e, i)=>{
+            this.experiment.subjects[i].map2 = e;
+        });
+    };
+
+    map2BackToMap1 = ()=>{
+        if(confirm("Discard second map and return to first map?")){
+            this.state.go('map1', {id: this.experiment.id, experiment: this.experiment});
+        }
+    };
+
+    startTrial = ()=>{
+        if(confirm("Begin Trial?")){
+            return this.dataService.save([{
+                type: Model.experiment,
+                data: {
+                    id: this.experiment.id,
+                    stage: Stage.live
+                }}, ...this.experiment.subjects.map((s)=>{
+                return {
+                    type: Model.subject,
+                    data: {
+                        id: s.id,
+                        map2: s.map2
+                    }}
+            })])
+        }
+        else return Promise.reject("nevermind");
+    };
+
+
+    gotoNextStep = () => {
+        let next = this.steps[this.step].nextFunction();
+        if (next){
+            this.step += next;
+            this.state.go(this.steps[this.step].name);
+            this.nextText = this.steps[this.step].nextText();
+        }
+    };
+
+    goBackAStep = () => {
+        this.step--;
+        this.state.go(this.steps[this.step].name);
+        this.nextText = this.steps[this.step].nextText();
+    };
+
+    saveAll = () =>{
         if(true){//confirm("Save changes and begin adding subjects?")){
 
             let saves = [];
@@ -122,7 +255,7 @@ export default class extends _controller{
                 }
             }));
 
-            return this.dataService.save(saves);
+            return this.dataService.save(saves).then(()=>1);
         }
     };
 }
