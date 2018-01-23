@@ -23,8 +23,16 @@ module.exports = function(app) {
         });
     });
 
+    app.get('/getNames', function (req, res) {
+        context.Experiment.where("id", req.query.id).fetch({columns:['name', 'moniker', 'plural']}).then(function (experimentModel) {
+            return res.json(experimentModel.toJSON());
+        }).catch((err)=>{
+            apiReject(err, res);
+        });
+    });
+
     app.get('/studies', function (req, res) {
-        context.Experiment.where("owner_id", req.user.id).fetchAll({columns:['id', 'name', 'stage']}).then(function (experimentModel) {
+        context.Experiment.where("owner_id", req.user.id).fetchAll({columns:['id', 'name', 'stage', 'moniker', 'plural']}).then(function (experimentModel) {
             if(experimentModel) {
                 return res.json(experimentModel.toJSON());
             }

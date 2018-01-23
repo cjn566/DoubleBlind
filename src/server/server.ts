@@ -63,6 +63,14 @@ app.all('/build/*', function(req, res, next) {
     res.sendFile(path.join(__dirname, '../../private/manage.html'));
 });
 
+app.all('/name/*', function(req, res, next) {
+    res.sendFile(path.join(__dirname, '../../private/manage.html'));
+});
+
+app.all('/live/*', function(req, res, next) {
+    res.sendFile(path.join(__dirname, '../../private/manage.html'));
+});
+
 app.use('/', express.static(path.join(__dirname, '../../private'), {
     extensions: ['html', 'htm']
 }));

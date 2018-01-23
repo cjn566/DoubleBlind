@@ -1,8 +1,8 @@
-<div class="panel" id="exp"><h3>{{shell.experiment.name}}</h3></div>
+<div class="panel" id="exp"><h3>{{ctrl.experiment.name}}</h3></div>
 
 <ui-view></ui-view>
 
 <div class="bot-btns">
-    <button ng-click="shell.goBackAStep()" ng-hide="shell.state.current.name == 'build.name'">Back</button>
-    <button ng-click="shell.gotoNextStep()">{{shell.nextText}}</button>
+    <button ng-click="ctrl.goBackAStep()" ng-hide="ctrl.state.current.name == 'build.name'">Back</button>
+    <button ng-click="ctrl.gotoNextStep()">{{ctrl.nextText}}</button>
 </div>

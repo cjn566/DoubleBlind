@@ -14,6 +14,7 @@ export enum Model {
 }
 
 export interface Subject {
+    displayname: string;
     id: number,
     name: string,
     map1: any,

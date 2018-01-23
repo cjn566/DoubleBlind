@@ -1,6 +1,8 @@
 
-<input ng-model="ctrl.experiment.name">
+<input ng-model="ctrl.names.name">
 
 <p>What do you call your subjects?</p>
-<input ng-model="ctrl.experiment.moniker" placeholder="singular">
-<input ng-model="ctrl.experiment.plural" placeholder="plural">
+<input ng-model="ctrl.names.moniker" placeholder="singular">
+<input ng-model="ctrl.names.plural" placeholder="plural">
+
+<button ng-click="ctrl.continue()">Continue</button>

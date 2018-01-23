@@ -17,6 +17,7 @@ export default class extends _controller{
             this.experiment.subjects.push({
                 id: -1,
                 name: this.newSubject,
+                displayname:'',
                 map1: '',
                 map2: ''
             });

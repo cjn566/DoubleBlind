@@ -38,7 +38,11 @@ export default class extends _controller{
         this.dataService.getExperimentForOwner(id).then((experiment:Experiment)=>{
             switch (experiment.stage) {
                 case Stage.build:
-                    this.state.go('build.name', {id: id});
+                    this.state.go('name', {id: id, names: {
+                        name: experiment.name,
+                        moniker: experiment.moniker,
+                        plural: experiment.plural
+                    }});
                     break;
                 case Stage.live:
                     this.state.go('live', {id: id});
@@ -58,7 +62,7 @@ export default class extends _controller{
                 name: this.newExperimentName,
                 stage : 0,
                 lock_responses: false,
-                aliases: 2
+                aliases: 1
             }
         }]).then((data)=>{
             console.log("newexperiment callback:")

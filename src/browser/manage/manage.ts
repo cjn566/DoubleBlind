@@ -5,9 +5,8 @@ import DataService from './services/DataService';
 import httpInterceptor from './services/HttpInterceptor';
 
 import SelectController from "../manage/controllers/SelectController";
-import MapTwoController from "../manage/controllers/MapTwoController";
 import ManageController from "../manage/controllers/BuildController";
-import SubjectsController from "../manage/controllers/Subjects";
+import NameController from "../manage/controllers/NameController";
 import LiveController from "../manage/controllers/LiveController";
 import ConcludedController from "../manage/controllers/ConcludedController";
 import Base from "../manage/controllers/base";
@@ -20,10 +19,9 @@ import Base from "../manage/controllers/base";
         .factory("dataService", ["$http", "$log", DataService])
         .factory('httpInterceptor', ['$q', '$rootScope', '$location', '$state', httpInterceptor])
         .controller('base', ["$log", "dataService", '$state', '$templateCache', Base])
-        .controller('manageController', ["$log", "dataService", "$state", "$stateParams", ManageController])
-        .controller('subjectsController', ["$log", "dataService", "$state", "$stateParams", SubjectsController])
         .controller('selectController', ["$log", "dataService", "$state", "studies", '$templateCache', SelectController])
-        .controller('mapTwoController', ["$log", "dataService", "$state", "$stateParams", MapTwoController])
+        .controller('manageController', ['$rootScope', ManageController])
+        .controller('nameController', ['$rootScope', NameController])
         .controller('liveController', ["$log", "dataService", "$state", "$stateParams", LiveController])
         .controller('concludedController', ["$log", "dataService", "$state", "$stateParams", ConcludedController])
         .config(
@@ -44,39 +42,37 @@ import Base from "../manage/controllers/base";
                         }
                     }
                 })
+                .state("name",{
+                    url:"/name/:id",
+                    controller: "nameController",
+                    controllerAs: "ctrl",
+                    templateUrl:"buildname.html",
+                    params: {
+                        names: null,
+                        id: null
+                    }
+                })
                 .state("build",{
                     url:"/build/:id",
                     abstract:true,
                     controller: "manageController",
-                    controllerAs: "shell",
+                    controllerAs: "ctrl",
                     templateUrl:"build-shell.html",
                     params: {
                         experiment: null,
                         id: null
                     }
                 })
-                .state("build.name",{
-                    url:"",
-                    controller: "manageController",
-                    controllerAs: "ctrl",
-                    templateUrl:"buildname.html"
-                })
                 .state("build.setup",{
                     url:"",
-                    controller: "manageController",
-                    controllerAs: "ctrl",
                     templateUrl:"buildstudy.html"
                 })
                 .state("build.subjects",{
                     url:"",
-                    controller: "manageController",
-                    controllerAs: "ctrl",
                     templateUrl:"add_subjects.html"
                 })
                 .state("build.map",{
                     url:"",
-                    controller: "manageController",
-                    controllerAs: "ctrl",
                     templateUrl:"secondmap.html"
                 })
                 .state("live",{
@@ -102,8 +98,11 @@ import Base from "../manage/controllers/base";
             $httpProvider.interceptors.push('httpInterceptor');
             $compileProvider.debugInfoEnabled(true);
         }])
-        .run(['$rootScope', '$state', function($rootScope, state) {
-            $rootScope.$on("$stateChangeError", console.log.bind(console));
+        .run(['$rootScope', '$state', '$log', "dataService", "$stateParams", function($rootScope, state, log, ds, sp) {
+            $rootScope.state = state;
+            $rootScope.log = log;
+            $rootScope.dataService = ds;
+            $rootScope.params = sp;
         }]);
 }());
 

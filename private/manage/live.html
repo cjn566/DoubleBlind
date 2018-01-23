@@ -6,14 +6,12 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Participant</th>
                 <th ng-if="ctrl.experiment.preQuestions.length > 0">Pre</th>
-                <th ng-repeat="subject in ctrl.experiment.subjects">{{subject.name}}</th>
+                <th ng-repeat="subject in ctrl.experiment.subjects">{{subject.displayname}}</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="user in ctrl.users">
-                <th>{{user}}</th>
                 <td ng-if="ctrl.experiment.preQuestions.length > 0">{{ctrl.answered(user, -1)}}</td>
                 <td ng-repeat="subject in ctrl.experiment.subjects">{{ctrl.answered(user, subject.id)}}</td>
             </tr>

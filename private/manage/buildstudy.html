@@ -5,11 +5,11 @@
     <div class="panel-group">
 
 
-        <p>Describe your study. This information will be shown to each participant when they first join your experiment.</p>
-        <input ng-model="ctrl.experiment.description">
+        <p>Describe your study. This information will be shown to each participant when they first join your experiment. Leave blank to skip an intro.</p>
+        <textarea cols=50 ng-model="ctrl.experiment.description"></textarea>
 
-        <p>Conclusion text. This will be shown to participants when they have reviewed all {{ctrl.experiment.plural}}.</p>
-        <input ng-model="ctrl.experiment.conclusion">
+        <p>Conclusion text. This will be shown to participants when they have reviewed all {{ctrl.experiment.plural}}. Leave blank to omit this.</p>
+        <textarea ng-model="ctrl.experiment.conclusion"></textarea>
 
         <div class="panel panel-default">
             <div class="panel-heading">Options</div>
@@ -17,35 +17,25 @@
 
                 <div class="checkbox" data-toggle="tooltip" title="Participants will not be able to overwrite their responses.">
                     <label>
-                        <input type="checkbox" ng-model="ctrl.study.lock_responses">
+                        <input id="lock-check" type="checkbox" ng-model="ctrl.study.lock_responses" ng-change="ctrl.togglecheck()">
                         Lock responses
                     </label>
                 </div>
 
-                <div class="form-group" data-toggle="tooltip" title="Number of times to alias the identity of each {{ctrl.experiment.moniker}}.">
-                    <label>Aliases</label>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" ng-value="0" ng-model="ctrl.study.aliases">
-                            None - Everyone knows the identity of each {{ctrl.experiment.moniker}}
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" ng-value="1" ng-model="ctrl.study.aliases">
-                            Single Blind - Only you know the identity of each {{ctrl.experiment.moniker}}
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" ng-value="2" ng-model="ctrl.study.aliases" aria-describedby="reqCoop">
-                            Double Blind - Nobody knows the identity of each {{ctrl.experiment.moniker}}
-                            <small id="reqCoop" class="form-text text-muted" style="display:block">
-                                *requires cooperation with a participant
-                            </small>
-                        </label>
-                    </div>
-                </div>
+                <label for="alias-select">Aliases:</label>
+                <select id="alias-select" ng-model="ctrl.aliasString">
+                    <option value=0>Open</option>
+                    <option value=1>Single Blind</option>
+                    <option value=2>Double Blind</option>
+                </select>
+
+                <p>Open - Everyone knows the identity of each {{ctrl.experiment.moniker}}. This option will introduce significant bias into your tasting results.</p>
+                <p>Single Blind - One person (likely the host) knows the identity of each {{ctrl.experiment.moniker}}.
+                    Use this option if you are comfortable with a small amount of bias,
+                    or if you have the assistance of a non-participant who can conceal the {{ctrl.experiment.plural}} for you.</p>
+                <p>Double Blind - Nobody knows the identity of each {{ctrl.experiment.moniker}}.
+                    This option will yield the most accurate results, and requires the most preparation.</p>
+
 
             </div>
         </div>

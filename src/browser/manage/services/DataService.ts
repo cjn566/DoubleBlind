@@ -28,6 +28,15 @@ export default class {
         }, this.err)
     };
 
+    getNames = (id: number) => {
+        return this.$http.get('/getNames',
+            {
+                'params': {'id': id}
+            }).then((response) => {
+            return response.data
+        }, this.err)
+    };
+
     save = (data: SaveBundle) => {
         return this.$http.post('/save', data
         ).then((response)=>{

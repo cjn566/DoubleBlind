@@ -16,6 +16,10 @@ export default class extends _controller{
             this.reqQs = this.experiment.questions.filter((e)=>{return e.required}).length;
             this.reqPreQs = this.experiment.preQuestions.filter((e)=>{return e.required}).length;
 
+            this.experiment.subjects.map((e)=>{
+                e.displayname = this.experiment.aliases == 2? e.map2 : this.experiment.aliases == 1? e.map1 : e.name;
+            })
+
         });
 
         setInterval(this.update, 2000)

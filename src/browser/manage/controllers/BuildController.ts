@@ -5,28 +5,60 @@ import _controller from './AbstractExperiment'
 import {invalid, resetValidations, shuffle} from "../../Misc";
 import subject from './Subjects'
 
-export default class extends _controller{
-    constructor(a,b,c,d){
-        super(a,b,c,d);
+
+declare let $: any;
+
+export default class {
+    constructor(root){
+
+        let finish = (exp) => {
+            this.experiment = exp;
+            this.eLockResponses = $('#lock-check');
+            this.eLockResponses.prop( "checked", this.experiment.lock_responses);
+            this.nextText = this.steps[0].nextText();
+            this.aliasString = "" + exp.aliases;
+        };
+
+        this.root = root;
+        if(root.params.experiment) {
+            finish(root.params.experiment)
+        }
+        else {
+            root.dataService.getExperimentForOwner(root.params.id).then(finish);
+        }
     }
 
+    togglecheck = () => {
+        this.experiment.lock_responses = this.eLockResponses.checked;
+    };
+
+    root;
+    experiment: Experiment;
     newQuestion:string = "";
     newPreQuestion:string = "";
     newSubject:string = "";
     step = 0;
+    nextText;
 
-    checkName = () => {return 1};
-    checkSetup = () => {return 1};
-    checkSubjects = () => {return 1};
+    eLockResponses;
+    aliasString:string;
+
+    checkSetup = () => {
+        this.experiment.aliases = parseInt(this.aliasString);
+
+
+
+        return 1;
+    };
+
+    checkSubjects = () => {
+        return 1 + (this.experiment.aliases == 2? 0 : 1);
+    };
+
     checkMap = () => {return 1};
 
 
     steps = [
-        {
-            name: 'build.name',
-            nextText: ()=>{return 'Continue'},
-            nextFunction: this.checkName
-        },
         {
             name: 'build.setup',
             nextText: ()=>{return 'Add ' + this.experiment.plural},
@@ -49,7 +81,6 @@ export default class extends _controller{
         }
     ];
 
-    nextText = this.steps[0].nextText();
 
     addSubject = ()=>{
         resetValidations(['subject']);
@@ -60,6 +91,7 @@ export default class extends _controller{
             this.experiment.subjects.push({
                 id: -1,
                 name: this.newSubject,
+                displayname: '',
                 map1: '',
                 map2: ''
             });
@@ -70,7 +102,7 @@ export default class extends _controller{
 
     deleteSubject = (subject, idx) => {
         this.log("delete " + idx);
-        confirm("Delete '" + subject.name + "'?") && this.dataService.delete({type: Model.subject, id:subject.id}).then(()=>{
+        confirm("Delete '" + subject.name + "'?") && this.root.dataService.delete({type: Model.subject, id:subject.id}).then(()=>{
             this.experiment.subjects.splice(idx, 1);
         })
     };
@@ -78,7 +110,7 @@ export default class extends _controller{
     map1tomap2 = ()=>{
         if(this.experiment.aliases > 0 && this.experiment.subjects.some((s)=>{return !s.map1}))
             return alert("Must not leave blank aliases");
-        return this.dataService.save(this.experiment.subjects.map((s)=>{
+        return this.root.dataService.save(this.experiment.subjects.map((s)=>{
             if (s.id > 0){
                 return {
                     type: Model.subject,
@@ -130,7 +162,7 @@ export default class extends _controller{
     deleteQuestion = (question, idx) => {
         this.log("delete " + idx);
         if(confirm("Delete question?")) {
-            this.dataService.delete({type: Model.question, id:question.id}).then(()=>{
+            this.root.dataService.delete({type: Model.question, id:question.id}).then(()=>{
                 if(question.per_subject)
                     this.experiment.questions.splice(idx, 1);
                 else
@@ -148,7 +180,7 @@ export default class extends _controller{
     };
 
     updateMap = (id, name)=>{
-        this.dataService.save({
+        this.root.dataService.save({
             type: Model.subject,
             data: {
                 id: id,
@@ -169,13 +201,13 @@ export default class extends _controller{
 
     map2BackToMap1 = ()=>{
         if(confirm("Discard second map and return to first map?")){
-            this.state.go('map1', {id: this.experiment.id, experiment: this.experiment});
+            this.root.state.go('map1', {id: this.experiment.id, experiment: this.experiment});
         }
     };
 
     startTrial = ()=>{
         if(confirm("Begin Trial?")){
-            return this.dataService.save([{
+            return this.root.dataService.save([{
                 type: Model.experiment,
                 data: {
                     id: this.experiment.id,
@@ -197,15 +229,19 @@ export default class extends _controller{
         let next = this.steps[this.step].nextFunction();
         if (next){
             this.step += next;
-            this.state.go(this.steps[this.step].name);
+            this.root.state.go(this.steps[this.step].name);
             this.nextText = this.steps[this.step].nextText();
         }
     };
 
     goBackAStep = () => {
-        this.step--;
-        this.state.go(this.steps[this.step].name);
-        this.nextText = this.steps[this.step].nextText();
+        if(this.step > 0) {
+            this.step--;
+            this.root.state.go(this.steps[this.step].name);
+            this.nextText = this.steps[this.step].nextText();
+        } else {
+            this.root.state.go('home');
+        }
     };
 
     saveAll = () =>{
@@ -255,7 +291,10 @@ export default class extends _controller{
                 }
             }));
 
-            return this.dataService.save(saves).then(()=>1);
+            return this.root.dataService.save(saves).then(()=>1);
         }
     };
+
+    log = (m) => {this.root.log.log(m)};
+    err = (e) => {this.root.log.error(e)};
 }
