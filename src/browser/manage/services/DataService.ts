@@ -38,7 +38,7 @@ export default class {
     };
 
     save = (data: SaveBundle) => {
-        return this.$http.post('/save', data
+        return this.$http.get('/save', data
         ).then((response)=>{
             return response.data;
         }, this.err)
@@ -59,6 +59,12 @@ export default class {
 
     answersForHost = (experiment_id: number) =>{
         return this.$http.get('/answersForHost', {
+            'params': {'experiment_id': experiment_id}
+        }).then((res)=>{return res.data})
+    };
+
+    export = (experiment_id: number) =>{
+        return this.$http.get('/export', {
             'params': {'experiment_id': experiment_id}
         }).then((res)=>{return res.data})
     };

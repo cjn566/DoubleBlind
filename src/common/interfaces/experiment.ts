@@ -13,6 +13,12 @@ export enum Model {
     answer
 }
 
+export enum DataOrder {
+    subject,
+    question,
+    partier
+}
+
 export interface Subject {
     displayname: string;
     id: number,

@@ -65,20 +65,13 @@ document.addEventListener('load', function() {
                         subId: null
                     }
                 })
-                /*
-                .state("join.prequestions",{
-                    url:"/join=:link",
-                    controller: "Join",
-                    controllerAs: "ctrl",
-                    templateUrl:"prequestions.html"
-                })
                 .state("not-live",{
-                    template:"<p>The experiment you are trying to controllers is not yet ready.</p>"
+                    template:"<p>The experiment you are trying to join is not yet ready.</p>"
                 })
                 .state("is-concluded",{
-                    template:"<p>The experiment you are trying to controllers has already concluded.</p>"
+                    template:"<p>The experiment you are trying to join has already concluded.</p>"
                 })
-                */
+
             $httpProvider.interceptors.push('httpInterceptor');
             $compileProvider.debugInfoEnabled(true);
         }])

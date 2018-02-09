@@ -56,19 +56,7 @@ export default class extends _controller{
     };
 
     newExperiment = () =>{
-        this.dataService.save([{
-            type: Model.experiment,
-            data: {
-                name: this.newExperimentName,
-                stage : 0,
-                lock_responses: false,
-                aliases: 1
-            }
-        }]).then((data)=>{
-            console.log("newexperiment callback:")
-            console.log(data);
-            this.state.go('build.setup', {id: data[0].id});
-        })
+        this.state.go('name');
     };
 
     deleteExperiment = (id, name) => {

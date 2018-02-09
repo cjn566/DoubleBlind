@@ -7,11 +7,8 @@ import subject from './Subjects'
 export default class {
     constructor(root){
         this.root = root;
-        this.id = root.params.id;
-        if(root.params.names) {
-            this.names = root.params.names;
-        }
-        else {
+        if(root.params.id) {
+            this.id = root.params.id;
             root.dataService.getNames(root.params.id).then((names) => {
                 this.names = names;
             });
@@ -19,25 +16,32 @@ export default class {
     }
 
     root;
-    id: number;
+    id: number = null;
     names = {
         name: "",
         moniker:"",
         plural:""
-    }
-
+    };
 
     continue = () =>{
+        let data = {
+            id: this.id,
+            name: this.names.name,
+            moniker:this.names.moniker,
+            plural:this.names.plural
+        };
+
+        if(!this.id) {
+            data['stage'] = 0;
+            data['lock_responses'] = false;
+            data['aliases'] = 0;
+        }
+
         return this.root.dataService.save([{
             type: Model.experiment,
-            data: {
-                id: this.id,
-                name: this.names.name,
-                moniker:this.names.moniker,
-                plural:this.names.plural
-            }
-        }]).then(()=>{
-            this.root.state.go('build.setup', {id:this.id});
+            data: data
+        }]).then((data)=>{
+            this.root.state.go('build.setup', {id:data[0].id});
         });
     };
 

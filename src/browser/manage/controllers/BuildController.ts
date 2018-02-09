@@ -46,17 +46,67 @@ export default class {
     checkSetup = () => {
         this.experiment.aliases = parseInt(this.aliasString);
 
+        // Must be at least one question to ask participants
+        if(this.experiment.questions.length == 0){
+            return Promise.resolve(0);
+        }
 
-
-        return 1;
+        return this.saveSetup().then(()=>{
+            return 1;
+        });
     };
 
     checkSubjects = () => {
-        return 1 + (this.experiment.aliases == 2? 0 : 1);
+
+        if (this.experiment.subjects.length === 0) {
+            alert("Must have at least one "+ this.experiment.moniker + ".");
+            return 0;
+        }
+
+        if (this.experiment.aliases > 0 && this.experiment.subjects.length === 1) {
+            alert("It would not make any sense to have a blind trial with only one "+ this.experiment.moniker + ".");
+            return 0;
+        }
+
+        if (this.experiment.aliases > 0 && this.experiment.subjects.some((s) => {
+                    return !s.map1
+                })){
+            alert("Must not leave blank aliases");
+            return 0;
+        }
+
+        return this.saveMap1().then(()=>{
+            return 1 + (this.experiment.aliases == 2? 0 : 1);
+        });
+
     };
 
-    checkMap = () => {return 1};
+    checkMap = () => {
+        if (this.experiment.subjects.some((s) => {
+                return !s.map2
+            })){
+            alert("Must not leave blank aliases");
+            return 0;
+        }
 
+        return this.saveMap2().then(()=>{
+            return 1;
+        });
+    };
+
+    startTrial = () => {
+        return this.root.dataService.save(
+            [{
+                type: Model.experiment,
+                data: {
+                    id: this.experiment.id,
+                    stage: Stage.live
+                }
+            }]
+        ).then(()=>{
+            this.root.state.go('live', {id:this.experiment.id});
+        })
+    };
 
     steps = [
         {
@@ -73,11 +123,6 @@ export default class {
             name: 'build.map',
             nextText: ()=>{return 'Start'},
             nextFunction: this.checkMap
-        },
-        {
-            name: 'build.live',
-            nextText: ()=>{return 'Wut'},
-            nextFunction: ()=>{return 1}
         }
     ];
 
@@ -101,15 +146,14 @@ export default class {
     };
 
     deleteSubject = (subject, idx) => {
-        this.log("delete " + idx);
+        this.log("delete " +
+            "" + idx);
         confirm("Delete '" + subject.name + "'?") && this.root.dataService.delete({type: Model.subject, id:subject.id}).then(()=>{
             this.experiment.subjects.splice(idx, 1);
         })
     };
 
-    map1tomap2 = ()=>{
-        if(this.experiment.aliases > 0 && this.experiment.subjects.some((s)=>{return !s.map1}))
-            return alert("Must not leave blank aliases");
+    saveMap1 = ()=>{
         return this.root.dataService.save(this.experiment.subjects.map((s)=>{
             if (s.id > 0){
                 return {
@@ -191,7 +235,7 @@ export default class {
 
     clearAll = () =>{
 
-    }
+    };
 
     copyScramble = ()=> {
         shuffle(this.experiment.subjects.map(s=>s.map1)).map((e, i)=>{
@@ -199,39 +243,33 @@ export default class {
         });
     };
 
-    map2BackToMap1 = ()=>{
-        if(confirm("Discard second map and return to first map?")){
-            this.root.state.go('map1', {id: this.experiment.id, experiment: this.experiment});
-        }
-    };
-
-    startTrial = ()=>{
+    saveMap2 = ()=>{
         if(confirm("Begin Trial?")){
-            return this.root.dataService.save([{
-                type: Model.experiment,
-                data: {
-                    id: this.experiment.id,
-                    stage: Stage.live
-                }}, ...this.experiment.subjects.map((s)=>{
+            return this.root.dataService.save(
+                this.experiment.subjects.map((s)=>{
                 return {
                     type: Model.subject,
                     data: {
                         id: s.id,
                         map2: s.map2
                     }}
-            })])
+            }))
         }
         else return Promise.reject("nevermind");
     };
 
 
     gotoNextStep = () => {
-        let next = this.steps[this.step].nextFunction();
-        if (next){
-            this.step += next;
-            this.root.state.go(this.steps[this.step].name);
-            this.nextText = this.steps[this.step].nextText();
-        }
+        this.steps[this.step].nextFunction().then((next)=>{
+            if (next){
+                this.step += next;
+                if(this.step == 3){
+                    return this.startTrial();
+                }
+                this.root.state.go(this.steps[this.step].name);
+                this.nextText = this.steps[this.step].nextText();
+            }
+        });
     };
 
     goBackAStep = () => {
@@ -244,9 +282,7 @@ export default class {
         }
     };
 
-    saveAll = () =>{
-        if(true){//confirm("Save changes and begin adding subjects?")){
-
+    saveSetup = () =>{
             let saves = [];
             saves.push({
                 type: Model.experiment,
@@ -291,8 +327,7 @@ export default class {
                 }
             }));
 
-            return this.root.dataService.save(saves).then(()=>1);
-        }
+            return this.root.dataService.save(saves);
     };
 
     log = (m) => {this.root.log.log(m)};

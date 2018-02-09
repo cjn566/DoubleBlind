@@ -20,16 +20,14 @@ export default class{
         this.params = params;
         this.experiment = experiment;
         this.answers = answers;
-        /*
+
         switch (experiment.stage){
             case Stage.build:
-                state.go('not-live');
-                break;
+                return state.go('not-live');
             case Stage.concluded:
-                state.go('is-concluded');
-                break;
+                return state.go('is-concluded');
         }
-        */
+
 
         this.experiment.preQuestions.map((e)=>{e.locked = false});
 
@@ -40,13 +38,12 @@ export default class{
             x.locked = experiment.lock_responses;
         });
 
-
         // Get list of required questions
         let preIdx = experiment.preQuestions.sort(e => !e.required).findIndex(e => !e.required);
         let idx = experiment.questions.sort(e => !e.required).findIndex(e => !e.required);
         if(preIdx > 0 )
             this.preReqs = experiment.preQuestions.slice(0, preIdx);
-        if(preIdx > 0 )
+        if(idx > 0 )
             this.reqs = experiment.questions.slice(0, idx);
 
         if(this.reqs.length > 0)
@@ -93,7 +90,8 @@ export default class{
                         subject_id: -1,
                         value: Q.answer
                     }
-                })).then((data) => {
+                })
+            ).then((data) => {
                 this.newAnswerSet(data);
                 let unansweredReqs = this.checkPreAnswers();
                 if (unansweredReqs.length) {
@@ -148,8 +146,6 @@ export default class{
                     q.locked = false;
                 }
             });
-
-
 
             this.state.go('join.answer', {subId: id});
         }

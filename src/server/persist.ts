@@ -1,6 +1,6 @@
 import {isOwnerOf} from "./util/Owner";
 import {ApiCode} from "../common/interfaces/codes";
-import {Model, Stage} from "../common/interfaces/experiment";
+import {DataOrder, Model, Stage} from "../common/interfaces/experiment";
 import {makeId, makeReject} from "./util/makeID";
 import * as context from './config/database';
 
@@ -74,22 +74,28 @@ export function getExperiment(link: string, manage: boolean, user?: number) {
     let options = {
         withRelated: ['subjects', 'questions']
     };
-    if(!manage) options['columns'] = ['id', 'name', 'link', 'lock_responses', 'aliases', 'stage'];
+    if (!manage) options['columns'] = ['id', 'name', 'link', 'lock_responses', 'aliases', 'stage'];
 
-    return context.Experiment.where({'id':link}).fetch(options)
+    return context.Experiment.where({'id': link}).fetch(options)
         .then(function (experimentModel) {
             let experiment = experimentModel.toJSON();
 
-            experiment.lock_responses = experiment.lock_responses==1;
-            experiment.questions.map((q)=>{q.required = q.required == 1});
-            experiment.preQuestions = experiment.questions.filter((q)=>{return !q.per_subject});
-            experiment.questions = experiment.questions.filter((q)=>{return q.per_subject});
+            experiment.lock_responses = experiment.lock_responses == 1;
+            experiment.questions.map((q) => {
+                q.required = q.required == 1
+            });
+            experiment.preQuestions = experiment.questions.filter((q) => {
+                return !q.per_subject
+            });
+            experiment.questions = experiment.questions.filter((q) => {
+                return q.per_subject
+            });
 
-            if(!manage) {
+            if (!manage) {
                 switch (experiment.stage) {
                     case Stage.build:
                     case Stage.concluded:
-                        // return {stage: experiment.stage};
+                    // return {stage: experiment.stage};
                     case Stage.live:
                         switch (experiment.aliases) {
                             case 1:
@@ -113,8 +119,8 @@ export function getExperiment(link: string, manage: boolean, user?: number) {
                         return makeReject({code: ApiCode.serverErr, message: "Experiment stage failure"});
                 }
             }
-            if(experiment.owner_id == user) {
-                experiment.anon_participants = experiment.anon_participants==1;
+            if (experiment.owner_id == user) {
+                experiment.anon_participants = experiment.anon_participants == 1;
                 return experiment;
             } else {
                 return makeReject({code: ApiCode.notAuth, message: 'Not the owner of the experiment'})
@@ -122,3 +128,140 @@ export function getExperiment(link: string, manage: boolean, user?: number) {
 
         });
 }
+
+    export function exportData(id: string, orderKeys) {
+
+        let q_first = ['question', 'subject', 'participant'];
+        let s_first = ['subject', 'question', 'participant'];
+        orderKeys = s_first;
+
+        let questionsFirst = true;
+
+        Promise.all([context.Experiment.where({'id':id}).fetch({withRelated: ['subjects', 'questions']}), context.Answer.where({'experiment_id':id}).fetchAll()]).then((data)=>{
+            let experiment = data[0].toJSON();
+            let answers = data[1].toJSON();
+
+            experiment['participants'] = [...new Set(answers.map(e => e.participant_id))];
+
+
+
+            /*
+            answers = answers.sort((a, b)=>{
+                if(a.question_id == b.question_id){
+                    if(a.subject_id == b.subject_id){
+                        return a.participant_id - b.participant_id;
+                    }
+                    return a.subject_id - b.subject_id;
+                }
+                return a.question_id - b.question_id
+            });*/
+
+            let map = {};
+
+            let keys = {
+                subject: {
+                    answerPropName: 'subject_id',
+                    experimentPropName:
+                        'subjects'
+                }
+                ,
+                'question': {
+                    answerPropName: 'question_id',
+                    experimentPropName:
+                        'questions'
+                }
+                ,
+                'participant': {
+                    answerPropName: 'participant_id',
+                    experimentPropName:
+                        'participants'
+                }
+            };
+
+            let order = [keys[orderKeys[0]],keys[orderKeys[1]],keys[orderKeys[2]]];
+
+
+            let nameLists = {};
+
+            for(let i = 0; i < 3; i++) {
+                nameLists[orderKeys[i]] = {};
+                experiment[order[i].experimentPropName].map((e) => {
+                    switch (order[i].experimentPropName){
+                        case 'questions':
+                            nameLists[orderKeys[i]][e.id] = e.text;
+                            break;
+                        case 'subjects':
+                            nameLists[orderKeys[i]][e.id] = e.name;
+                            break;
+                    }
+                });
+            }
+
+            for(let i = 0; i < answers.length; i++){
+                let a = answers[i];
+                let first = a[order[0].answerPropName];
+                let second = a[order[1].answerPropName];
+                let third = a[order[2].answerPropName];
+                let v = a.value;
+
+                if(!map[first]) map[first] = {};
+                if(!map[first][second]) map[first][second] = [];
+                map[first][second].push([third, v]);
+            }
+
+            let CSV_string = "";
+
+            /*
+            for (let p1 in map) {
+                CSV_string += orderKeys[0] +  ": " + nameLists[orderKeys[0]][p1] + "\n";
+                if (map.hasOwnProperty(p1)) {
+                    for(let i = 0; i < p1.length; i++) {
+
+                    }
+                }
+            }
+            */
+
+            for(let i = 0; i < experiment.questions.length; i++){
+                CSV_string += '\n\n' + experiment.questions[i].text;
+
+                for (let j = 0; j < experiment.subjects.length; j++){
+                    CSV_string += '\n' + experiment.subjects[j].name;
+                    for (let k = 0; k < experiment.participants.length; k++){
+                        CSV_string += ',' + answers.find((e)=>{
+                            return e.question_id == experiment.questions[i].id &&
+                                e.subject_id == experiment.subjects[j].id &&
+                                e.participant_id == experiment.participants[i].id
+                        }).value
+                    }
+                }
+            }
+
+            console.log(CSV_string);
+        })
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

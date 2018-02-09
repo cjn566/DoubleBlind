@@ -3,7 +3,7 @@
 
 <ng-form name="buildForm">
     <div class="panel-group">
-
+        <a ui-sref="name({ id: ctrl.experiment.id })">Change name of the study or monikers.</a>
 
         <p>Describe your study. This information will be shown to each participant when they first join your experiment. Leave blank to skip an intro.</p>
         <textarea cols=50 ng-model="ctrl.experiment.description"></textarea>
