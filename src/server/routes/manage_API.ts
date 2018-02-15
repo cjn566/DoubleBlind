@@ -99,7 +99,12 @@ module.exports = function(app) {
     });
 
     app.get('/export', function(req, res){
-        exportData(req.query.experiment_id, ['question', 'subject', 'participant']);
+        exportData(req.query.experiment_id, (req.query.questionsFirst == 'true'), req.user.id).then((csv)=>{
+            res.set({"Content-Disposition":"attachment; filename=\"" + csv[0] + ".csv\"",'Content-type': 'text/csv'});
+            res.send(csv[1]);
+        }).catch((err)=>{
+            apiReject(err, res);
+        });
     });
 
     let er = (e)=>{

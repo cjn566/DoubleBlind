@@ -22,7 +22,7 @@ export enum DataOrder {
 export interface Subject {
     displayname: string;
     id: number,
-    name: string,
+    text: string,
     map1: any,
     map2: any
 }

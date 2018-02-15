@@ -17,7 +17,7 @@ export default class extends _controller{
             this.reqPreQs = this.experiment.preQuestions.filter((e)=>{return e.required}).length;
 
             this.experiment.subjects.map((e)=>{
-                e.displayname = this.experiment.aliases == 2? e.map2 : this.experiment.aliases == 1? e.map1 : e.name;
+                e.displayname = this.experiment.aliases == 2? e.map2 : this.experiment.aliases == 1? e.map1 : e.text;
             })
 
         });

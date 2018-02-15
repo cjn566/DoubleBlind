@@ -34,6 +34,10 @@ export default class extends _controller{
         window.open(link);
     };
 
+    exportData = (id) => {
+        this.dataService.exportData(id, true);
+    }
+
     selectExperiment = (id:number) =>{
         this.dataService.getExperimentForOwner(id).then((experiment:Experiment)=>{
             switch (experiment.stage) {

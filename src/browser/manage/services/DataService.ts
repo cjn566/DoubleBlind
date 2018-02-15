@@ -63,10 +63,10 @@ export default class {
         }).then((res)=>{return res.data})
     };
 
-    export = (experiment_id: number) =>{
+    exportData = (experiment_id: number, questionsFirst: boolean) =>{
         return this.$http.get('/export', {
-            'params': {'experiment_id': experiment_id}
-        }).then((res)=>{return res.data})
+            'params': {'experiment_id': experiment_id, 'questionsFirst': questionsFirst}
+        })
     };
 
 }

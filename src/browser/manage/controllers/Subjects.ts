@@ -10,13 +10,13 @@ export default class extends _controller{
 
     addSubject = ()=>{
         resetValidations(['subject']);
-        if(this.experiment.subjects.some((e)=>{return e.name === this.newSubject})){
+        if(this.experiment.subjects.some((e)=>{return e.text === this.newSubject})){
             return invalid('subject', 'That subject already exists.')
         }
         if(this.newSubject.length > 0) {
             this.experiment.subjects.push({
                 id: -1,
-                name: this.newSubject,
+                text: this.newSubject,
                 displayname:'',
                 map1: '',
                 map2: ''
@@ -42,7 +42,7 @@ export default class extends _controller{
                     type: Model.subject,
                     data:{
                         id: s.id,
-                        name: s.name,
+                        name: s.text,
                         map1: s.map1
                     }
                 }
@@ -51,7 +51,7 @@ export default class extends _controller{
                 type: Model.subject,
                 data:{
                     experiment_id: this.experiment.id,
-                    name: s.name,
+                    name: s.text,
                     map1: s.map1
                 }
             }

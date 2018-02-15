@@ -100,12 +100,12 @@ export function getExperiment(link: string, manage: boolean, user?: number) {
                         switch (experiment.aliases) {
                             case 1:
                                 experiment.subjects.map((s) => {
-                                    s.name = s.map1;
+                                    s.text = s.map1;
                                 });
                                 break;
                             case 2:
                                 experiment.subjects.map((s) => {
-                                    s.name = s.map2;
+                                    s.text = s.map2;
                                 });
                                 break;
                         }
@@ -129,115 +129,57 @@ export function getExperiment(link: string, manage: boolean, user?: number) {
         });
 }
 
-    export function exportData(id: string, orderKeys) {
+    export function exportData(id: string, questionsFirst: boolean, user) {
 
-        let q_first = ['question', 'subject', 'participant'];
-        let s_first = ['subject', 'question', 'participant'];
-        orderKeys = s_first;
+        return Promise.all([getExperiment(id, true, user), context.Answer.where({'experiment_id':id}).fetchAll()]).then((data)=>{
 
-        let questionsFirst = true;
+            let experiment = data[0];
+            if(experiment.stage !== Stage.concluded) return //todo: makeReject({code: ApiCode.notReady, message: 'Not yet concluded.'});
 
-        Promise.all([context.Experiment.where({'id':id}).fetch({withRelated: ['subjects', 'questions']}), context.Answer.where({'experiment_id':id}).fetchAll()]).then((data)=>{
-            let experiment = data[0].toJSON();
             let answers = data[1].toJSON();
 
             experiment['participants'] = [...new Set(answers.map(e => e.participant_id))];
 
+            let i = 1, partLine = "\nGuest";
+            for(let x in experiment.participants) {partLine += ',' + i++}
 
 
-            /*
-            answers = answers.sort((a, b)=>{
-                if(a.question_id == b.question_id){
-                    if(a.subject_id == b.subject_id){
-                        return a.participant_id - b.participant_id;
-                    }
-                    return a.subject_id - b.subject_id;
-                }
-                return a.question_id - b.question_id
-            });*/
+            let CSV_string = "Prequestions" + partLine;
 
-            let map = {};
-
-            let keys = {
-                subject: {
-                    answerPropName: 'subject_id',
-                    experimentPropName:
-                        'subjects'
-                }
-                ,
-                'question': {
-                    answerPropName: 'question_id',
-                    experimentPropName:
-                        'questions'
-                }
-                ,
-                'participant': {
-                    answerPropName: 'participant_id',
-                    experimentPropName:
-                        'participants'
-                }
-            };
-
-            let order = [keys[orderKeys[0]],keys[orderKeys[1]],keys[orderKeys[2]]];
-
-
-            let nameLists = {};
-
-            for(let i = 0; i < 3; i++) {
-                nameLists[orderKeys[i]] = {};
-                experiment[order[i].experimentPropName].map((e) => {
-                    switch (order[i].experimentPropName){
-                        case 'questions':
-                            nameLists[orderKeys[i]][e.id] = e.text;
-                            break;
-                        case 'subjects':
-                            nameLists[orderKeys[i]][e.id] = e.name;
-                            break;
-                    }
-                });
-            }
-
-            for(let i = 0; i < answers.length; i++){
-                let a = answers[i];
-                let first = a[order[0].answerPropName];
-                let second = a[order[1].answerPropName];
-                let third = a[order[2].answerPropName];
-                let v = a.value;
-
-                if(!map[first]) map[first] = {};
-                if(!map[first][second]) map[first][second] = [];
-                map[first][second].push([third, v]);
-            }
-
-            let CSV_string = "";
-
-            /*
-            for (let p1 in map) {
-                CSV_string += orderKeys[0] +  ": " + nameLists[orderKeys[0]][p1] + "\n";
-                if (map.hasOwnProperty(p1)) {
-                    for(let i = 0; i < p1.length; i++) {
-
-                    }
+            for (let j = 0; j < experiment.preQuestions.length; j++){
+                CSV_string += '\n' + experiment.preQuestions[j].text;
+                for (let k = 0; k < experiment.participants.length; k++){
+                    let answer = answers.find((e)=>{
+                        return  e.question_id == experiment.preQuestions[j].id &&
+                            e.participant_id == experiment.participants[k]
+                    });
+                    CSV_string += ',' + (answer? answer.value : '');
                 }
             }
-            */
 
-            for(let i = 0; i < experiment.questions.length; i++){
-                CSV_string += '\n\n' + experiment.questions[i].text;
+            let arrs;
+            if(questionsFirst){
+                arrs = [experiment.questions, experiment.subjects];
+            } else {
+                arrs = [experiment.subjects, experiment.questions];
+            }
 
-                for (let j = 0; j < experiment.subjects.length; j++){
-                    CSV_string += '\n' + experiment.subjects[j].name;
+            for(let i = 0; i < arrs[0].length; i++){
+                CSV_string += '\n\n' + (questionsFirst? 'Question: ' : 'Subject: ') + arrs[0][i].text + partLine;
+                for (let j = 0; j < arrs[1].length; j++){
+                    CSV_string += '\n' + arrs[1][j].text;
                     for (let k = 0; k < experiment.participants.length; k++){
-                        CSV_string += ',' + answers.find((e)=>{
-                            return e.question_id == experiment.questions[i].id &&
-                                e.subject_id == experiment.subjects[j].id &&
-                                e.participant_id == experiment.participants[i].id
-                        }).value
+                        let answer = answers.find((e)=>{
+                            return  e.question_id == experiment.questions[questionsFirst? i : j].id &&
+                                    e.subject_id == experiment.subjects[questionsFirst? j : i].id &&
+                                    e.participant_id == experiment.participants[k]
+                        });
+                        CSV_string += ',' + (answer? answer.value : '');
                     }
                 }
             }
 
-            console.log(CSV_string);
+            return [ experiment.name, CSV_string];
         })
     };
 
