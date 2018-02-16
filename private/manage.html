@@ -1,39 +1,44 @@
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <base href="/join">
+<head>
+    <base href="/join">
 
-        <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
-        <link rel="manifest" href="/assets/icons/manifest.json">
-        <link rel="mask-icon" href="/assets/icons/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="theme-color" content="#ffffff">
-        <meta charset="utf-8" />
-        <title>Double Blind</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+    <link rel="manifest" href="/assets/icons/manifest.json">
+    <link rel="mask-icon" href="/assets/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+    <meta charset="utf-8" />
+    <title>Double Blind</title>
 
 
-        <script src="manage.js" type="text/javascript"></script>
+    <script src="manage.js" type="text/javascript"></script>
 
-        <script src="third_party/jquery-3.2.1.min.js"></script>
-        <!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.min.css" />
-        <script-- src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script-->
-        <link data-require="bootstrap@*" data-semver="4.0.5" rel="stylesheet" href="third_party/bootstrap-4.0.0-beta.2-dist/css/bootstrap.min.css" />
-        <script data-require="bootstrap@*" data-semver="4.0.5" src="third_party/bootstrap-4.0.0-beta.2-dist/js/bootstrap.bundle.min.js"></script>
-        <link id="mainss" rel="stylesheet" href="/css/main.css">
-    </head>
+    <script src="third_party/jquery-3.2.1.min.js"></script>
+    <!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.min.css" />
+    <script-- src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script-->
+    <link data-require="bootstrap@*" data-semver="4.0.5" rel="stylesheet" href="third_party/bootstrap-4.0.0-beta.2-dist/css/bootstrap.min.css" />
+    <script data-require="bootstrap@*" data-semver="4.0.5" src="third_party/bootstrap-4.0.0-beta.2-dist/js/bootstrap.bundle.min.js"></script>
+    <link id="mainss" rel="stylesheet" href="/css/main.css">
+</head>
 
-    <body ng-app="DoubleBlind"  class="container full-height">
-        <div ng-controller="base as base" id="main-div" class="align-items-center justify-content-center full-height row">
+<body ng-app="DoubleBlind"  class="container full-height">
+<div ng-controller="base as base" >
 
-                <div id="user-info">
-                    Welcome, <b>{{base.user}}!</b>
-                    <a ng-click="base.logout()">not you?</a>
-                </div>
-            <div id="wait-for-load" ng-cloak ng-hide="base.loading">
-                <ui-view id="main-view"></ui-view>
-            </div>
+    <div id="top-bar">
+
+        <div id="user-info">
+            Welcome, <b>{{base.user}}!</b>
+            <a ng-click="base.logout()"><p>not you?</p></a>
         </div>
-    </body>
+    </div>
+    <div id="main-div" class="align-items-center justify-content-center full-height row">
+        <div id="wait-for-load" ng-cloak ng-hide="base.loading">
+            <ui-view id="main-view"></ui-view>
+        </div>
+    </div>
+</div>
+</body>
 </html>

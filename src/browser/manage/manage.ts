@@ -35,7 +35,7 @@ import Base from "../manage/controllers/base";
                     url:"/manage.html",
                     controller: "selectController",
                     controllerAs: "ctrl",
-                    templateUrl:"home.html",
+                    templateUrl:"simple_home.html",
                     resolve: {
                         studies: function(dataService){
                             return dataService.getExperiments()

@@ -125,6 +125,10 @@ body {
 
 }
 
+#top-bar {
+    background-color: saddlebrown;
+}
+
 #user-info {
     background-color: lightgoldenrodyellow;
     padding: 0.8rem;

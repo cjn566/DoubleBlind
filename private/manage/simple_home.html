@@ -1,0 +1,39 @@
+
+
+<h4 class="panel-title">Start a new experiment..</h4>
+<button ng-click="ctrl.newExperiment()">New Experiment</button>
+
+
+<div ng-show="ctrl.active.length > 0">
+    <h4 class="panel-title">Current Experiments</h4>
+    <div ng-repeat="experiment in ctrl.active">
+        <h5>
+            {{experiment.name}}
+        </h5>
+
+        <div>status: {{experiment.stage? 'live':'setup'}} </div>
+        <button ng-click="ctrl.selectExperiment(experiment.id)">{{experiment.stage? 'View':'Continue setup'}}</button>
+
+
+        <div>
+            URL to join:
+            <a href="{{experiment.link}}">www.DoubleBlind.com{{experiment.link}}</a>
+            <button ng-click="ctrl.copyLink(experiment.link) ">Copy URL</button>
+        </div>
+    </div>
+</div>
+
+        <div class="panel panel-default" ng-show="ctrl.archive.length > 0">
+            <div class="panel-heading">
+                <h3 class="panel-title">Finished Experiments</h3>
+            </div>
+            <div class="panel-body current-studies-panel">
+                <div class="list-group current-studies-list">
+                    <a class="list-group-item archive-item is-link"  ng-repeat="experiment in ctrl.archive" ng-click="ctrl.selectExperiment(experiment.id)">
+                        {{experiment.name}}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

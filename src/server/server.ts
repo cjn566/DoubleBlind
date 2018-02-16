@@ -40,41 +40,24 @@ app.all('/join/*', function(req, res, next) {
 require('./routes/join_API')(app);
 
 
+app.all('/', function(req, res, next) {
+    res.sendFile(path.join(__dirname, '../../public/index.html'));
+});
+
 // Ensure logged in
 app.use((req, res, next)=>{
     if(!req.user) {
         if(!devmode) {
-            let redirect = loginURL;
-            if (req.query.join) {
-                redirect += "?join=" + req.query.join
-            }
-            return res.redirect(redirect);
+            return res.redirect(loginURL);
         } else {
             // AUTO LOG IN FOR DEV PURPOSES!
             req.login({id: 2}, (err) => {
                 return next();
             });
         }
-}
-else return next();
+    }
+    else return next();
 });
-
-app.all('/build/*', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '../../private/manage.html'));
-});
-
-app.all('/name/*', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '../../private/manage.html'));
-});
-
-app.all('/live/*', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '../../private/manage.html'));
-});
-
-app.all('/results/*', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '../../private/manage.html'));
-});
-
 app.use('/', express.static(path.join(__dirname, '../../private'), {
     extensions: ['html', 'htm']
 }));
@@ -85,9 +68,8 @@ app.use('/', express.static(path.join(__dirname, '../../private/manage'), {
 
 require('./routes/manage_API')(app);
 
-
 app.all('/*', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '../../public/index.html'));
+    res.sendFile(path.join(__dirname, '../../private/manage.html'));
 });
 
 //Nothing found

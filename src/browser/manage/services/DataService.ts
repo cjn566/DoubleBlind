@@ -38,7 +38,7 @@ export default class {
     };
 
     save = (data: SaveBundle) => {
-        return this.$http.get('/save', data
+        return this.$http.post('/save', data
         ).then((response)=>{
             return response.data;
         }, this.err)
