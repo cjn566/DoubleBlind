@@ -3,6 +3,7 @@
 import {Model, Experiment, Stage} from "../../../common/interfaces/experiment";
 import {invalid, resetValidations, shuffle} from "../../Misc";
 import subject from './Subjects'
+import * as pluralize from 'pluralize';
 
 export default class {
     constructor(root){
@@ -24,6 +25,8 @@ export default class {
     };
 
     continue = () =>{
+        console.log(pluralize(this.names.moniker));
+
         let data = {
             id: this.id,
             name: this.names.name,

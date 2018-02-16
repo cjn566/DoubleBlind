@@ -3,7 +3,6 @@ import {isArray} from "util";
 import {ApiCode, ApiError} from "../../common/interfaces/codes";
 import {isOwnerOf} from "../util/Owner";
 import {doSave, getMyAnswers, getExperiment, getAnswersForHost, exportData} from "../persist";
-import * as CSV from 'csv-generate';
 
 let context = require('../config/database');
 
