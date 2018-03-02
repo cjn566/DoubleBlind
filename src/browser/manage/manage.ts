@@ -6,7 +6,6 @@ import httpInterceptor from './services/HttpInterceptor';
 
 import SelectController from "../manage/controllers/SelectController";
 import ManageController from "../manage/controllers/BuildController";
-import NameController from "../manage/controllers/NameController";
 import LiveController from "../manage/controllers/LiveController";
 import ConcludedController from "../manage/controllers/ConcludedController";
 import Base from "../manage/controllers/base";
@@ -19,9 +18,8 @@ import Base from "../manage/controllers/base";
         .factory("dataService", ["$http", "$log", DataService])
         .factory('httpInterceptor', ['$q', '$rootScope', '$location', '$state', httpInterceptor])
         .controller('base', ["$log", "dataService", '$state', '$templateCache', Base])
-        .controller('selectController', ["$log", "dataService", "$state", "studies", '$templateCache', SelectController])
-        .controller('manageController', ['$rootScope', ManageController])
-        .controller('nameController', ['$rootScope', NameController])
+        .controller('selectController', ['$rootScope', "studies", SelectController])
+        .controller('manageController', ['$rootScope','$transitions', ManageController])
         .controller('liveController', ["$log", "dataService", "$state", "$stateParams", LiveController])
         .controller('concludedController', ["$log", "dataService", "$state", "$stateParams", ConcludedController])
         .config(
@@ -42,16 +40,6 @@ import Base from "../manage/controllers/base";
                         }
                     }
                 })
-                .state("name",{
-                    url:"/name/:id",
-                    controller: "nameController",
-                    controllerAs: "ctrl",
-                    templateUrl:"buildname.html",
-                    params: {
-                        names: null,
-                        id: null
-                    }
-                })
                 .state("build",{
                     url:"/build/:id",
                     abstract:true,
@@ -63,17 +51,29 @@ import Base from "../manage/controllers/base";
                         id: null
                     }
                 })
-                .state("build.setup",{
+                .state("build.name",{
                     url:"",
-                    templateUrl:"buildstudy.html"
+                    templateUrl:"/build/buildname.html"
+                })
+                .state("build.options",{
+                    url:"",
+                    templateUrl:"/build/buildstudy.html"
+                })
+                .state("build.prequestions",{
+                    url:"",
+                    templateUrl:"/build/prequestions.html"
+                })
+                .state("build.questions",{
+                    url:"",
+                    templateUrl:"/build/questions.html"
                 })
                 .state("build.subjects",{
                     url:"",
-                    templateUrl:"add_subjects.html"
+                    templateUrl:"/build/add_subjects.html"
                 })
                 .state("build.map",{
                     url:"",
-                    templateUrl:"secondmap.html"
+                    templateUrl:"/build/secondmap.html"
                 })
                 .state("live",{
                     url:"/live/:id",
@@ -98,7 +98,7 @@ import Base from "../manage/controllers/base";
             $httpProvider.interceptors.push('httpInterceptor');
             $compileProvider.debugInfoEnabled(true);
         }])
-        .run(['$rootScope', '$state', '$log', "dataService", "$stateParams", function($rootScope, state, log, ds, sp) {
+        .run(['$rootScope', '$state', '$log', "dataService", "$stateParams",'$transitions', function($rootScope, state, log, ds, sp, $transitions) {
             $rootScope.state = state;
             $rootScope.log = log;
             $rootScope.dataService = ds;

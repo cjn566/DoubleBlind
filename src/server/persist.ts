@@ -45,7 +45,15 @@ export function doSave(save, userId) {
                     });
                 });
         case Model.question:
-            return isOwnerOf((save.data.id > 0 ? Model.question : Model.experiment), (save.data.id ? save.data.id : save.data.experiment_id), userId)
+
+            let bob = save.data;
+            let frank = bob.id;
+            let bill = save.data.id;
+            let bfr = save.data.required;
+            let bsd = save.data.text;
+
+            let idz = (save.data.id > 0? save.data.id : save.data.experiment_id);
+            return isOwnerOf((save.data.id > 0 ? Model.question : Model.experiment), idz, userId)
                 .then((authed) => {
                     if (authed) {
                         return new context.Question(save.data).save();

@@ -26,7 +26,7 @@ export default class {
 
     continue = () =>{
         console.log(pluralize(this.names.moniker));
-
+        pluralize.singular();
         let data = {
             id: this.id,
             name: this.names.name,

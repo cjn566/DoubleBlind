@@ -1,25 +1,64 @@
 
 
 import {Model, Experiment, Stage} from "../../../common/interfaces/experiment";
-import _controller from './AbstractExperiment'
 import {invalid, resetValidations, shuffle} from "../../Misc";
 import subject from './Subjects'
-
+import * as pluralize from 'pluralize';
 
 declare let $: any;
 
 export default class {
-    constructor(root){
+
+    states = {
+        'build.name': 0,
+        'build.options': 1,
+        'build.prequestions': 2,
+        'build.questions': 3,
+        'build.subjects': 4,
+        'build.map': 5
+    };
+
+    constructor(root, transitions){
+
+        this.root = root;
+
+        let that = this;
+        transitions.onSuccess({ to: 'build.**' }, function(transition) {
+            that.step = that.states[transition.to().name];
+            that.navBar(that.step);
+        });
 
         let finish = (exp) => {
             this.experiment = exp;
             this.eLockResponses = $('#lock-check');
             this.eLockResponses.prop( "checked", this.experiment.lock_responses);
-            this.nextText = this.steps[0].nextText();
             this.aliasString = "" + exp.aliases;
-        };
+            this.nameString = exp.name;
 
-        this.root = root;
+            if(exp.name){
+                if(exp.conclusion){
+                    if(exp.preQuestions.length){
+                        if(exp.questions.length){
+                            if(exp.subjects.length && (exp.aliases == 2)){
+                                this.step = 5;
+                            } else {
+                                this.step = 4;
+                            }
+                        }  else {
+                            this.step = 3;
+                        }
+                    } else {
+                        this.step = 2;
+                    }
+                } else {
+                    this.step = 1;
+                }
+            } else {
+                this.step = 0;
+            }
+
+            this.gotoStep();
+        };
         if(root.params.experiment) {
             finish(root.params.experiment)
         }
@@ -38,22 +77,82 @@ export default class {
     newPreQuestion:string = "";
     newSubject:string = "";
     step = 0;
-    nextText;
+    nameString:string = "";
+    moniker:string;
 
     eLockResponses;
     aliasString:string;
 
+    navBar = (step: number) => {
+        let eSteps = $('#build-steps > li');
+        eSteps.removeClass('active').addClass((i)=>{
+            return (i == step)? 'active' : '';
+        });
+    }
+
+    checkName = () => {
+        let plural, singular;
+        if(pluralize.isPlural(this.moniker)){
+            plural = this.moniker;
+            singular = pluralize.singular(this.moniker);
+        } else {
+            singular = this.moniker;
+            plural = pluralize.plural(this.moniker);
+        }
+
+        let data = {
+            id: this.experiment.id,
+            name: this.nameString,
+            moniker:singular,
+            plural:plural
+        };
+
+        return this.root.dataService.save({
+            type: Model.experiment,
+            data: data
+        }).then((data)=>{
+            Object.assign(this.experiment, data);
+            return 1;
+        });
+    };
+
     checkSetup = () => {
         this.experiment.aliases = parseInt(this.aliasString);
 
+
+        return this.root.dataService.save({
+            type: Model.experiment,
+            data: {
+                id: this.experiment.id,
+                description:this.experiment.description,
+                conclusion:this.experiment.conclusion,
+                lock_responses: this.experiment.lock_responses,
+                aliases: this.experiment.aliases
+            }
+        }).then((data)=>{
+            Object.assign(this.experiment, data);
+            return 1;
+        });
+    };
+
+    checkPrequestions = () => {
+
         // Must be at least one question to ask participants
-        if(this.experiment.questions.length == 0){
+        if(this.experiment.preQuestions.length == 0){
             return Promise.resolve(0);
         }
 
-        return this.saveSetup().then(()=>{
-            return 1;
-        });
+        return this.saveQuestions(true).then(()=>{ return 1});
+    };
+
+    checkQuestions = () => {
+
+        // Must be at least one question to ask participants
+        if(this.experiment.questions.length == 0){
+            return Promise.resolve(0)
+        }
+
+        return this.saveQuestions(false).then(()=>{ return 1});
     };
 
     checkSubjects = () => {
@@ -107,24 +206,58 @@ export default class {
             this.root.state.go('live', {id:this.experiment.id});
         })
     };
-
+/**/
     steps = [
         {
-            name: 'build.setup',
-            nextText: ()=>{return 'Add ' + this.experiment.plural},
+            name: "Name",
+            stateName: 'build.names',
+            nextFunction: this.checkName
+        },
+        {
+            name: "Options",
+            stateName: 'build.options',
             nextFunction: this.checkSetup
         },
         {
-            name: 'build.subjects',
-            nextText: ()=>{return this.experiment.aliases == 2? "Rename " + this.experiment.plural : "Start"},
+            name: "Initial Questions",
+            stateName: 'build.prequestions',
+            nextFunction: this.checkPrequestions
+        },
+        {
+            name: "Drink Questions",
+            stateName: 'build.questions',
+            nextFunction: this.checkQuestions
+        },
+        {
+            name: "Drinks",
+            stateName: 'build.subjects',
             nextFunction: this.checkSubjects
         },
         {
-            name: 'build.map',
-            nextText: ()=>{return 'Start'},
+            name: "Re-Map",
+            stateName: 'build.map',
             nextFunction: this.checkMap
         }
     ];
+
+
+    gotoNextStep = () => {
+        this.steps[this.step].nextFunction().then((next)=>{
+            if (next){
+                this.step += next;
+                if(this.step == 6){
+                    return this.startTrial();
+                }
+                this.gotoStep();
+            }
+        });
+    };
+
+    gotoStep = ()=> {
+        this.navBar(this.step);
+        console.log("Going to: " + this.steps[this.step].name);
+        this.root.state.go(this.steps[this.step].stateName);
+    };
 
 
     addSubject = ()=>{
@@ -146,7 +279,7 @@ export default class {
     };
 
     deleteSubject = (subject, idx) => {
-        this.log("delete " +
+        this.root.log("delete " +
             "" + idx);
         confirm("Delete '" + subject.name + "'?") && this.root.dataService.delete({type: Model.subject, id:subject.id}).then(()=>{
             this.experiment.subjects.splice(idx, 1);
@@ -204,7 +337,7 @@ export default class {
     };
 
     deleteQuestion = (question, idx) => {
-        this.log("delete " + idx);
+        this.root.log("delete " + idx);
         if(confirm("Delete question?")) {
             this.root.dataService.delete({type: Model.question, id:question.id}).then(()=>{
                 if(question.per_subject)
@@ -217,7 +350,7 @@ export default class {
 
     updateMapFromUI = (subject, form)=>{
         if(form.$dirty) {
-            this.log("saving mapping");
+            this.root.log("saving mapping");
             this.updateMap(subject.id, subject.name);
             form.$setPristine();
         }
@@ -230,7 +363,7 @@ export default class {
                 id: id,
                 map1: name
             }
-        }).catch(this.err)
+        }).catch(this.root.err)
     };
 
     clearAll = () =>{
@@ -258,78 +391,25 @@ export default class {
         else return Promise.reject("nevermind");
     };
 
+    saveQuestions = (pre:boolean)=> {
+        let array = pre? this.experiment.preQuestions : this.experiment.questions;
+        return this.root.dataService.save(array.map((s)=>{
+            let data = {
+                text: s.text,
+                per_subject: s.perSubject,
+                required: s.required
+            };
 
-    gotoNextStep = () => {
-        this.steps[this.step].nextFunction().then((next)=>{
-            if (next){
-                this.step += next;
-                if(this.step == 3){
-                    return this.startTrial();
-                }
-                this.root.state.go(this.steps[this.step].name);
-                this.nextText = this.steps[this.step].nextText();
+            if(s.id == -1){
+                data['experiment_id'] = this.experiment.id;
+            } else {
+                data[' id'] = s.id;
             }
-        });
+            return {
+                type: Model.question,
+                data: data
+            }
+        }))
     };
 
-    goBackAStep = () => {
-        if(this.step > 0) {
-            this.step--;
-            this.root.state.go(this.steps[this.step].name);
-            this.nextText = this.steps[this.step].nextText();
-        } else {
-            this.root.state.go('home');
-        }
-    };
-
-    saveSetup = () =>{
-            let saves = [];
-            saves.push({
-                type: Model.experiment,
-                data: {
-                    id: this.experiment.id,
-                    name: this.experiment.name,
-                    moniker:this.experiment.moniker,
-                    plural:this.experiment.plural,
-                    description:this.experiment.description,
-                    conclusion:this.experiment.conclusion,
-                    lock_responses: this.experiment.lock_responses,
-                    aliases: this.experiment.aliases
-                }
-            });
-
-            let oldQuestions = this.experiment.questions.filter((e)=>{ return (e.id > 0)});
-            let newQuestions = this.experiment.questions.filter((e)=>{ return (e.id == -1)});
-            oldQuestions = oldQuestions.concat(this.experiment.preQuestions.filter((e)=>{ return (e.id > 0)}));
-            newQuestions = newQuestions.concat(this.experiment.preQuestions.filter((e)=>{ return (e.id == -1)}));
-
-            saves = saves.concat(oldQuestions.map((s)=>{
-                return {
-                    type: Model.question,
-                    data:{
-                        id: s.id,
-                        text: s.text,
-                        per_subject: s.perSubject,
-                        required: s.required
-                    }
-                }
-            }));
-
-            saves = saves.concat(newQuestions.map((s)=>{
-                return {
-                    type: Model.question,
-                    data:{
-                        experiment_id: this.experiment.id,
-                        text: s.text,
-                        per_subject: s.perSubject,
-                        required: s.required
-                    }
-                }
-            }));
-
-            return this.root.dataService.save(saves);
-    };
-
-    log = (m) => {this.root.log.log(m)};
-    err = (e) => {this.root.log.error(e)};
 }

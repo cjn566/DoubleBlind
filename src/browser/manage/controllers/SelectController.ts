@@ -6,10 +6,11 @@ import * as copy from 'copy-to-clipboard';
 import {options} from "../../../common/options";
 
 
-export default class extends _controller{
-    constructor(a,b,c,d, cache){
-        super(a,b,c,{experiment: true});
-        this.studies = d;
+export default class {
+    constructor(root, studies){
+
+        this.root = root;
+        this.studies = studies;
         this.studies.map((s)=>{
             s.link = "/join/" + s.id;
         });
@@ -20,6 +21,7 @@ export default class extends _controller{
         //autoRefresh(this.state, cache);
     }
 
+    root;
     active;
     archive;
     studies;
@@ -35,24 +37,20 @@ export default class extends _controller{
     };
 
     exportData = (id) => {
-        this.dataService.exportData(id, true);
+        this.root.dataService.exportData(id, true);
     }
 
     selectExperiment = (id:number) =>{
-        this.dataService.getExperimentForOwner(id).then((experiment:Experiment)=>{
+        this.root.dataService.getExperimentForOwner(id).then((experiment:Experiment)=>{
             switch (experiment.stage) {
                 case Stage.build:
-                    this.state.go('name', {id: id, names: {
-                        name: experiment.name,
-                        moniker: experiment.moniker,
-                        plural: experiment.plural
-                    }});
+                    this.root.state.go('build.name', {id: id});
                     break;
                 case Stage.live:
-                    this.state.go('live', {id: id});
+                    this.root.state.go('live', {id: id});
                     break;
                 case Stage.concluded:
-                    this.state.go('results', {id: id});
+                    this.root.state.go('results', {id: id});
                     break;
 
             }
@@ -60,14 +58,28 @@ export default class extends _controller{
     };
 
     newExperiment = () =>{
-        this.state.go('name');
+        let data = {
+            name: '',
+            moniker:'',
+            plural:'',
+            stage: 0,
+            lock_responses: false,
+            aliases: 0
+        };
+
+        return this.root.dataService.save({
+            type: Model.experiment,
+            data: data
+        }).then((data)=>{
+            this.root.state.go('build.name', {id:data.id});
+        });
     };
 
     deleteExperiment = (id, name) => {
         if(confirm("Delete '" + name + "'?")) {
             if(confirm("Are you sure?!")) {
-                this.dataService.delete({type: Model.experiment, id: id}).then(() => {
-                    this.dataService.getExperiments().then((studies)=>{
+                this.root.dataService.delete({type: Model.experiment, id: id}).then(() => {
+                    this.root.dataService.getExperiments().then((studies)=>{
                         this.studies = studies;
                     })
                 })
