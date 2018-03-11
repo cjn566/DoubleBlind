@@ -91,6 +91,8 @@ export default class {
     }
 
     checkName = () => {
+        if(!this.moniker) return Promise.reject("Moniker is blank.");
+
         let plural, singular;
         if(pluralize.isPlural(this.moniker)){
             plural = this.moniker;
@@ -184,8 +186,7 @@ export default class {
         if (this.experiment.subjects.some((s) => {
                 return !s.map2
             })){
-            alert("Must not leave blank aliases");
-            return 0;
+            return Promise.reject("Must not leave blank aliases");
         }
 
         return this.saveMap2().then(()=>{
@@ -243,13 +244,13 @@ export default class {
 
     gotoNextStep = () => {
         this.steps[this.step].nextFunction().then((next)=>{
-            if (next){
-                this.step += next;
-                if(this.step == 6){
-                    return this.startTrial();
-                }
-                this.gotoStep();
+            this.step += next;
+            if(this.step == 6){
+                return this.startTrial();
             }
+            this.gotoStep();
+        }, (reason)=>{
+            console.log("Can't proceed: " + reason)
         });
     };
 
