@@ -3,22 +3,16 @@ import * as jscookie from 'js-cookie';
 import {autoRefresh} from "../../Misc";
 
 export default class{
-    $log;
-    dataService;
     user;
     loading = true;
-    state;
+    root;
 
-    constructor(log, dataService, state, cache) {
-        this.dataService = dataService;
-        this.$log = log;
-        this.state = state;
-        dataService.whoami().then((user) => {
+    constructor(root) {
+        this.root  = root
+        root.dataService.whoami().then((user) => {
             this.user  = user;
             this.loading = false;
         });
-
-        //autoRefresh(state,cache )
     }
 
     logout = ()=>{
@@ -27,9 +21,6 @@ export default class{
     };
 
     goHome = ()=>{
-        this.state.go('home')
+        this.root.state.go('home')
     };
-
-    log = (m) => {this.$log.log(m)};
-    err = (e)=>{this.$log.error(e)};
 }

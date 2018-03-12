@@ -17,10 +17,10 @@ import Base from "../manage/controllers/base";
     angular.module("DoubleBlind", ["ui.router"])
         .factory("dataService", ["$http", "$log", DataService])
         .factory('httpInterceptor', ['$q', '$rootScope', '$location', '$state', httpInterceptor])
-        .controller('base', ["$log", "dataService", '$state', '$templateCache', Base])
+        .controller('base', ['$rootScope', Base])
         .controller('selectController', ['$rootScope', "studies", SelectController])
         .controller('manageController', ['$rootScope','$transitions', ManageController])
-        .controller('liveController', ["$log", "dataService", "$state", "$stateParams", LiveController])
+        .controller('liveController', ['$rootScope', "experiment", LiveController])
         .controller('concludedController', ["$log", "dataService", "$state", "$stateParams", ConcludedController])
         .config(
             ['$stateProvider', '$logProvider', '$urlRouterProvider', '$httpProvider', '$compileProvider', '$locationProvider',
@@ -53,36 +53,33 @@ import Base from "../manage/controllers/base";
                 })
                 .state("build.name",{
                     url:"",
-                    templateUrl:"/build/buildname.html"
+                    templateUrl:"/build/1-name.html"
                 })
                 .state("build.options",{
                     url:"",
-                    templateUrl:"/build/buildstudy.html"
+                    templateUrl:"/build/2-options.html"
                 })
                 .state("build.prequestions",{
                     url:"",
-                    templateUrl:"/build/prequestions.html"
+                    templateUrl:"/build/3-prequestions.html"
                 })
                 .state("build.questions",{
                     url:"",
-                    templateUrl:"/build/questions.html"
+                    templateUrl:"/build/4-questions.html"
                 })
                 .state("build.subjects",{
                     url:"",
-                    templateUrl:"/build/add_subjects.html"
-                })
-                .state("build.map",{
-                    url:"",
-                    templateUrl:"/build/secondmap.html"
+                    templateUrl:"/build/5-subjects.html"
                 })
                 .state("live",{
                     url:"/live/:id",
                     controller: "liveController",
                     controllerAs: "ctrl",
                     templateUrl:"live.html",
-                    params: {
-                        experiment: null,
-                        id: null
+                    resolve: {
+                        experiment: function(dataService, $stateParams){
+                            return dataService.getExperimentForOwner($stateParams.id)
+                        }
                     }
                 })
                 .state("results",{
@@ -90,9 +87,10 @@ import Base from "../manage/controllers/base";
                     controller: "concludedController",
                     controllerAs: "ctrl",
                     templateUrl:"concluded.html",
-                    params: {
-                        experiment: null,
-                        id: null
+                    resolve: {
+                        experiment: function(dataService){
+                            return dataService.getExperimentForOwner()
+                        }
                     }
                 });
             $httpProvider.interceptors.push('httpInterceptor');
@@ -100,7 +98,8 @@ import Base from "../manage/controllers/base";
         }])
         .run(['$rootScope', '$state', '$log', "dataService", "$stateParams",'$transitions', function($rootScope, state, log, ds, sp, $transitions) {
             $rootScope.state = state;
-            $rootScope.log = log;
+            $rootScope.log = (m) => log.log(m);
+            $rootScope.err = (m) => log.error(m);
             $rootScope.dataService = ds;
             $rootScope.params = sp;
         }]);

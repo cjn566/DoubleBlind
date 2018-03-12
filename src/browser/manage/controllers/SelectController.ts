@@ -1,5 +1,4 @@
 import {Model, Stage, Experiment} from "../../../common/interfaces/experiment";
-import _controller from './AbstractExperiment'
 import {autoRefresh} from "../../Misc";
 
 import * as copy from 'copy-to-clipboard';

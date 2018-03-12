@@ -1,7 +1,11 @@
-import _controller from './AbstractExperiment'
 
-export default class extends _controller{
-    constructor(a,b,c,d){super(a,b,c,d)}
+export default class {
+    root;
+    experiment;
+    constructor(root) {
+        this.root = root;
+        this.experiment = root.params.experiment;
+    }
 
-    export = ()=>{this.dataService.export(this.experiment.id)}
+    export = ()=>{this.root.dataService.export(this.experiment.id)}
 }

@@ -2,7 +2,6 @@
 
 import {Model, Experiment, Stage} from "../../../common/interfaces/experiment";
 import {invalid, resetValidations, shuffle} from "../../Misc";
-import subject from './Subjects'
 import * as pluralize from 'pluralize';
 
 declare let $: any;
@@ -15,7 +14,6 @@ export default class {
         'build.prequestions': 2,
         'build.questions': 3,
         'build.subjects': 4,
-        'build.map': 5
     };
 
     constructor(root, transitions){
@@ -32,31 +30,11 @@ export default class {
             this.experiment = exp;
             this.eLockResponses = $('#lock-check');
             this.eLockResponses.prop( "checked", this.experiment.lock_responses);
-            this.aliasString = "" + exp.aliases;
             this.nameString = exp.name;
 
-            if(exp.name){
-                if(exp.conclusion){
-                    if(exp.preQuestions.length){
-                        if(exp.questions.length){
-                            if(exp.subjects.length && (exp.aliases == 2)){
-                                this.step = 5;
-                            } else {
-                                this.step = 4;
-                            }
-                        }  else {
-                            this.step = 3;
-                        }
-                    } else {
-                        this.step = 2;
-                    }
-                } else {
-                    this.step = 1;
-                }
-            } else {
-                this.step = 0;
+            if(exp.setup_step){
+                this.step = exp.setup_step;
             }
-
             this.gotoStep();
         };
         if(root.params.experiment) {
@@ -69,6 +47,7 @@ export default class {
 
     togglecheck = () => {
         this.experiment.lock_responses = this.eLockResponses.checked;
+        this.experiment.show_results = this.eShowresults.checked;
     };
 
     root;
@@ -81,17 +60,17 @@ export default class {
     moniker:string;
 
     eLockResponses;
-    aliasString:string;
+    eShowresults;
 
     navBar = (step: number) => {
-        let eSteps = $('#build-steps > li');
+        let eSteps = $('#build-steps > li > a');
         eSteps.removeClass('active').addClass((i)=>{
             return (i == step)? 'active' : '';
         });
     }
 
     checkName = () => {
-        if(!this.moniker) return Promise.reject("Moniker is blank.");
+        if(!this.moniker || !this.nameString) return Promise.reject("Moniker or Name is blank.");
 
         let plural, singular;
         if(pluralize.isPlural(this.moniker)){
@@ -119,9 +98,6 @@ export default class {
     };
 
     checkSetup = () => {
-        this.experiment.aliases = parseInt(this.aliasString);
-
-
         return this.root.dataService.save({
             type: Model.experiment,
             data: {
@@ -129,7 +105,6 @@ export default class {
                 description:this.experiment.description,
                 conclusion:this.experiment.conclusion,
                 lock_responses: this.experiment.lock_responses,
-                aliases: this.experiment.aliases
             }
         }).then((data)=>{
             Object.assign(this.experiment, data);
@@ -164,34 +139,10 @@ export default class {
             return 0;
         }
 
-        if (this.experiment.aliases > 0 && this.experiment.subjects.length === 1) {
-            alert("It would not make any sense to have a blind trial with only one "+ this.experiment.moniker + ".");
-            return 0;
-        }
-
-        if (this.experiment.aliases > 0 && this.experiment.subjects.some((s) => {
-                    return !s.map1
-                })){
-            alert("Must not leave blank aliases");
-            return 0;
-        }
-
         return this.saveMap1().then(()=>{
-            return 1 + (this.experiment.aliases == 2? 0 : 1);
-        });
-
-    };
-
-    checkMap = () => {
-        if (this.experiment.subjects.some((s) => {
-                return !s.map2
-            })){
-            return Promise.reject("Must not leave blank aliases");
-        }
-
-        return this.saveMap2().then(()=>{
             return 1;
         });
+
     };
 
     startTrial = () => {
@@ -233,11 +184,6 @@ export default class {
             name: "Drinks",
             stateName: 'build.subjects',
             nextFunction: this.checkSubjects
-        },
-        {
-            name: "Re-Map",
-            stateName: 'build.map',
-            nextFunction: this.checkMap
         }
     ];
 
@@ -245,7 +191,7 @@ export default class {
     gotoNextStep = () => {
         this.steps[this.step].nextFunction().then((next)=>{
             this.step += next;
-            if(this.step == 6){
+            if(this.step == 5){
                 return this.startTrial();
             }
             this.gotoStep();
@@ -258,6 +204,13 @@ export default class {
         this.navBar(this.step);
         console.log("Going to: " + this.steps[this.step].name);
         this.root.state.go(this.steps[this.step].stateName);
+        this.root.dataService.save({
+            type: Model.experiment,
+            data:{
+                id: this.experiment.id,
+                setup_step: this.step
+            }
+        })
     };
 
 
@@ -270,9 +223,7 @@ export default class {
             this.experiment.subjects.push({
                 id: -1,
                 text: this.newSubject,
-                displayname: '',
-                map1: '',
-                map2: ''
+                alias: ''
             });
             this.newSubject = "";
             document.getElementById("newSubject").focus();
@@ -295,7 +246,7 @@ export default class {
                     data:{
                         id: s.id,
                         name: s.text,
-                        map1: s.map1
+                        alias: s.alias
                     }
                 }
             }
@@ -304,7 +255,7 @@ export default class {
                 data:{
                     experiment_id: this.experiment.id,
                     name: s.text,
-                    map1: s.map1
+                    alias: s.alias
                 }
             }
         }))
@@ -347,49 +298,6 @@ export default class {
                     this.experiment.preQuestions.splice(idx, 1);
             })
         }
-    };
-
-    updateMapFromUI = (subject, form)=>{
-        if(form.$dirty) {
-            this.root.log("saving mapping");
-            this.updateMap(subject.id, subject.name);
-            form.$setPristine();
-        }
-    };
-
-    updateMap = (id, name)=>{
-        this.root.dataService.save({
-            type: Model.subject,
-            data: {
-                id: id,
-                map1: name
-            }
-        }).catch(this.root.err)
-    };
-
-    clearAll = () =>{
-
-    };
-
-    copyScramble = ()=> {
-        shuffle(this.experiment.subjects.map(s=>s.map1)).map((e, i)=>{
-            this.experiment.subjects[i].map2 = e;
-        });
-    };
-
-    saveMap2 = ()=>{
-        if(confirm("Begin Trial?")){
-            return this.root.dataService.save(
-                this.experiment.subjects.map((s)=>{
-                return {
-                    type: Model.subject,
-                    data: {
-                        id: s.id,
-                        map2: s.map2
-                    }}
-            }))
-        }
-        else return Promise.reject("nevermind");
     };
 
     saveQuestions = (pre:boolean)=> {

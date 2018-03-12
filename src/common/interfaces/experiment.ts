@@ -20,11 +20,9 @@ export enum DataOrder {
 }
 
 export interface Subject {
-    displayname: string;
     id: number,
     text: string,
-    map1: any,
-    map2: any
+    alias: string
 }
 
 export interface Question {
@@ -55,6 +53,7 @@ export interface Experiment {
     preQuestions: Question[],
     aliases: number,
     lock_responses: boolean
+    show_results: boolean;
 }
 
 export interface SaveBundle {

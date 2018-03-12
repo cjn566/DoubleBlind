@@ -3,7 +3,7 @@
     <p>Select subject:</p>
     <ul>
         <li ng-repeat="subject in ctrl.experiment.subjects" ng-click="ctrl.loadSubject(subject.id)">
-            {{subject.name}}<span ng-if="subject.complete"> **Complete**</span>
+            {{subject.text}}<span ng-if="subject.complete"> **Complete**</span>
         </li>
     </ul>
     <span ng-if="ctrl.complete">You've reviewed all subjects. Thank you for your time!</span>

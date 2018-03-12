@@ -31,7 +31,7 @@ export default class{
 
         this.experiment.preQuestions.map((e)=>{e.locked = false});
 
-        // assign answers to questions
+        // assign answers to pre-questions
         answers.filter(e => (e.subject_id == -1)).map((a)=>{
             let x = this.experiment.preQuestions.find((q)=>{return q.id == a.question_id})
             x.answer = a.value;
@@ -47,15 +47,15 @@ export default class{
             this.reqs = experiment.questions.slice(0, idx);
 
         if(this.reqs.length > 0)
-            this.complete = this.updateCompletedSubjects();
+            this.updateCompletedSubjects();
 
-        if(this.checkPreAnswers().length)
+        if(!this.checkPreAnswers())
             this.state.go('join.prelim');
         else this.state.go('join.select');
-        this.loadSubject(params.subId)
+        if(params.subId) this.loadSubject(params.subId)
     }
 
-    updateCompletedSubjects = ():boolean => {
+    updateCompletedSubjects = () => {
         this.experiment.subjects.map((s)=>{
             let As = this.answers.filter((a)=>{
                 return a.subject_id == s.id;
@@ -71,7 +71,7 @@ export default class{
                 s['complete'] = false;
             }
         });
-        return !this.experiment.subjects.some(s => !s.complete)
+        this.complete = !this.experiment.subjects.some(s => !s.complete)
     };
 
     updatePreAnswers = () => {
@@ -123,7 +123,7 @@ export default class{
                     }
                 })).then((data) => {
                 this.newAnswerSet(data);
-                this.complete = this.updateCompletedSubjects();
+                this.updateCompletedSubjects();
                 this.state.go('join.select');
             }).catch(this.err);
         }
@@ -160,7 +160,9 @@ export default class{
         this.answers = this.answers.concat(newAnswers);
     };
 
-    checkPreAnswers = () => { return this.preReqs.some(q => q.answer) };
+    checkPreAnswers = () => {
+        return this.preReqs.some(q => q.answer);
+    };
 
     log=(m)=>{this.$log.log(m)};
     err=(e)=>{this.$log.error(e)};

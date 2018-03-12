@@ -21,21 +21,12 @@
                     </label>
                 </div>
 
-                <label for="alias-select">Aliases:</label>
-                <select id="alias-select" ng-model="ctrl.aliasString">
-                    <option value=0>Open</option>
-                    <option value=1>Single Blind</option>
-                    <option value=2>Double Blind</option>
-                </select>
-
-                <p>Open - Everyone knows the identity of each {{ctrl.experiment.moniker}}. This option will introduce significant bias into your tasting results.</p>
-                <p>Single Blind - One person (likely the host) knows the identity of each {{ctrl.experiment.moniker}}.
-                    Use this option if you are comfortable with a small amount of bias,
-                    or if you have the assistance of a non-participant who can conceal the {{ctrl.experiment.plural}} for you.</p>
-                <p>Double Blind - Nobody knows the identity of each {{ctrl.experiment.moniker}}.
-                    This option will yield the most accurate results, and requires the most preparation.</p>
-
-
+                <div class="checkbox" data-toggle="tooltip" title="Participants will to see all responses after the study has concluded.">
+                    <label>
+                        <input id="show-check" type="checkbox" ng-model="ctrl.study.show_results" ng-change="ctrl.togglecheck()">
+                        Allow participants to see all results after event is concluded.
+                    </label>
+                </div>
             </div>
         </div>
 

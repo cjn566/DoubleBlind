@@ -45,13 +45,6 @@ export function doSave(save, userId) {
                     });
                 });
         case Model.question:
-
-            let bob = save.data;
-            let frank = bob.id;
-            let bill = save.data.id;
-            let bfr = save.data.required;
-            let bsd = save.data.text;
-
             let idz = (save.data.id > 0? save.data.id : save.data.experiment_id);
             return isOwnerOf((save.data.id > 0 ? Model.question : Model.experiment), idz, userId)
                 .then((authed) => {
@@ -74,7 +67,20 @@ export function getMyAnswers(experiment_id, part_id) {
 
 export function getAnswersForHost(experiment_id) {
     return context.Answer.where({"experiment_id":experiment_id}).fetchAll({columns: ['id', 'question_id', 'subject_id', 'participant_id', 'timestamp']}).then((models)=>{
-        return models.toJSON();
+        let answers = models.toJSON();
+
+
+        let users = [...new Set(answers.map(e => e.participant_id))];
+        return users.map((user)=>{
+            return answers.filter((a)=>{
+                return a.participant_id == user
+            }).filter((e,i,a)=>{
+                return a.findIndex((v)=> {
+                    return v.subject_id === e.subject_id;
+                }) === i
+            }).length;
+        }).sort().reverse();
+
     })
 }
 
@@ -82,7 +88,7 @@ export function getExperiment(link: string, manage: boolean, user?: number) {
     let options = {
         withRelated: ['subjects', 'questions']
     };
-    if (!manage) options['columns'] = ['id', 'name', 'link', 'lock_responses', 'aliases', 'stage'];
+    if (!manage) options['columns'] = ['id', 'name', 'link', 'lock_responses', 'stage'];
 
     return context.Experiment.where({'id': link}).fetch(options)
         .then(function (experimentModel) {
@@ -103,24 +109,10 @@ export function getExperiment(link: string, manage: boolean, user?: number) {
                 switch (experiment.stage) {
                     case Stage.build:
                     case Stage.concluded:
-                    // return {stage: experiment.stage};
+                        return {stage: experiment.stage};
                     case Stage.live:
-                        switch (experiment.aliases) {
-                            case 1:
-                                experiment.subjects.map((s) => {
-                                    s.text = s.map1;
-                                });
-                                break;
-                            case 2:
-                                experiment.subjects.map((s) => {
-                                    s.text = s.map2;
-                                });
-                                break;
-                        }
-                        delete experiment.aliases;
                         experiment.subjects.map((s) => {
-                            delete s.map1;
-                            delete s.map2;
+                            if(s.alias) s.text = s.alias;
                         });
                         return experiment;
                     default:

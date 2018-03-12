@@ -3,19 +3,13 @@
     <div class="panel-heading">Submissions</div>
 
     <!-- Table -->
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th ng-if="ctrl.experiment.preQuestions.length > 0">Pre</th>
-                <th ng-repeat="subject in ctrl.experiment.subjects">{{subject.displayname}}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="user in ctrl.users">
-                <td ng-if="ctrl.experiment.preQuestions.length > 0">{{ctrl.answered(user, -1)}}</td>
-                <td ng-repeat="subject in ctrl.experiment.subjects">{{ctrl.answered(user, subject.id)}}</td>
-            </tr>
-        </tbody>
-    </table>
+
+    <div ng-repeat="answer in ctrl.answers">
+        <div class="progress" style="width: 500px; padding-bottom: 3px;">
+            <div class="progress-bar" role="progressbar" style="width: {{answer.value*100 / ctrl.numSubjects}}%;"></div>
+        </div>
+    </div>
+
+
     <button ng-click="ctrl.finish()">Finish Trial</button>
 </div>

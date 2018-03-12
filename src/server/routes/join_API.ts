@@ -12,7 +12,7 @@ module.exports = function(app) {
         if(!partier){
             partier = Date.now();
             // debug: testing cookie
-            res.cookie('partier', "TEST");
+            res.cookie('partier', partier);//"TEST");
         }
         req["participant_id"] = partier;
         return next();

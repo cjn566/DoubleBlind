@@ -75,10 +75,10 @@ document.addEventListener('load', function() {
             $httpProvider.interceptors.push('httpInterceptor');
             $compileProvider.debugInfoEnabled(true);
         }])
-        .run(['$rootScope', '$state', function($rootScope, state) {
-            //state.go('join.select', {link:28});
-            $rootScope.$on("$stateChangeError", console.log.bind(console));
-            $rootScope.$on("$stateChange", console.log.bind(console));
+        .run(['$rootScope', '$state', function($rootScope, $document) {
+            $rootScope.$on('$stateChangeSuccess', function() {
+                $document[0].body.scrollTop = $document[0].documentElement.scrollTop = 0;
+            });
         }]);
 }());
 
