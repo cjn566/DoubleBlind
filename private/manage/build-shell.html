@@ -9,12 +9,9 @@
 
 
 <ul class="nav nav-pills nav-fill" id="build-steps">
-    <li class="nav-item"><a class="nav-link" ui-sref="build.name">Name</a></li>
-    <li class="nav-item"><a class="nav-link" ui-sref="build.options">Options</a></li>
-    <li class="nav-item"><a class="nav-link" ui-sref="build.prequestions">Initial Questions</a></li>
-    <li class="nav-item"><a class="nav-link" ui-sref="build.questions">Drink Questions</a></li>
-    <li class="nav-item"><a class="nav-link" ui-sref="build.subjects">Drinks</a></li>
-    <li class="nav-item"><a class="nav-link" ui-sref="build.subjects">Start</a></li>
+    <li ng-repeat="step in ctrl.steps" class="nav-item">
+        <a class="nav-link {{step.disabled? 'disabled ':' '}} {{($index == ctrl.step)? 'active ':' '}} {{(ctrl.doneSteps[$index])? 'done ':' '}}" ng-click="ctrl.gotoStep($index)">{{step.name}}</a>
+    </li>
 </ul>
 <hr>
 

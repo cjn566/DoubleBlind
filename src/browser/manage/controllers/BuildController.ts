@@ -20,22 +20,13 @@ export default class {
 
         this.root = root;
 
-        let that = this;
-        transitions.onSuccess({ to: 'build.**' }, function(transition) {
-            that.step = that.states[transition.to().name];
-            that.navBar(that.step);
-        });
-
         let finish = (exp) => {
             this.experiment = exp;
             this.eLockResponses = $('#lock-check');
             this.eLockResponses.prop( "checked", this.experiment.lock_responses);
             this.nameString = exp.name;
+            this.doneSteps = JSON.parse(exp.setup_steps);
 
-            if(exp.setup_step){
-                this.step = exp.setup_step;
-            }
-            this.gotoStep();
         };
         if(root.params.experiment) {
             finish(root.params.experiment)
@@ -56,18 +47,12 @@ export default class {
     newPreQuestion:string = "";
     newSubject:string = "";
     step = 0;
+    doneSteps = 0;
     nameString:string = "";
     moniker:string;
 
     eLockResponses;
     eShowresults;
-
-    navBar = (step: number) => {
-        let eSteps = $('#build-steps > li > a');
-        eSteps.removeClass('active').addClass((i)=>{
-            return (i == step)? 'active' : '';
-        });
-    }
 
     checkName = () => {
         if(!this.moniker || !this.nameString) return Promise.reject("Moniker or Name is blank.");
@@ -162,55 +147,52 @@ export default class {
     steps = [
         {
             name: "Name",
-            stateName: 'build.names',
-            nextFunction: this.checkName
+            disabled: true,
+            stateName: 'build.name',
+            saveStep: this.checkName
         },
         {
             name: "Options",
+            disabled: true,
             stateName: 'build.options',
-            nextFunction: this.checkSetup
+            saveStep: this.checkSetup
         },
         {
             name: "Initial Questions",
+            disabled: false,
             stateName: 'build.prequestions',
-            nextFunction: this.checkPrequestions
+            saveStep: this.checkPrequestions
         },
         {
             name: "Drink Questions",
+            disabled: false,
             stateName: 'build.questions',
-            nextFunction: this.checkQuestions
+            saveStep: this.checkQuestions
         },
         {
             name: "Drinks",
+            disabled: true,
             stateName: 'build.subjects',
-            nextFunction: this.checkSubjects
+            saveStep: this.checkSubjects
         }
     ];
 
 
     gotoNextStep = () => {
-        this.steps[this.step].nextFunction().then((next)=>{
-            this.step += next;
+        this.steps[this.step].saveStep().then((next)=>{
             if(this.step == 5){
                 return this.startTrial();
             }
-            this.gotoStep();
+            this.gotoStep(this.step + next);
         }, (reason)=>{
             console.log("Can't proceed: " + reason)
         });
     };
 
-    gotoStep = ()=> {
-        this.navBar(this.step);
-        console.log("Going to: " + this.steps[this.step].name);
-        this.root.state.go(this.steps[this.step].stateName);
-        this.root.dataService.save({
-            type: Model.experiment,
-            data:{
-                id: this.experiment.id,
-                setup_step: this.step
-            }
-        })
+    gotoStep = (step: number)=> {
+        console.log("Going to: " + this.steps[step].name);
+        this.step = step;
+        this.root.state.go(this.steps[step].stateName);
     };
 
 

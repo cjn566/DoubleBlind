@@ -63,7 +63,8 @@ export default class {
             plural:'',
             stage: 0,
             lock_responses: false,
-            aliases: 0
+            aliases: 0,
+            setup_steps: JSON.stringify([false, false, false, false, false])
         };
 
         return this.root.dataService.save({

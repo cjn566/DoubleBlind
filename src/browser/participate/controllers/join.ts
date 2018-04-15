@@ -22,6 +22,7 @@ export default class{
         this.answers = answers;
 
         switch (experiment.stage){
+
             case Stage.build:
                 return state.go('not-live');
             case Stage.concluded:

@@ -51,9 +51,9 @@ export interface Experiment {
     subjects: Subject[],
     questions: Question[],
     preQuestions: Question[],
-    aliases: number,
     lock_responses: boolean
     show_results: boolean;
+    setup_steps: string;
 }
 
 export interface SaveBundle {

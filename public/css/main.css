@@ -164,7 +164,9 @@ body {
     width: 100%;
 }
 
-
+a.done {
+    background-color: green;
+}
 
 
 

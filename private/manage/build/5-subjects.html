@@ -5,14 +5,14 @@ List all {{ctrl.experiment.plural}} in the experiment
 <table>
     <tr>
         <th>Name</th>
-        <th ng-if="ctrl.experiment.aliases >= 1">{{ctrl.experiment.aliases == 1? "Alias":"First Alias"}}</th>
+        <th>Alias</th>
     </tr>
     <tr ng-repeat="subject in ctrl.experiment.subjects">
         <td>
-            <input ng-model="subject.name">
+            <input ng-model="subject.text">
         </td>
-        <td ng-if="ctrl.experiment.aliases >= 1">
-            <input ng-model="subject.map1">
+        <td>
+            <input ng-model="subject.alias">
         </td>
         <td>
             <span ng-click="ctrl.deleteSubject(subject, $index)" class="glyphicon glyphicon-trash" ></span>

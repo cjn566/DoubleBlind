@@ -2,7 +2,7 @@
 import {options} from "../common/options";
 /// <reference path="Scripts/typings/bookshelf.d.ts" />
 
-let devmode = true;
+let devmode = false;
 
 let loginURL: string = '/login.html';
 let path = require('path');
